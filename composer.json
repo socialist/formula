@@ -1,6 +1,6 @@
 {
-  "name": "seregas/formul-parser",
-  "description": "Formul parser",
+  "name": "seregas/formula",
+  "description": "Formula",
   "type": "library",
   "require": {
     "php": "^7.0"
@@ -14,7 +14,7 @@
   "authors": [
     {
       "name": "Social IST",
-      "email": "serega@socialist.pw"
+      "email": "sergey@socialist.pw"
     }
   ],
   "autoload": {
