@@ -58,7 +58,7 @@ class FormulaTest extends PHPUnit_Framework_TestCase
         $parser->parse();
         $this->assertEquals( '1.65', $parser->calculate() );
 
-        $parser = new \socialist\formula\Formula('( 2 + ( 3 - 4 ) ) * ( 2,65 + ( 25 - 26 ) )');
+        $parser = new \socialist\formula\Formula('( 2 + ( 3 - 4 ) ) * ( 2.65 + ( 25 - 26 ) )');
         $parser->parse();
         $this->assertEquals( '1.65', $parser->calculate() );
 

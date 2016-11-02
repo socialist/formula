@@ -86,7 +86,7 @@ class Formula
             $this->source = str_replace( $results[0], '{' . $key . '}', $this->source );
         }
 
-        while ( preg_match( '/(([\d,%]+|[^\{\}]|[\{\w\d\}]+)\*([\d,%]+|[^\{\}]|[\{\w\d\}]+))/i', $this->source, $results ) ) {
+        while ( preg_match( '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)\*([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i', $this->source, $results ) ) {
             $left = $this->getExpressionObject( $results[2] );
             $right = $this->getExpressionObject( $results[3] );
             $key = $this->generateKey();
@@ -96,7 +96,7 @@ class Formula
             $this->source = str_replace( $results[1], '{' . $key . '}', $this->source );
         }
 
-        while ( preg_match( '/(([\d,%]+|[^\{\}]|[\{\w\d\}]+)\/([\d,%]+|[^\{\}]|[\{\w\d\}]+))/i', $this->source, $results ) ) {
+        while ( preg_match( '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)\/([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i', $this->source, $results ) ) {
             $left = $this->getExpressionObject( $results[2] );
             $right = $this->getExpressionObject( $results[3] );
             $key = $this->generateKey();
@@ -106,7 +106,7 @@ class Formula
         }
 
 
-        while ( preg_match( '/(([\d,%]+|[^\{\}]|[\{\w\d\}]+)([\+|-])([\d,%]+|[^\{\}]|[\{\w\d\}]+))/i', $this->source, $results ) ) {
+        while ( preg_match( '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)([\+|-])([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i', $this->source, $results ) ) {
             $left = $this->getExpressionObject( $results[2] );
             $right = $this->getExpressionObject( $results[4] );
             $key = $this->generateKey();
