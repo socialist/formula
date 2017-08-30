@@ -9,13 +9,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```
-php composer.phar require --prefer-dist socialist/formula "*"
+php composer.phar require --prefer-dist seregas/formula "*"
 ```
 
 or add
 
 ```
-"socialist/formula": "*"
+"seregas/formula": "*"
 ```
 
 to the require section of your `composer.json` file.
