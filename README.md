@@ -1,5 +1,9 @@
 # formula
 Simple mathematical expression parser
+[![Latest Stable Version](https://img.shields.io/packagist/v/seregas/formula.svg)](https://packagist.org/packages/seregas/formula)
+[![Build Status](https://travis-ci.com/socialist/formula.svg?branch=master)](https://github.com/socialist/formula)
+[![Total Downloads](https://img.shields.io/packagist/dt/seregas/formula.svg)](https://packagist.org/packages/seregas/formula)
+
 
 Installation
 ------------
