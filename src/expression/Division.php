@@ -1,18 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: seregas
- * Date: 29.10.16
- * Time: 18:51
- */
-
 namespace socialist\formula\expression;
 
 
 class Division extends Operator
 {
-    public function doCalculate( $left, $right )
+    /**
+     * @inheritdoc
+     */
+    public function doCalculate(float $left, float $right): float
     {
-        return round( $left / $right, 2 );
+        return round($left / $right, 2);
     }
 }

@@ -1,16 +1,17 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: seregas
- * Date: 29.10.16
- * Time: 1:28
- */
-class IntegerTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+use socialist\formula\expression\Increment;
+use socialist\formula\operator\Integer;
+
+class IntegerTest extends TestCase
 {
     public function testIsInteger()
     {
-        $expression = new \socialist\formula\operator\Integer('23');
-        $this->assertInternalType( 'integer', $expression->calculate( new \socialist\formula\expression\Increment( $expression, $expression ) ), 'This expression is not an integer type' );
+        $expression = new Integer('23');
+        $this->assertInternalType('float',
+            $expression->calculate(new Increment($expression, $expression)),
+            'This expression is not an integer type'
+        );
     }
 }

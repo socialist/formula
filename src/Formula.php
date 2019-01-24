@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: seregas
- * Date: 28.10.16
- * Time: 20:01
- */
-
 namespace socialist\formula;
 
 
@@ -14,126 +7,89 @@ use socialist\formula\expression\Increment;
 use socialist\formula\expression\Multiplication;
 use socialist\formula\expression\Operator;
 use socialist\formula\expression\Subtraction;
-use socialist\formula\operator\Double;
+use socialist\formula\operator\Expression;
+use socialist\formula\operator\Variable;
 
 class Formula
 {
+    /**
+     * @var Operator[]
+     */
     public $expressions  = [];
 
+    /**
+     * @var Variable[]
+     */
     protected $variables = [];
 
-    protected $source    = '';
+    /**
+     * @var string
+     */
+    protected $source = '';
+
     /**
      * @var Operator
      */
     protected $result;
 
     /**
-     * Parser constructor.
-     * @param $value
-     * @throws \Exception
+     * Formula constructor.
+     * @param string $value
      */
-    public function __construct( $value )
+    public function __construct(string $value)
     {
-        if ( !is_string( $value ) ) {
-            throw new \Exception( "Formula must be a string" );
-        }
-
-        $this->source = $this->clear( $value );
+        $this->source = $this->clear($value);
     }
 
     /**
      * @param $key
      * @param $value
      */
-    public function setVariable( $key, $value )
+    public function setVariable(string $key, string $value): void
     {
         $this->variables[$key] = $value;
     }
 
     /**
-     * @return mixed|string
+     * @return string
      */
-    public function getSource()
+    public function getSource(): string
     {
         return $this->source;
     }
 
     /**
-     * @return Operator
+     * @return null|Operator
+     * @throws ExpressionNotFoundException
      */
-    public function getExpression()
+    public function getExpression(): ?Operator
     {
-        $key = substr( $this->source, 1, -1 );
-        if ( array_key_exists( $key, $this->expressions ))
-            return $this->expressions[ $key ];
+        $key = substr($this->source, 1, -1);
+
+        if (array_key_exists($key, $this->expressions)) {
+            return $this->expressions[$key];
+        }
+
+        throw new ExpressionNotFoundException('Expression not found: key - ' . $key);
     }
 
     /**
-     * Formula parse
+     * @return float
      */
-    public function parse()
+    public function calculate(): float
     {
-        while ( preg_match( '/\(((?:(?>[^()]+)|(?R))*)\)/i', $this->source, $results ) ) {
-            $key = $this->generateKey();
-            $formula = new static( $results[1] );
-            foreach ( $this->variables as $key => $var ) {
-                $formula->setVariable( $key, $var );
-            }
-            $formula->parse();
-
-            $this->expressions[ $key ] = $formula->getExpression();
-            $this->source = str_replace( $results[0], '{' . $key . '}', $this->source );
-        }
-
-        while ( preg_match( '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)\*([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i', $this->source, $results ) ) {
-            $left = $this->getExpressionObject( $results[2] );
-            $right = $this->getExpressionObject( $results[3] );
-            $key = $this->generateKey();
-
-            $this->expressions[ $key ] = new Multiplication( $left, $right );
-
-            $this->source = str_replace( $results[1], '{' . $key . '}', $this->source );
-        }
-
-        while ( preg_match( '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)\/([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i', $this->source, $results ) ) {
-            $left = $this->getExpressionObject( $results[2] );
-            $right = $this->getExpressionObject( $results[3] );
-            $key = $this->generateKey();
-
-            $this->expressions[ $key ] = new Division( $left, $right );
-            $this->source = str_replace( $results[1], '{' . $key . '}', $this->source );
-        }
-
-
-        while ( preg_match( '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)([\+|-])([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i', $this->source, $results ) ) {
-            $left = $this->getExpressionObject( $results[2] );
-            $right = $this->getExpressionObject( $results[4] );
-            $key = $this->generateKey();
-
-            $className = ( $results[3] == '+' )
-                ? '\socialist\formula\expression\Increment'
-                : '\socialist\formula\expression\Subtraction';
-
-            $this->expressions[ $key ] = new $className( $left, $right );
-            $this->source = str_replace( $results[1], '{' . $key . '}', $this->source );
-        }
-
-        $this->result = $this->getExpressionObject( $this->source );
-    }
-
-    public function calculate()
-    {
-        $key = substr( $this->source, 1, -1 );
-        if ( array_key_exists( $key, $this->expressions ))
-            return $this->expressions[ $key ]->calculate( $this->expressions[ $key ] );
+        $this->parse();
+        $expression = $this->getExpression();
+        return $expression->calculate($expression);
     }
 
     /**
+     * Clear all comments in source
+     *
      * @param $source
-     * @return mixed
+     * @return string
      */
-    private function clear( $source )
+    private function clear(string $source): string
     {
         $patterns = [
             '/\/\*(.*)\*\//i',
@@ -141,32 +97,79 @@ class Formula
             '/\[(.*)\]/i',
             '/[\s]+/i',
         ];
-        return preg_replace( $patterns, '', $source );
+        return preg_replace($patterns, '', $source);
     }
 
-    private function generateKey()
+    /**
+     * Generate random key
+     *
+     * @return string
+     */
+    private function generateKey(): string
     {
         return $uid = md5(uniqid(rand(), true));
     }
 
-    private function getExpressionObject( $expression )
+    /**
+     * @param string $expression
+     * @return Expression
+     */
+    private function getExpressionObject(string $expression): Expression
     {
-        if ( preg_match( '/\{([\w\d]+)\}/', $expression, $result ) ) {
+        if (preg_match('/\{([\w\d]+)\}/', $expression, $result)) {
             return $this->expressions[$result[1]];
-        } else if ( strpos( $expression, '.' ) !== false || strpos( $expression, ',' ) !== false ) {
-            return new \socialist\formula\operator\Double( $expression );
-        } else if ( strpos( $expression, '%' ) !== false ) {
-            return new \socialist\formula\operator\Percent( $expression );
-        } else if ( ( int ) $expression > 0 ) {
-            return new \socialist\formula\operator\Integer( $expression );
         } else {
-            $variable = new \socialist\formula\operator\Variable( $expression );
-
-            if ( array_key_exists( $expression, $this->variables ) ) {
-                $variable->setValue( $this->variables[ $expression ] );
-            }
-
-            return $variable;
+            return ExpressionFactory::factory($expression, $this->variables);
         }
+    }
+
+    /**
+     * Formula parse
+     */
+    public function parse()
+    {
+        $patterns = [
+            '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)(\*)([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i',
+            '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)(\/)([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i',
+            '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)([\+|-])([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i',
+        ];
+
+        $operators = [
+            '*' => Multiplication::class,
+            '/' => Division::class,
+            '-' => Subtraction::class,
+            '+' => Increment::class,
+        ];
+
+        // Выражение в скобках
+        while (preg_match('/\(((?:(?>[^()]+)|(?R))*)\)/i', $this->source, $results)) {
+            $key = $this->generateKey();
+            $formula = new static($results[1]);
+            foreach ($this->variables as $key => $var) {
+                $formula->setVariable($key, $var);
+            }
+            $formula->parse();
+
+            $this->expressions[$key] = $formula->getExpression();
+            $this->source = str_replace($results[0], '{' . $key . '}', $this->source);
+        }
+
+        foreach ($patterns as $pattern) {
+            while (preg_match($pattern, $this->source, $results)) {
+                try {
+                    $left = $this->getExpressionObject( $results[2] );
+                    $right = $this->getExpressionObject( $results[4] );
+                    $key = $this->generateKey();
+
+                    $this->expressions[ $key ] = new $operators[$results[3]]( $left, $right );
+
+                    $this->source = str_replace( $results[1], '{' . $key . '}', $this->source );
+                } catch(\Exception $e) {
+                    echo $e->getMessage();
+                }
+            }
+        }
+
+        $this->result = $this->getExpressionObject( $this->source );
     }
 }

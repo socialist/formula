@@ -1,24 +1,27 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: seregas
- * Date: 29.10.16
- * Time: 1:19
- */
-
 namespace socialist\formula\operator;
 
 use socialist\formula\expression\Operator;
 
-
 abstract class Expression
 {
+    /**
+     * @var string
+     */
     protected $value;
 
-    public function __construct( $value )
+    /**
+     * Expression constructor.
+     * @param string $value
+     */
+    public function __construct(string $value)
     {
         $this->value = $value;
     }
 
-    public abstract function calculate( Operator $context );
+    /**
+     * @param Operator $context
+     * @return float
+     */
+    public abstract function calculate(Operator $context): float;
 }

@@ -1,16 +1,14 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: seregas
- * Date: 29.10.16
- * Time: 17:14
- */
-class VariableTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+use socialist\formula\expression\Increment;
+use socialist\formula\operator\Variable;
+
+class VariableTest extends TestCase
 {
     public function testVariable()
     {
-        $expression = new \socialist\formula\operator\Variable( 'p', '2,56' );
-        $this->assertEquals( $expression->calculate( new \socialist\formula\expression\Increment( $expression, $expression ) ), 2.56 );
+        $expression = new Variable('p', '2,56');
+        $this->assertEquals($expression->calculate(new Increment($expression, $expression)), 2.56);
     }
 }

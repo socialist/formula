@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: seregas
- * Date: 29.10.16
- * Time: 17:10
- */
-
 namespace socialist\formula\operator;
 
 use socialist\formula\expression\Operator;
@@ -14,26 +7,26 @@ class Variable extends Expression
 {
     protected $key;
 
-    public function __construct( $key, $value = 0 )
+    public function __construct(string $key, string $value = '0')
     {
         $this->key = $key;
-        parent::__construct( $value );
+        parent::__construct($value);
     }
 
     /**
-     * @param mixed $value
+     * @param string $value
      */
-    public function setValue($value)
+    public function setValue(string $value)
     {
         $this->value = $value;
     }
 
     /**
-     * @param Operator $operator
+     * @inheritdoc
      */
-    public function calculate( Operator $operator )
+    public function calculate(Operator $operator): float
     {
-        $this->value = str_replace( ',', '.', $this->value );
-        return ( float ) $this->value;
+        $this->value = str_replace(',', '.', $this->value);
+        return (float) $this->value;
     }
 }
