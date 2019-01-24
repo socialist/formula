@@ -12,7 +12,7 @@
     "phpunit/dbunit": "2.0.*",
     "phpunit/php-code-coverage": "^4"
   },
-  "license": "GPL",
+  "license": "MIT",
   "authors": [
     {
       "name": "Social IST",
