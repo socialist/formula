@@ -3,7 +3,11 @@
 [![Build Status](https://travis-ci.com/socialist/formula.svg?branch=master)](https://github.com/socialist/formula)
 [![Total Downloads](https://img.shields.io/packagist/dt/seregas/formula.svg)](https://packagist.org/packages/seregas/formula)
 
-Simple mathematical expression parser
+This package can parse and evaluate formulas with variables.
+
+It can take a string with a math expression and parses it so it can be evaluated replacing variables in the expression by given values.
+
+The packages supports operations like addition, subtraction, multiplication and division.
 
 Installation
 ------------
