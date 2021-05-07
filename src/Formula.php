@@ -27,6 +27,11 @@ class Formula
      */
     protected $source = '';
 
+	/**
+     * @var string
+     */
+    protected $parsed = '';
+    
     /**
      * @var Operator
      */
@@ -64,7 +69,7 @@ class Formula
      */
     public function getExpression(): ?Operator
     {
-        $key = substr($this->source, 1, -1);
+        $key = substr($this->parsed, 1, -1);
 
         if (array_key_exists($key, $this->expressions)) {
             return $this->expressions[$key];
@@ -128,6 +133,9 @@ class Formula
      */
     public function parse()
     {
+        $this->parsed = $this->source;
+        $this->expressions = [];
+        
         $patterns = [
             '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)(\*)([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i',
             '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)(\/)([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i',
@@ -142,7 +150,7 @@ class Formula
         ];
 
         // Выражение в скобках
-        while (preg_match('/\(((?:(?>[^()]+)|(?R))*)\)/i', $this->source, $results)) {
+        while (preg_match('/\(((?:(?>[^()]+)|(?R))*)\)/i', $this->parsed, $results)) {
             $key = $this->generateKey();
             $formula = new static($results[1]);
             foreach ($this->variables as $varKey => $var) {
@@ -151,11 +159,11 @@ class Formula
             $formula->parse();
 
             $this->expressions[$key] = $formula->getExpression();
-            $this->source = str_replace($results[0], '{' . $key . '}', $this->source);
+            $this->parsed = str_replace($results[0], '{' . $key . '}', $this->parsed);
         }
 
         foreach ($patterns as $pattern) {
-            while (preg_match($pattern, $this->source, $results)) {
+            while (preg_match($pattern, $this->parsed, $results)) {
                 try {
                     $left = $this->getExpressionObject( $results[2] );
                     $right = $this->getExpressionObject( $results[4] );
@@ -163,13 +171,13 @@ class Formula
 
                     $this->expressions[ $key ] = new $operators[$results[3]]( $left, $right );
 
-                    $this->source = str_replace( $results[1], '{' . $key . '}', $this->source );
+                    $this->parsed = str_replace( $results[1], '{' . $key . '}', $this->parsed );
                 } catch(\Exception $e) {
                     echo $e->getMessage();
                 }
             }
         }
 
-        $this->result = $this->getExpressionObject( $this->source );
+        $this->result = $this->getExpressionObject( $this->parsed );
     }
 }
