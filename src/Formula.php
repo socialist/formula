@@ -164,17 +164,13 @@ class Formula
 
         foreach ($patterns as $pattern) {
             while (preg_match($pattern, $this->parsed, $results)) {
-                try {
-                    $left = $this->getExpressionObject( $results[2] );
-                    $right = $this->getExpressionObject( $results[4] );
-                    $key = $this->generateKey();
+                $left = $this->getExpressionObject( $results[2] );
+                $right = $this->getExpressionObject( $results[4] );
+                $key = $this->generateKey();
 
-                    $this->expressions[ $key ] = new $operators[$results[3]]( $left, $right );
+                $this->expressions[ $key ] = new $operators[$results[3]]( $left, $right );
 
-                    $this->parsed = str_replace( $results[1], '{' . $key . '}', $this->parsed );
-                } catch(\Exception $e) {
-                    echo $e->getMessage();
-                }
+                $this->parsed = str_replace( $results[1], '{' . $key . '}', $this->parsed );
             }
         }
 
