@@ -145,8 +145,8 @@ class Formula
         while (preg_match('/\(((?:(?>[^()]+)|(?R))*)\)/i', $this->source, $results)) {
             $key = $this->generateKey();
             $formula = new static($results[1]);
-            foreach ($this->variables as $key => $var) {
-                $formula->setVariable($key, $var);
+            foreach ($this->variables as $varKey => $var) {
+                $formula->setVariable($varKey, $var);
             }
             $formula->parse();
 
