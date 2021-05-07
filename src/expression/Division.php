@@ -9,6 +9,6 @@ class Division extends Operator
      */
     public function doCalculate(float $left, float $right): float
     {
-        return round($left / $right, 2);
+        return $right == 0 ? NAN : $left / $right;
     }
 }
