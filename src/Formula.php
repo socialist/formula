@@ -27,7 +27,7 @@ class Formula
      */
     protected $source = '';
 
-	/**
+    /**
      * @var string
      */
     protected $parsed = '';
@@ -136,10 +136,10 @@ class Formula
         $this->parsed = $this->source;
         $this->expressions = [];
         
+        $operandPattern = '([\d\.,%]+|[^\{\}\.,%\(\)\*\/\+-]+|\{[\w\d]+\})';
         $patterns = [
-            '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)(\*)([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i',
-            '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)(\/)([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i',
-            '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)([\+|-])([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i',
+            '/('.$operandPattern.'(\*|\/)'.$operandPattern.')/i',
+            '/('.$operandPattern.'(\+|-)'.$operandPattern.')/i'
         ];
 
         $operators = [
