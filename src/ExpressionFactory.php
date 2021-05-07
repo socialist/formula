@@ -15,7 +15,7 @@ class ExpressionFactory
             return new Double( $expression );
         } else if ( strpos( $expression, '%' ) !== false ) {
             return new Percent( $expression );
-        } else if ( ( int ) $expression > 0 ) {
+        } else if ( is_numeric($expression) ) {
             return new Integer( $expression );
         } else {
             $variable = new Variable( $expression );
