@@ -1,5 +1,5 @@
 {
-  "name": "seregas/formula",
+  "name": "timo/formula",
   "description": "Formula",
   "type": "library",
   "version": "0.3.0",
@@ -7,16 +7,15 @@
     "php": "^7.1||^8.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "5.4.*",
-    "phpunit/php-invoker": "1.1.*",
-    "phpunit/dbunit": "2.0.*",
-    "phpunit/php-code-coverage": "^4"
   },
   "license": "MIT",
   "authors": [
     {
       "name": "Social IST",
       "email": "sergey@socialist.pw"
+    }, {
+      "name": "timo Lehnertz",
+      "email": "timolehnertz1@gmail.com"
     }
   ],
   "autoload": {
