@@ -1,0 +1,26 @@
+{
+    "name": "timo-lehnertz/formula",
+    "description": "An open source PHP formula parser based on https://github.com/socialist/formula",
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "TimoLehnertz\\formula\\": "src/"
+        }
+    },
+    "version": "1.0.0",
+    "keywords": ["formula", "math"],
+    "readme": "README.md",
+    "license": "MIT",
+    "authors": [{
+        "name": "Social IST",
+        "email": "sergey@socialist.pw"
+      }, {
+        "name": "Timo Lehnertz"
+      }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^9.5.*"
+    }
+}
