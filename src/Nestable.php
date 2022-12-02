@@ -27,5 +27,7 @@ interface Nestable {
    * @param bool $throwOnError
    */
   public function validate(bool $throwOnError): bool;
+  
+  public function getVariables(): array;
 }
 

@@ -293,5 +293,18 @@ class MathExpression implements Expression, Nestable {
     $this->expressionsAndOperators = $expressionsAndOperatorsBackup;
     return $calculateable;
   }
+  
+  public function getVariables(): array {
+      $variables = [];
+    foreach ($this->expressionsAndOperators as $expression) {
+      if($expression instanceof Nestable) {
+        $nestedVariables = $expression->getVariables();
+        foreach ($nestedVariables as $nestedVariable) {
+          $variables []= $nestedVariable;
+        }
+      }
+    }
+    return $variables;
+  }
 }
 

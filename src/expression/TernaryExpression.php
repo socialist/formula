@@ -51,5 +51,22 @@ class TernaryExpression implements Expression, Nestable {
     if(!$this->rightExpression->validate($throwOnError)) return false;
     return true;
   }
+  
+  private function getExpressions(): array {
+    return [$this->condition, $this->leftExpression, $this->rightExpression];
+  }
+  
+  public function getVariables(): array {
+    $variables = [];
+    foreach ($this->getExpressions() as $expression) {
+      if($expression instanceof Nestable) {
+        $nestedVariables = $expression->getVariables();
+        foreach ($nestedVariables as $nestedVariable) {
+          $variables []= $nestedVariable;
+        }
+      }
+    }
+    return $variables;
+  }
 }
 

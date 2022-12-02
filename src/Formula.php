@@ -2,7 +2,6 @@
 namespace TimoLehnertz\formula;
 
 use TimoLehnertz\formula\expression\MathExpression;
-use socialist\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\tokens\Tokenizer;
 
 /**
@@ -129,6 +128,21 @@ class Formula {
       '/\[(.*)\]/i'
     ];
     return preg_replace($patterns, '', $source);
+  }
+  
+  /**
+   * Gets all variable identifiers present in this formula
+   * @return string[]
+   */
+  public function getVariables(): array {
+    $variables = $this->expression->getVariables();
+    $identifiers = [];
+    foreach ($variables as $variable) {
+      if(!in_array($variable->getIdentifier(), $identifiers)) {
+        $identifiers []= $variable->getIdentifier();
+      }
+    }
+    return $identifiers;
   }
   
   public function minFunc(...$values) {

@@ -1,12 +1,13 @@
 <?php
 namespace TimoLehnertz\formula\expression;
 
-use Exception;
+use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Nestable;
 use TimoLehnertz\formula\Parseable;
 use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\operator\Calculateable;
-use TimoLehnertz\formula\ExpressionNotFoundException;
+use Exception;
+
 
 /**
  *
@@ -136,5 +137,18 @@ class Method implements Expression, Parseable, Nestable {
       }
     }
     return true;
+  }
+  
+  public function getVariables(): array {
+    $variables = [];
+    foreach ($this->parameters as $parameter) {
+      if($parameter instanceof Nestable) {
+        $nestedVariables = $parameter->getVariables();
+        foreach ($nestedVariables as $nestedVariable) {
+          $variables []= $nestedVariable;
+        }
+      }
+    }
+    return $variables;
   }
 }

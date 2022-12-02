@@ -62,4 +62,8 @@ class Variable implements Expression, Parseable, Nestable {
   public function validate(bool $throwOnError): bool {
     return true; // do nothing
   }
+  
+  public function getVariables(): array {
+    return [$this];
+  }
 }
