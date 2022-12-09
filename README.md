@@ -4,8 +4,10 @@ An open source PHP formula parser based on https://github.com/socialist/formula
 ### Features
 - Variables
 - User defined functions
-- DateTime
-- DateInterval
+- Vectors
+- Vectormath
+- PHP DateTime
+- PHP DateInterval
 
 # Usage
 
@@ -50,8 +52,19 @@ All php date formats are supported. Check out this site for a list of DateTimeFO
 Here's a list for DateIntervals: https://www.php.net/manual/en/class.dateinterval.php
 Internally all dates and intervals get parsed to the UNIX timestamp for easier calculation. So if a date gets passed as parameter to a method the method will receive the timestamp and should also return a timestamp is thats what its purpose is.
 
+## Vectors
+Vectors are defined like `{1,2,a,b,someMethod()}`.
+All math operations work on vectors of the same size or a vector and a number.  All Vectors are truthy.
+### array indices
+Array indices can be accsessed like `{1,2,3}[0]`
+### arrays and functions
+Arrays passed to a method will be received by the php function just like a normal array.
+Arrays Returned from a php function will be translated to a formula array.
+The inbuild methods `sizeof(<Vector>)` and `asVector(...args)` can halp working with vectors. Also the `min` and `max` methods are designed to be used with Vectors. They will search recursivly for the min or max value.
+
 ## Pre defined methods
 Those methods are predefined and ready to use in any formula script
+## php functions
 - `min`
 - `max`
 - `sqrt`
@@ -66,3 +79,6 @@ Those methods are predefined and ready to use in any formula script
 - `abs`
 
 All these are linked to their PHP counterpart and act just like php functions
+## additional methods
+- `asVector(...element)`
+- `sizeof(<Vector>)`

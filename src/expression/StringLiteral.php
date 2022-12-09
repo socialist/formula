@@ -23,15 +23,15 @@ class StringLiteral implements Calculateable {
   /**
    * @param string $string
    */
-  private function construct(string $string) {
+  private function __construct(string $string) {
     $this->string = $string;
 //     echo "constructed String litearl: $string";
   }
 
   public static function fromToken(Token $token): Calculateable {
     $string = $token->value;
-    if(substr($token->value, 0, 1) == "\"") {
-      $string = str_replace("\"", '', $string); // exclude ""
+    if(substr($token->value, 0, 1) == '"') {
+      $string = str_replace('"', '', $string); // exclude ""
     } else if(substr($token->value, 0, 1) == "'") {
       $string = str_replace("'", '', $string); // exclude ''
     }
@@ -44,27 +44,28 @@ class StringLiteral implements Calculateable {
 
     $intervalLiteral = TimeIntervalLiteral::fromString($string);
     if($intervalLiteral != null) return $intervalLiteral;
-
+    
     return new StringLiteral($string);
   }
 
-  public function add(Calculateable $summand) {
-    throw new InvalidArgumentException("Cant add strings");
+  public function add(Calculateable $summand): Calculateable {
+  	if(!($summand instanceof StringLiteral)) throw new InvalidArgumentException("Cant add strings");
+  	return new StringLiteral($this->string.$summand->string);
   }
 
-  public function subtract(Calculateable $difference) {
+  public function subtract(Calculateable $difference): Calculateable {
     throw new InvalidArgumentException("Cant subtract strings");
   }
 
-  public function multiply(Calculateable $factor) {
+  public function multiply(Calculateable $factor): Calculateable {
     throw new InvalidArgumentException("Cant multiply strings");
   }
 
-  public function divide(Calculateable $divisor) {
+  public function divide(Calculateable $divisor): Calculateable {
     throw new InvalidArgumentException("Cant divide strings");
   }
 
-  public function pow(Calculateable $power) {
+  public function pow(Calculateable $power): Calculateable {
     throw new InvalidArgumentException("Cant multiply strings");
   }
   
@@ -77,7 +78,6 @@ class StringLiteral implements Calculateable {
   }
   
   public function isTruthy(): bool {
-    return true; // always truthy
+    return true; // strings are always truthy
   }
-
 }

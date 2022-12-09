@@ -1,6 +1,8 @@
 <?php
 namespace TimoLehnertz\formula\expression;
 
+use TimoLehnertz\formula\operator\Operator;
+
 /**
  *
  * @author Timo Lehnertz

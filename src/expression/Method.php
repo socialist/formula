@@ -55,6 +55,9 @@ class Method implements Expression, Parseable, Nestable {
     if($value instanceof \DateInterval) {
       return new TimeIntervalLiteral($value);
     }
+    if(is_array($value)) {
+    	return Vector::fromArray($value);
+    }
     return StringLiteral::fromString($value);
   }
 
@@ -77,9 +80,10 @@ class Method implements Expression, Parseable, Nestable {
       if($first && $token->name == ',') throw new ParsingException("", $token);
       if(!$first && $token->name != ',') throw new ParsingException("", $token);
       if(!$first) $index++;
-      $param = new MathExpression(null);
+      $param = new MathExpression();
       
       $param->parse($tokens, $index); // will throw on error
+      if($param->size() == 0) throw new ExpressionNotFoundException("Invalid Method argument");
       
       $index--;
       $this->parameters []= $param;

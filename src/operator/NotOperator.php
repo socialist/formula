@@ -11,7 +11,7 @@ use TimoLehnertz\formula\expression\BooleanExpression;
 class NotOperator extends Operator {
 
   public function __construct() {
-    parent::__construct(5, false, false);
+    parent::__construct(100, false, false);
   }
   
   /**

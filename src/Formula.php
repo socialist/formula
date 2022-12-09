@@ -68,6 +68,8 @@ class Formula {
     $index = 0;
     $this->expression->parse($this->tokens, $index);
     if($index != sizeof($this->tokens)) {
+    	var_dump($index);
+    	var_dump(sizeof($this->tokens));
       throw new ExpressionNotFoundException("Unexpected end of input");
     }
   }
@@ -124,8 +126,8 @@ class Formula {
   private static function clearComments(string $source): string {
     $patterns = [
       '/\/\*(.*)\*\//i',
-      '/\{(.*)\}/i',
-      '/\[(.*)\]/i'
+//       '/\{(.*)\}/i',
+//       '/\[(.*)\]/i'
     ];
     return preg_replace($patterns, '', $source);
   }
@@ -145,11 +147,30 @@ class Formula {
     return $identifiers;
   }
   
+  /**
+   * Merges an array of arrays into one flat array (Recursively)
+   * @param array $arrays
+   * @return array
+   */
+  private static function mergeArraysRecursive($arrays): array {
+  	$merged = [];
+  	foreach ($arrays as $val) {
+  			if(is_array($val)) {
+  				$merged = array_merge($merged, Formula::mergeArraysRecursive($val));
+  			} else {
+  				$merged[] = $val;
+  			}
+  	}
+  	return $merged;
+  }
+  
   public function minFunc(...$values) {
+  	$values = Formula::mergeArraysRecursive($values);
     return min($values);
   }
 
   public function maxFunc(...$values) {
+  	$values = Formula::mergeArraysRecursive($values);
     return max($values);
   }
   
@@ -193,6 +214,14 @@ class Formula {
     return abs($number);
   }
   
+  public function asVectorFunc(...$values) {
+    return $values;
+  }
+  
+  public function sizeofFunc($arr) {
+    return sizeof($arr);
+  }
+  
   private function initDefaultMethods(): void {
     $this->setMethod("min", [$this, "minFunc"]);
     $this->setMethod("max", [$this, "maxFunc"]);
@@ -206,5 +235,7 @@ class Formula {
     $this->setMethod("tan", [$this, "tanFunc"]);
     $this->setMethod("is_nan", [$this, "is_nanFunc"]);
     $this->setMethod("abs", [$this, "absFunc"]);
+    $this->setMethod("asVector", [$this, "asVectorFunc"]);
+    $this->setMethod("sizeof", [$this, "sizeofFunc"]);
   }
 }

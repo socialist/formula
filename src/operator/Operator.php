@@ -1,8 +1,8 @@
 <?php
 namespace TimoLehnertz\formula\operator;
 
-use InvalidArgumentException;
 use TimoLehnertz\formula\expression\Expression;
+use InvalidArgumentException;
 
 /**
  *
@@ -12,24 +12,48 @@ use TimoLehnertz\formula\expression\Expression;
 abstract class Operator {
 
   /**
+   * Prioriry of this operator over other operators
    * @readonly
    */
   private int $priority;
   
   /**
+   * Can left and right be intervhanged
    * @readonly
    */
   private bool $commutative;
   
   /**
+   * Is lefthand expression needed
    * @readonly
    */
   private bool $needsLeft;
   
-  public function __construct(int $priority, bool $commutative, bool $needsLeft = true) {
+  /**
+   * Is righthand expression needed
+   * @readonly
+   */
+  private bool $needsRight;
+  
+  /**
+   * Will use lefthand expression
+   * @readonly
+   */
+  private bool $usesLeft;
+  
+  /**
+   * Will use righthand expression
+   * @readonly
+   */
+  private bool $usesRight;
+  
+  public function __construct(int $priority, bool $commutative, bool $needsLeft = true, bool $needsRight = true, bool $usesLeft = true, bool $usesRight = true) {
     $this->priority = $priority;
     $this->commutative = $commutative;
     $this->needsLeft = $needsLeft;
+    $this->needsRight = $needsRight;
+    $this->usesLeft = $usesLeft;
+    $this->usesRight = $usesRight;
   }
   
   /**
@@ -42,8 +66,29 @@ abstract class Operator {
   /**
    * @return bool needsLeft
    */
-  public function doesNeedsLeft(): bool {
+  public function needsLeft(): bool {
     return $this->needsLeft;
+  }
+  
+  /**
+   * @return bool needsLeft
+   */
+  public function needsRight(): bool {
+    return $this->needsRight;
+  }
+  
+  /**
+   * @return bool usesLeft
+   */
+  public function usesLeft(): bool {
+    return $this->usesLeft;
+  }
+  
+  /**
+   * @return bool usesRight
+   */
+  public function usesRight(): bool {
+    return $this->usesRight;
   }
   
   /**

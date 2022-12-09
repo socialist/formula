@@ -32,29 +32,29 @@ class Number implements Calculateable {
     return $this->value;
   }
   
-  public function add(Calculateable $summand) {
+  public function add(Calculateable $summand): Calculateable {
     if(!$summand instanceof Number) throw new \InvalidArgumentException("Can only add numbers got ". get_class($summand));
     return new Number($this->value + $summand->getValue());
   }
   
-  public function subtract(Calculateable $difference) {
+  public function subtract(Calculateable $difference): Calculateable {
     if(!$difference instanceof Number) throw new \InvalidArgumentException("Can only subtract numbers got ". get_class($difference));
     return new Number($this->value - $difference->getValue());
   }
   
-  public function pow(Calculateable $power) {
+  public function pow(Calculateable $power): Calculateable {
     if(!$power instanceof Number) throw new \InvalidArgumentException("Can only power numbers got ". get_class($power));
     return new Number(pow($this->value, $power->getValue()));
   }
   
-  public function divide(Calculateable $divisor) {
+  public function divide(Calculateable $divisor): Calculateable {
     if(!$divisor instanceof Number) throw new \InvalidArgumentException("Can only divide numbers got ". get_class($divisor));
     $divisorValue = $divisor->getValue();
     if($divisorValue == 0 || is_nan($divisorValue)) return new Number(NAN);
     return new Number($divisorValue == 0 ? NAN : $this->value / $divisorValue);
   }
   
-  public function multiply(Calculateable $factor) {
+  public function multiply(Calculateable $factor): Calculateable {
     if(!$factor instanceof Number) throw new \InvalidArgumentException("Can only multiply numbers got ". get_class($factor));
     return new Number($this->value * $factor->getValue());
   }

@@ -16,31 +16,31 @@ interface Calculateable extends Expression {
    * @param Calculateable $summand
    * @throws \InvalidArgumentException
    */
-  public function add(Calculateable $summand);
+  public function add(Calculateable $summand): Calculateable;
   
   /**
    * @param Calculateable $difference
    * @throws \InvalidArgumentException
    */
-  public function subtract(Calculateable $difference);
+  public function subtract(Calculateable $difference): Calculateable;
   
   /**
    * @param Calculateable $factor
    * @throws \InvalidArgumentException
    */
-  public function multiply(Calculateable $factor);
+  public function multiply(Calculateable $factor): Calculateable;
   
   /**
    * @param Calculateable $divisor
    * @throws \InvalidArgumentException
    */
-  public function divide(Calculateable $divisor);
+  public function divide(Calculateable $divisor): Calculateable;
   
   /**
    * @param Calculateable $power
    * @throws \InvalidArgumentException
    */
-  public function pow(Calculateable $power);
+  public function pow(Calculateable $power): Calculateable;
   
   public function getValue();
 }

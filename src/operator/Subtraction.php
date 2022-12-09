@@ -9,7 +9,7 @@ namespace TimoLehnertz\formula\operator;
 class Subtraction extends Operator {
 
   public function __construct() {
-    parent::__construct(0, false);
+    parent::__construct(0, false, false, true);
   }
   
   public function doCalculate(Calculateable $left, Calculateable $right): Calculateable {
