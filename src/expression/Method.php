@@ -83,13 +83,13 @@ class Method implements Expression, Parseable, Nestable {
       $param = new MathExpression();
       
       $param->parse($tokens, $index); // will throw on error
-      if($param->size() == 0) throw new ExpressionNotFoundException("Invalid Method argument");
+      if($param->size() == 0) throw new ExpressionNotFoundException("Invalid Method argument", $tokens, $index);
       
       $index--;
       $this->parameters []= $param;
       $first = false;
     }
-    throw new ExpressionNotFoundException("Unexpected end of input");
+    throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
   }
   
   /**

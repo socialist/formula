@@ -38,6 +38,11 @@ class MathExpression implements Expression, Nestable {
   private bool $validated = false;
 
   /**
+   * @var array<Token> array of all tokens
+   */
+  private array $tokens = [];
+  
+  /**
    * Primary parsing function
    * Will parse this formula, create and parse all subformulas
    *
@@ -45,6 +50,7 @@ class MathExpression implements Expression, Nestable {
    */
   public function parse(array &$tokens, int &$index): bool {
     if($this->parsingDone) return true;
+    $this->tokens = $tokens;
     $this->expressionsAndOperators = [];
     for($index;$index < sizeof($tokens);$index++) {
       $token = $tokens[$index];
@@ -93,9 +99,9 @@ class MathExpression implements Expression, Nestable {
         case '(': // must be start of new formula
           $expression = new MathExpression();
           $index++;
-          if($index >= sizeof($tokens)) throw new ExpressionNotFoundException("Unexpected end of input");
+          if($index >= sizeof($tokens)) throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
           $expression->parse($tokens, $index); // will throw on failure
-          if($index >= sizeof($tokens)) throw new ExpressionNotFoundException("Unexpected end of input");
+          if($index >= sizeof($tokens)) throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
           if($tokens[$index]->name != ")") throw new ParsingException("", $token);
           $this->expressionsAndOperators[] = $expression;
           break;
@@ -122,7 +128,7 @@ class MathExpression implements Expression, Nestable {
     // clone this MathExpression and complete its parsing
     $condition = new MathExpression();
     $condition->expressionsAndOperators = $this->expressionsAndOperators;
-    if($condition->size() == 0) throw new ParsingException("Invalid ternary condition");
+    if($condition->size() == 0) throw new ParsingException("Invalid ternary condition", $tokens[$index]);
     $condition->parsingDone = true;
     
     $index++;
@@ -200,7 +206,7 @@ class MathExpression implements Expression, Nestable {
     // one expression
     if(sizeof($this->expressionsAndOperators) == 1) { 
       if(!($this->expressionsAndOperators[0] instanceof Expression)) {
-        if($throwOnError) throw new ExpressionNotFoundException("Single Expression can not be an Operator");
+        if($throwOnError) throw new ExpressionNotFoundException("Single Expression can not be an Operator", $this->tokens);
         return false;
       }
       if($this->expressionsAndOperators[0] instanceof Nestable) {
@@ -219,8 +225,8 @@ class MathExpression implements Expression, Nestable {
         $rightExpression = $this->expressionsAndOperators[$i + 1];
       }
       if($expression instanceof Operator) {
-        if($expression->needsLeft() && !($leftExpression instanceof Expression)) throw new ExpressionNotFoundException(get_class($expression)." needs a lefthand expression");
-        if($expression->needsRight() && !($rightExpression instanceof Expression)) throw new ExpressionNotFoundException(get_class($expression)." needs a righthand expression");
+        if($expression->needsLeft() && !($leftExpression instanceof Expression)) throw new ExpressionNotFoundException(get_class($expression)." needs a lefthand expression", $this->tokens);
+        if($expression->needsRight() && !($rightExpression instanceof Expression)) throw new ExpressionNotFoundException(get_class($expression)." needs a righthand expression", $this->tokens);
         
         if(!$expression->needsLeft() && (!$expression->usesLeft() || !($leftExpression instanceof Expression))) {
           array_splice($this->expressionsAndOperators, $i, 0, [new Number(0)]); // Add a dummy 0 in front to preserve alternating order
@@ -243,12 +249,12 @@ class MathExpression implements Expression, Nestable {
         if(!(($expressionOrOperator instanceof Number) && ($this->expressionsAndOperators[$i - 1] instanceof Number))) { // not (this one and last one are a number)
           array_splice($this->expressionsAndOperators, $i, 0, [ new Multiplication() ]);
         } else {
-          if($throwOnError) throw new ExpressionNotFoundException("Can't chain expressions without operators in between!");
+          if($throwOnError) throw new ExpressionNotFoundException("Can't chain expressions without operators in between!", $this->tokens);
           return false;
         }
       }
       if($expressionOrOperator instanceof Operator && $expectExpression) {
-        if($throwOnError) throw new ExpressionNotFoundException("Can't chain operators without expressions in between!");
+        if($throwOnError) throw new ExpressionNotFoundException("Can't chain operators without expressions in between!", $this->tokens);
         return false;
       }
       if($expressionOrOperator instanceof Nestable) {
@@ -258,7 +264,7 @@ class MathExpression implements Expression, Nestable {
     }
     // check if last one is no operator
     if($expectExpression) {
-      if($throwOnError) throw new ExpressionNotFoundException("Cant end an expression with an operator");
+      if($throwOnError) throw new ExpressionNotFoundException("Cant end an expression with an operator", $this->tokens);
       return false;
     }
     $this->validated = true;

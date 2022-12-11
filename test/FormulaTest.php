@@ -374,4 +374,11 @@ class FormulaTest extends TestCase {
     $formula = new Formula('{1,2,3}[-1]');
     $formula->calculate();
   }
+  
+  public function testUnexpectedEndOfInputException(): void {
+    $this->expectException(ExpressionNotFoundException::class);
+    $this->expectExceptionMessage('Unexpected end of input. Formula: "(1+2+3"  At position: 6');
+    $formula = new Formula('(1+2+3');
+    $formula->calculate();
+  }
 }

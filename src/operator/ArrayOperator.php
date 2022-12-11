@@ -22,11 +22,11 @@ class ArrayOperator extends Operator implements Parseable, Nestable {
    */
   public function parse(array &$tokens, int &$index): bool {
     if($tokens[$index]->value != "[") return false;
-    if(sizeof($tokens) < $index + 3) throw new ExpressionNotFoundException("Invalid array operator");
+    if(sizeof($tokens) < $index + 3) throw new ExpressionNotFoundException("Invalid array operator", $tokens, $index);
     $index++;
     $this->indexExpression = new MathExpression();
     $this->indexExpression->parse($tokens, $index); // will throw on error
-    if($tokens[$index]->value != "]") throw new ExpressionNotFoundException("Invalid array operator");
+    if($tokens[$index]->value != "]") throw new ExpressionNotFoundException("Invalid array operator", $tokens, $index);
     $index++;
     return true;
   }

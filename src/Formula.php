@@ -24,7 +24,6 @@ class Formula {
    * @var array
    */
   private array $tokens = [];
-  
   /**
    * The top level math expression
    * @var MathExpression
@@ -70,7 +69,7 @@ class Formula {
     if($index != sizeof($this->tokens)) {
     	var_dump($index);
     	var_dump(sizeof($this->tokens));
-      throw new ExpressionNotFoundException("Unexpected end of input");
+      throw new ExpressionNotFoundException("Unexpected end of input", $this->source);
     }
   }
   
@@ -112,7 +111,7 @@ class Formula {
       }
     }
     if(!$parsedEnd) {
-      throw new ExpressionNotFoundException("Unexpected end of input");
+      throw new ExpressionNotFoundException("Unexpected end of input", $string);
     }
     return $tokens;
   }
@@ -237,5 +236,12 @@ class Formula {
     $this->setMethod("abs", [$this, "absFunc"]);
     $this->setMethod("asVector", [$this, "asVectorFunc"]);
     $this->setMethod("sizeof", [$this, "sizeofFunc"]);
+  }
+  
+  /**
+   * @return string source string
+   */
+  public function getSource(): string {
+    return $this->source;
   }
 }
