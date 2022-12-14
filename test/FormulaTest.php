@@ -3,10 +3,10 @@
 namespace test;
 
 use PHPUnit\Framework\TestCase;
-use DateTime;
 use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Formula;
 use TimoLehnertz\formula\ParsingException;
+use DateTime;
 
 class FormulaTest extends TestCase {
   
@@ -35,7 +35,7 @@ class FormulaTest extends TestCase {
   public function testpow(): void {
     $str = 'pow(a,b)';
     $formula = new Formula($str);
-    for ($i = 0; $i < 10; $i++) {
+    for ($i = 0; $i < 1; $i++) {
       $a = rand(0, 10);
       $b = rand(0, 10);
       $formula->setVariable('a', $a);
@@ -183,12 +183,16 @@ class FormulaTest extends TestCase {
     
     $formula = new Formula("$aStr>=$bStr");
     $this->assertEquals($a >= $b, $formula->calculate() == 0 ? false : true);
+
+    $formula = new Formula("!$aStr");
+    $this->assertEquals(!$a, $formula->calculate() == 0 ? false : true);
   }
   
   public function ternaryDataProvider() : array {
     $arr = [];
-    for ($i = 0; $i < 10; $i++) {
-      $arr []= [rand(-100, 100), rand(-100, 100) ,rand(-100, 100)];
+    for ($i = 0; $i < 1; $i++) {
+      $arr []= [rand(-1, -1), rand(-1, -1) ,rand(-1, -1)];
+//       $arr []= [rand(-100, 100), rand(-100, 100) ,rand(-100, 100)];
     }
     return $arr;
 }
@@ -197,16 +201,18 @@ class FormulaTest extends TestCase {
    * @dataProvider ternaryDataProvider
    */
   public function testTernary($a, $b, $c): void {
+    $formula = new Formula("$a < 0 ? $b : $c");
+    $this->assertEquals($formula->calculate(), $a < 0 ? $b : $c);
     $formula = new Formula("max($b, min($a < 0 ? $b : $c, $c))");
     $this->assertEquals($formula->calculate(), max($b, min($a < 0 ? $b : $c, $c)));
-    // testing Not operator
+//  testing Not operator
     $formula = new Formula("max($b, min(!($a < 0) ? $b : $c, $c))");
     $this->assertEquals($formula->calculate(), max($b, min(!($a < 0) ? $b : $c, $c)));
   }
   
   public function testTernaryError(): void {
-    $this->expectException(ParsingException::class);
-    $this->expectExceptionMessage("unexpected symbol \"34\" at: 23. Message: Expected \":\" (Ternary)");
+    $this->expectException(ExpressionNotFoundException::class);
+    $this->expectExceptionMessage('Expected ":" (Ternary). Formula: "max(1,min(2<0?34,5))"  At position: 11');
     $formula = new Formula('max(1, min(2 < 0 ? 3  4, 5))');
     $formula->calculate();
   }
@@ -380,5 +386,16 @@ class FormulaTest extends TestCase {
     $this->expectExceptionMessage('Unexpected end of input. Formula: "(1+2+3"  At position: 6');
     $formula = new Formula('(1+2+3');
     $formula->calculate();
+  }
+
+  public function strFunc() {
+    return "Hallo welt";
+  }
+  
+  public function testGetStringLiterals(): void {
+    $formula = new Formula('strFunc("hallo", "welt", "hallo", "welt")');
+    $formula->setMethod('strFunc', [$this, "strFunc"]);
+    $this->assertEquals("Hallo welt", $formula->calculate());
+    $this->assertEquals(['hallo', 'welt', 'hallo', 'welt'], $formula->getStringLiterals());
   }
 }

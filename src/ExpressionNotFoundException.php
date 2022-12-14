@@ -21,6 +21,12 @@ class ExpressionNotFoundException extends \Exception {
     if($index >= 0) {
       $indexStr = " At position: $index";
     }
-    parent::__construct("$message. Formula: \"$source\" $indexStr");
+    
+    $formulaStr = "";
+    if(strlen($source) > 0) {
+      $formulaStr = ". Formula: \"$source\" $indexStr";
+    }
+    
+    parent::__construct($message.$formulaStr);
   }
 }

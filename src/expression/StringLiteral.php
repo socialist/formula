@@ -48,9 +48,16 @@ class StringLiteral implements Calculateable {
     return new StringLiteral($string);
   }
 
+  /**
+   * String concatination could pose security risks in some application
+   * 
+   * {@inheritDoc}
+   * @see \TimoLehnertz\formula\operator\Calculateable::add()
+   */
   public function add(Calculateable $summand): Calculateable {
-  	if(!($summand instanceof StringLiteral)) throw new InvalidArgumentException("Cant add strings");
-  	return new StringLiteral($this->string.$summand->string);
+    throw new InvalidArgumentException("Cant add strings");
+//   	if(!($summand instanceof StringLiteral)) throw new InvalidArgumentException("Cant add strings");
+//   	return new StringLiteral($this->string.$summand->string);
   }
 
   public function subtract(Calculateable $difference): Calculateable {
@@ -69,7 +76,7 @@ class StringLiteral implements Calculateable {
     throw new InvalidArgumentException("Cant multiply strings");
   }
   
-  public function getValue() {
+  public function getValue(): string {
     return $this->string;
   }
 

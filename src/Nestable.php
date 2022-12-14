@@ -9,25 +9,15 @@ namespace TimoLehnertz\formula;
 interface Nestable {
   
   /**
-   * Sets all sub variables
-   * @param string $identifier
-   * @param mixed $value
+   * Returns an array containing all sub Operators and expressions
+   * @return array<Operator|Expression>
    */
-  public function setVariable(string $identifier, $value): void;
+  public function getContent(): array;
   
   /**
-   * Sets all sub methods
-   * @param string $identifier
-   * @param callable $method
-   */
-  public function setMethod(string $identifier, callable $method): void;
-  
-  /**
-   * Validates this and sub nestables
+   * Validates this and sub contents
    * @param bool $throwOnError
+   * @return bool
    */
   public function validate(bool $throwOnError): bool;
-  
-  public function getVariables(): array;
 }
-

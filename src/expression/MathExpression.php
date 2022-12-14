@@ -128,23 +128,23 @@ class MathExpression implements Expression, Nestable {
     // clone this MathExpression and complete its parsing
     $condition = new MathExpression();
     $condition->expressionsAndOperators = $this->expressionsAndOperators;
-    if($condition->size() == 0) throw new ParsingException("Invalid ternary condition", $tokens[$index]);
+    if($condition->size() == 0) throw new ExpressionNotFoundException("Invalid ternary condition", $tokens, $index);
     $condition->parsingDone = true;
     
     $index++;
-    if(sizeof($tokens) <= $index) throw new ParsingException("Unexpected end of input", $tokens[$index - 1]);
+    if(sizeof($tokens) <= $index) throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
     // left expression
     $leftExpression = new MathExpression();
     $leftExpression->parse($tokens, $index);
-    if($leftExpression->size() == 0) throw new ParsingException("Invalid ternary expression");
-    if(sizeof($tokens) <= $index) throw new ParsingException("Unexpected end of input", $tokens[$index - 1]);
-    if($tokens[$index]->name != ":") throw new ParsingException("Expected \":\" (Ternary)", $tokens[$index - 1]);
+    if($leftExpression->size() == 0) throw new ExpressionNotFoundException("Invalid ternary expression", $tokens, $index);
+    if(sizeof($tokens) <= $index) throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
+    if($tokens[$index]->name != ":") throw new ExpressionNotFoundException("Expected \":\" (Ternary)", $tokens, $index);
     $index++;
-    if(sizeof($tokens) <= $index) throw new ParsingException("Unexpected end of input", $tokens[$index - 1]);
+    if(sizeof($tokens) <= $index) throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
     // right expression
     $rightExpression = new MathExpression();
     $rightExpression->parse($tokens, $index);
-    if($rightExpression->size() == 0) throw new ParsingException("Invalid ternary expression");
+    if($rightExpression->size() == 0) throw new ExpressionNotFoundException("Invalid ternary expression", $tokens, $index);
     
     $ternaryExpression->condition = $condition;
     $ternaryExpression->leftExpression = $leftExpression;
@@ -152,33 +152,6 @@ class MathExpression implements Expression, Nestable {
     
     // replace this MathExpressions content by the ternary Operator
     $this->expressionsAndOperators = [$ternaryExpression];
-  }
-  
-  /**
-   * Will set all variables with the given identifier to a value
-   *
-   * @param string $identifier the variable name
-   * @param float $value
-   */
-  public function setVariable(string $identifier, $value): void {
-    foreach($this->expressionsAndOperators as $expressionOrOperator) {
-      if($expressionOrOperator instanceof Nestable) {
-        $expressionOrOperator->setVariable($identifier, $value);
-      }
-    }
-  }
-
-  /**
-   * Will set all methods with this identifier
-   *
-   * @param string $identifier
-   */
-  public function setMethod(string $identifier, callable $method): void {
-    foreach($this->expressionsAndOperators as $expressionOrOperator) {
-      if($expressionOrOperator instanceof Nestable) {
-        $expressionOrOperator->setMethod($identifier, $method);
-      }
-    }
   }
 
   /**
@@ -200,6 +173,13 @@ class MathExpression implements Expression, Nestable {
   public function validate(bool $throwOnError): bool {
     if($this->validated) return true;
     
+    // validate sub expressoins
+    foreach ($this->expressionsAndOperators as $expressionsAndOperator) {
+      if($expressionsAndOperator instanceof Nestable) {
+        if(!$expressionsAndOperator->validate($throwOnError)) return false;
+      }
+    }
+    
     // 0 expressions
     if(sizeof($this->expressionsAndOperators) == 0) return true; 
     
@@ -209,7 +189,7 @@ class MathExpression implements Expression, Nestable {
         if($throwOnError) throw new ExpressionNotFoundException("Single Expression can not be an Operator", $this->tokens);
         return false;
       }
-      if($this->expressionsAndOperators[0] instanceof Nestable) {
+      if($this->expressionsAndOperators[0] instanceof MathExpression) {
         return $this->expressionsAndOperators[0]->validate($throwOnError);
       }
       return true;
@@ -256,9 +236,6 @@ class MathExpression implements Expression, Nestable {
       if($expressionOrOperator instanceof Operator && $expectExpression) {
         if($throwOnError) throw new ExpressionNotFoundException("Can't chain operators without expressions in between!", $this->tokens);
         return false;
-      }
-      if($expressionOrOperator instanceof Nestable) {
-        if(!$expressionOrOperator->validate($throwOnError)) return false;
       }
       $expectExpression = !$expectExpression;
     }
@@ -310,6 +287,12 @@ class MathExpression implements Expression, Nestable {
     if(sizeof($this->expressionsAndOperators) == 3) {
       return $this->expressionsAndOperators[1]->calculate($this->expressionsAndOperators[0]->calculate(), $this->expressionsAndOperators[2]->calculate());
     }
+    
+//     echo PHP_EOL;
+//     foreach ($this->expressionsAndOperators as $value) {
+//       echo get_class($value).PHP_EOL;
+//     }
+    
     // find highest priority operator
     $maxPriority = 0;
     $bestOperator = 1; // start with index 1 as this will be the first operator if no better operators are found
@@ -343,17 +326,19 @@ class MathExpression implements Expression, Nestable {
     return $calculateable;
   }
   
-  public function getVariables(): array {
-      $variables = [];
-    foreach ($this->expressionsAndOperators as $expression) {
-      if($expression instanceof Nestable) {
-        $nestedVariables = $expression->getVariables();
-        foreach ($nestedVariables as $nestedVariable) {
-          $variables []= $nestedVariable;
-        }
+  /**
+   * {@inheritDoc}
+   * @see \TimoLehnertz\formula\Nestable::getContent()
+   */
+  public function getContent(): array {
+    $content = [];
+    foreach ($this->expressionsAndOperators as $expressionOrOperator) {
+      $content[] = $expressionOrOperator;
+      if($expressionOrOperator instanceof Nestable) {
+        $content = array_merge($content, $expressionOrOperator->getContent());
       }
     }
-    return $variables;
+    return $content;
   }
 }
 

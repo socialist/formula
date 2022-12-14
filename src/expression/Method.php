@@ -7,6 +7,7 @@ use TimoLehnertz\formula\Parseable;
 use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\operator\Calculateable;
 use Exception;
+use PhpParser\Node\Stmt\Foreach_;
 
 
 /**
@@ -29,7 +30,7 @@ class Method implements Expression, Parseable, Nestable {
   private ?array $parameters = null;
 
   /**
-   * Callable method
+   * @var callable
    */
   private $method = null;
   
@@ -60,7 +61,7 @@ class Method implements Expression, Parseable, Nestable {
     }
     return StringLiteral::fromString($value);
   }
-
+  
   public function parse(array &$tokens, int &$index): bool {
     // identifier
     if($tokens[$index]->name != "I") return false;
@@ -93,28 +94,6 @@ class Method implements Expression, Parseable, Nestable {
   }
   
   /**
-   * @param string $identifier
-   * @param mixed $value
-   */
-  public function setVariable(string $identifier, $value): void {
-    foreach ($this->parameters as $parameter) {
-      $parameter->setVariable($identifier, $value);
-    }
-  }
-  
-  /**
-   * @param string $identifier
-   */
-  public function setMethod(string $identifier, callable $method): void {
-    foreach ($this->parameters as $parameter) {
-      $parameter->setMethod($identifier, $method);
-    }
-    if($this->identifier == $identifier) {
-      $this->method = $method;
-    }
-  }
-  
-  /**
    * @psalm-mutation-free
    * @return string
    */
@@ -134,25 +113,34 @@ class Method implements Expression, Parseable, Nestable {
     return $values;
   }
   
+  /**
+   * {@inheritDoc}
+   * @see \TimoLehnertz\formula\Nestable::getContent()
+   */
+  public function getContent(): array {
+    $content = [];
+    foreach ($this->parameters as $parameter) {
+      $content[] = $parameter;
+      if($parameter instanceof Nestable) {
+        $content = array_merge($content, $parameter->getContent());
+      }
+    }
+    return $content;
+  }
+  
+  /**
+   * @param callable $method
+   */
+  public function setMethod(callable $method): void {
+    $this->method = $method;
+  }
+  
   public function validate(bool $throwOnError): bool {
-    foreach($this->parameters as $parameter) {
-      if(!$parameter->validate($throwOnError)) {
-        return false;
+    foreach ($this->parameters as $parameter) {
+      if($parameter instanceof Nestable) {
+        if(!$parameter->validate($throwOnError)) return false;
       }
     }
     return true;
-  }
-  
-  public function getVariables(): array {
-    $variables = [];
-    foreach ($this->parameters as $parameter) {
-      if($parameter instanceof Nestable) {
-        $nestedVariables = $parameter->getVariables();
-        foreach ($nestedVariables as $nestedVariable) {
-          $variables []= $nestedVariable;
-        }
-      }
-    }
-    return $variables;
   }
 }

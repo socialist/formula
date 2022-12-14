@@ -10,7 +10,7 @@ use TimoLehnertz\formula\operator\Calculateable;
 class Vector implements Calculateable, Nestable, Parseable {
 	
 	/**
-	 * @var array<Expression>
+	 * @var array<Calculateable>
 	 */
 	private array $elements = [];
 	
@@ -137,7 +137,9 @@ class Vector implements Calculateable, Nestable, Parseable {
 
 	public function validate(bool $throwOnError): bool {
 		foreach ($this->elements as $element) {
-			if(!$element->validate($throwOnError)) return false;
+		  if($element instanceof Nestable) {
+  			if(!$element->validate($throwOnError)) return false;
+		  }
 		}
 		return true;
 	}
@@ -171,4 +173,15 @@ class Vector implements Calculateable, Nestable, Parseable {
 	public function size(): int {
 		return sizeof($this->elements);
 	}
+	
+  public function getContent(): array {
+    $content = [];
+    foreach ($this->elements as $element) {
+      $content[] = $element;
+      if($element instanceof Nestable) {
+        $content[] = $element->getContent();
+      }
+    }
+    return $content;
+  }
 }

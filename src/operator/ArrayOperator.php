@@ -34,42 +34,6 @@ class ArrayOperator extends Operator implements Parseable, Nestable {
   /**
    * 
    * {@inheritDoc}
-   * @see \TimoLehnertz\formula\Nestable::setMethod()
-   */
-  public function setMethod(string $identifier, callable $method): void {
-    $this->indexExpression->setMethod($identifier, $method);
-  }
-
-  /**
-   * 
-   * {@inheritDoc}
-   * @see \TimoLehnertz\formula\Nestable::getVariables()
-   */
-  public function getVariables(): array {
-    return $this->indexExpression->getVariables();
-  }
-
-  /**
-   * 
-   * {@inheritDoc}
-   * @see \TimoLehnertz\formula\Nestable::setVariable()
-   */
-  public function setVariable(string $identifier, $value): void {
-    $this->indexExpression->setVariable($identifier, $value);
-  }
-
-  /**
-   * 
-   * {@inheritDoc}
-   * @see \TimoLehnertz\formula\Nestable::validate()
-   */
-  public function validate(bool $throwOnError): bool {
-    return $this->indexExpression->validate($throwOnError);
-  }
-
-  /**
-   * 
-   * {@inheritDoc}
    * @see \TimoLehnertz\formula\operator\Operator::doCalculate()
    */
   public function doCalculate(Calculateable $left, Calculateable $right): Calculateable {
@@ -79,5 +43,15 @@ class ArrayOperator extends Operator implements Parseable, Nestable {
     $index = intVal($index);
     return $left->getElement($index)->calculate();
   }
-}
+  
+  public function getContent(): array {
+    if($this->indexExpression instanceof Nestable) {      
+      return $this->indexExpression->getContent();
+    }
+    return $this->indexExpression;
+  }
 
+  public function validate(bool $throwOnError): bool {
+    return $this->indexExpression->validate($throwOnError);
+  }
+}

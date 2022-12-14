@@ -1,9 +1,7 @@
 <?php
 namespace TimoLehnertz\formula\expression;
 
-use Exception;
 use TimoLehnertz\formula\ExpressionNotFoundException;
-use TimoLehnertz\formula\Nestable;
 use TimoLehnertz\formula\Parseable;
 use TimoLehnertz\formula\operator\Calculateable;
 
@@ -12,7 +10,7 @@ use TimoLehnertz\formula\operator\Calculateable;
  * @author Timo Lehnertz
  *
  */
-class Variable implements Expression, Parseable, Nestable {
+class Variable implements Expression, Parseable {
 
   private ?string $identifier = null;
 
@@ -31,7 +29,7 @@ class Variable implements Expression, Parseable, Nestable {
    */
   public function calculate(): Calculateable {
     if($this->value === null) throw new ExpressionNotFoundException("Can't calculate. Variable $this->identifier has no value");
-    return $this->value;
+    return $this->value->calculate();
   }
 
   public function parse(array &$tokens, int &$index): bool {
@@ -49,21 +47,10 @@ class Variable implements Expression, Parseable, Nestable {
     return false;
   }
   
-  public function setMethod(string $identifier, callable $method): void {
-    // do nothing
-  }
-  
-  public function setVariable(string $identifier, $value): void {
-    if($this->identifier != $identifier) return;
-    if($value === null) throw new Exception("Can't set value of variable $this->identifier to null!");
-    $this->value = Method::calculateableFromValue($value);
-  }
-
-  public function validate(bool $throwOnError): bool {
-    return true; // do nothing
-  }
-  
-  public function getVariables(): array {
-    return [$this];
+  /**
+   * @param Calculateable $value
+   */
+  public function setValue(Calculateable $value): void {
+    $this->value = $value;
   }
 }

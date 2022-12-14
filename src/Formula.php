@@ -2,6 +2,9 @@
 namespace TimoLehnertz\formula;
 
 use TimoLehnertz\formula\expression\MathExpression;
+use TimoLehnertz\formula\expression\Method;
+use TimoLehnertz\formula\expression\StringLiteral;
+use TimoLehnertz\formula\expression\Variable;
 use TimoLehnertz\formula\tokens\Tokenizer;
 
 /**
@@ -44,10 +47,14 @@ class Formula {
    * Will set all variables with the given identifier to a value
    *
    * @param string $identifier the variable name
-   * @param float $value
+   * @param mixed $value
    */
-  public function setVariable(string $identifier, float $value): void {
-    $this->expression->setVariable($identifier, $value);
+  public function setVariable(string $identifier, $value): void {
+    foreach ($this->expression->getContent() as $content) {
+      if($content instanceof Variable) {
+        if($content->getIdentifier() == $identifier) $content->setValue(Method::calculateableFromValue($value));
+      }
+    }
   }
   
   /**
@@ -56,7 +63,11 @@ class Formula {
    * @param string $identifier
    */
   public function setMethod(string $identifier, callable $method): void {
-    $this->expression->setMethod($identifier, $method);
+    foreach ($this->expression->getContent() as $content) {
+      if($content instanceof Method) {
+        if($content->getIdentifier() == $identifier) $content->setMethod($method);
+      }
+    }
   }
 
   public function calculate() {
@@ -67,8 +78,6 @@ class Formula {
     $index = 0;
     $this->expression->parse($this->tokens, $index);
     if($index != sizeof($this->tokens)) {
-    	var_dump($index);
-    	var_dump(sizeof($this->tokens));
       throw new ExpressionNotFoundException("Unexpected end of input", $this->source);
     }
   }
@@ -132,11 +141,38 @@ class Formula {
   }
   
   /**
+   * Gets all string literals
+   * @return array<string>
+   */
+  public function getStringLiterals(): array {
+    $strings = [];
+    foreach ($this->expression->getContent() as $content) {
+      if($content instanceof StringLiteral) $strings[] = $content->getValue();
+    }
+    return $strings;
+  }
+  
+  /**
+   * Gets all method identifiers
+   * @return array<string>
+   */
+  public function getMethodIdentifiers(): array {
+    $methods = [];
+    foreach ($this->expression->getContent() as $content) {
+      if($content instanceof Method) $methods[] = $content;
+    }
+    return $methods;
+  }
+  
+  /**
    * Gets all variable identifiers present in this formula
    * @return string[]
    */
   public function getVariables(): array {
-    $variables = $this->expression->getVariables();
+    $variables = [];
+    foreach ($this->expression->getContent() as $content) {
+      if($content instanceof Variable) $variables[] = $content;
+    }
     $identifiers = [];
     foreach ($variables as $variable) {
       if(!in_array($variable->getIdentifier(), $identifiers)) {
