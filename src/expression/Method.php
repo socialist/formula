@@ -5,9 +5,9 @@ use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Nestable;
 use TimoLehnertz\formula\Parseable;
 use TimoLehnertz\formula\ParsingException;
+use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\operator\Calculateable;
 use Exception;
-use PhpParser\Node\Stmt\Foreach_;
 
 
 /**
@@ -15,7 +15,7 @@ use PhpParser\Node\Stmt\Foreach_;
  * @author Timo Lehnertz
  * 
  */
-class Method implements Expression, Parseable, Nestable {
+class Method implements Expression, Parseable, Nestable, SubFormula {
 
   /**
    * Identifier of this method. To be set by parse()
@@ -25,7 +25,7 @@ class Method implements Expression, Parseable, Nestable {
 
   /**
    * Parameters of this method. To be set by parse()
-   * @var array<MathExpression>|null
+   * @var ?MathExpression[]
    */
   private ?array $parameters = null;
 
@@ -150,5 +150,15 @@ class Method implements Expression, Parseable, Nestable {
       }
     }
     return true;
+  }
+
+  public function toString(): string {
+    $parameters = '';
+    $delimiter = '';
+    foreach ($this->parameters as $parameter) {
+      $parameters .= $delimiter.$parameter->toString();
+      $delimiter = ',';
+    }
+    return "$this->identifier($parameters)";
   }
 }

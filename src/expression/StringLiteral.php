@@ -1,17 +1,17 @@
 <?php
 namespace TimoLehnertz\formula\expression;
 
-use InvalidArgumentException;
+use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\operator\Calculateable;
 use TimoLehnertz\formula\tokens\Token;
-
+use InvalidArgumentException;
 
 /**
  *
  * @author Timo Lehnertz
  *        
  */
-class StringLiteral implements Calculateable {
+class StringLiteral implements Calculateable, SubFormula {
 
   /**
    *
@@ -93,5 +93,9 @@ class StringLiteral implements Calculateable {
   
   public function isTruthy(): bool {
     return true; // strings are always truthy
+  }
+
+  public function toString(): string {
+    return "'$this->string'";
   }
 }

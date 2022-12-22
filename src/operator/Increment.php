@@ -11,7 +11,7 @@ namespace TimoLehnertz\formula\operator;
 class Increment extends Operator {
 
   public function __construct() {
-    parent::__construct(0, true);
+    parent::__construct('+', 0, true);
   }
   
   public function doCalculate(Calculateable $left, Calculateable $right): Calculateable {

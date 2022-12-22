@@ -1,18 +1,19 @@
 <?php
 namespace TimoLehnertz\formula\operator;
 
+use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Nestable;
 use TimoLehnertz\formula\Parseable;
+use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\expression\MathExpression;
 use TimoLehnertz\formula\expression\Vector;
-use TimoLehnertz\formula\ExpressionNotFoundException;
 
-class ArrayOperator extends Operator implements Parseable, Nestable {
+class ArrayOperator extends Operator implements Parseable, Nestable, SubFormula {
 
   private MathExpression $indexExpression;
   
   public function __construct() {
-    parent::__construct(10000, false, true, false, true, false);
+    parent::__construct(null, 10000, false, true, false, true, false);
   }
   
   /**
@@ -53,5 +54,13 @@ class ArrayOperator extends Operator implements Parseable, Nestable {
 
   public function validate(bool $throwOnError): bool {
     return $this->indexExpression->validate($throwOnError);
+  }
+  
+  /**
+   * {@inheritDoc}
+   * @see \TimoLehnertz\formula\operator\Operator::toString()
+   */
+  public function toString(): string {
+    return '['.$this->indexExpression->toString().']';
   }
 }

@@ -12,7 +12,7 @@ use TimoLehnertz\formula\expression\BooleanExpression;
 class SmallerEqualsOperator extends Operator {
 
   public function __construct() {
-    parent::__construct(0, false, true);
+    parent::__construct('<=', 0, false, true);
   }
   
   /**

@@ -1,6 +1,7 @@
 <?php
 namespace TimoLehnertz\formula\operator;
 
+use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\expression\Expression;
 use InvalidArgumentException;
 
@@ -9,7 +10,7 @@ use InvalidArgumentException;
  * @author Timo Lehnertz
  *
  */
-abstract class Operator {
+abstract class Operator implements SubFormula {
 
   /**
    * Prioriry of this operator over other operators
@@ -47,13 +48,19 @@ abstract class Operator {
    */
   private bool $usesRight;
   
-  public function __construct(int $priority, bool $commutative, bool $needsLeft = true, bool $needsRight = true, bool $usesLeft = true, bool $usesRight = true) {
+  /**
+   * @var ?string
+   */
+  private ?string $stringRepresentation;
+  
+  public function __construct(?string $stringRepresentation, int $priority, bool $commutative, bool $needsLeft = true, bool $needsRight = true, bool $usesLeft = true, bool $usesRight = true) {
     $this->priority = $priority;
     $this->commutative = $commutative;
     $this->needsLeft = $needsLeft;
     $this->needsRight = $needsRight;
     $this->usesLeft = $usesLeft;
     $this->usesRight = $usesRight;
+    $this->stringRepresentation = $stringRepresentation;
   }
   
   /**
@@ -141,4 +148,11 @@ abstract class Operator {
    * @return mixed
    */
   public abstract function doCalculate(Calculateable $left, Calculateable $right): Calculateable;
+  
+  /**
+   * @return string
+   */
+  public function toString(): string {
+    return $this->stringRepresentation;
+  }
 }

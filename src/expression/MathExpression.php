@@ -4,6 +4,7 @@ namespace TimoLehnertz\formula\expression;
 use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Nestable;
 use TimoLehnertz\formula\ParsingException;
+use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\operator\ArrayOperator;
 use TimoLehnertz\formula\operator\Calculateable;
 use TimoLehnertz\formula\operator\Multiplication;
@@ -14,14 +15,14 @@ use TimoLehnertz\formula\operator\Operator;
  * @author Timo Lehnertz
  *        
  */
-class MathExpression implements Expression, Nestable {
+class MathExpression implements Expression, Nestable, SubFormula {
 
   /**
    * Array containing all expressions and operators that make up this formula
    *
-   * @var array<Expression|Operator>
+   * @var SubFormula[]
    */
-  protected array $expressionsAndOperators = [];
+  public array $expressionsAndOperators = [];
 
   /**
    * Will be set to true after succsessfull parsing so parsing only needs to occour once
@@ -209,11 +210,11 @@ class MathExpression implements Expression, Nestable {
         if($expression->needsRight() && !($rightExpression instanceof Expression)) throw new ExpressionNotFoundException(get_class($expression)." needs a righthand expression", $this->tokens);
         
         if(!$expression->needsLeft() && (!$expression->usesLeft() || !($leftExpression instanceof Expression))) {
-          array_splice($this->expressionsAndOperators, $i, 0, [new Number(0)]); // Add a dummy 0 in front to preserve alternating order
+          array_splice($this->expressionsAndOperators, $i, 0, [new Number(0, true)]); // Add a dummy 0 in front to preserve alternating order
           $i++; // skip inserted created array element
         }
         if(!$expression->needsRight() && (!$expression->usesRight() || !($rightExpression instanceof Expression))) {
-          array_splice($this->expressionsAndOperators, $i + 1, 0, [new Number(0)]); // Add a dummy 0 behind to preserve alternating order
+          array_splice($this->expressionsAndOperators, $i + 1, 0, [new Number(0, true)]); // Add a dummy 0 behind to preserve alternating order
           $i++; // skip inserted created array element
         }
       }
@@ -339,6 +340,14 @@ class MathExpression implements Expression, Nestable {
       }
     }
     return $content;
+  }
+  
+  public function toString(): string {
+    $string  = '';
+    foreach ($this->expressionsAndOperators as $expressionsAndOperator) {
+      $string .= $expressionsAndOperator->toString();
+    }
+    return "($string)";
   }
 }
 

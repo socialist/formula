@@ -419,4 +419,45 @@ class FormulaTest extends TestCase {
     $formula->renameMethods('abc', 'min');
     $this->assertEquals(1, $formula->calculate());
   }
+  
+  public function provideFormulaStrings(): array {
+    return [
+      ['1+1'],
+      ['a + b'],
+      ['max(50, 3, 100) + (a ? b : min(b,a))'],
+      ['"P1D" + "P2D"'],
+      ['{a,b,c}[2]'],
+      ['(1*((((())))1)2)'],
+      ['"Hallo welt"'],
+      ['a+b+max(a,min(a,b))'],
+      ['{1,2,a+max(a,b,c)} + {1,2,3}'],
+      ['(a+(b-c))*(a/d)*e+pow(a,b)*(b/d)-pow(a,e)'],
+      ['a&&b||c^d!=e>=f'],
+    ];
+  }
+  
+  /**
+   * @dataProvider provideFormulaStrings
+   */
+  public function testGetFormula(string $formulaString): void {
+    $formula1 = new Formula($formulaString);
+    $formula1->setVariable('a', 0);
+    $formula1->setVariable('b', 1);
+    $formula1->setVariable('c', 2);
+    $formula1->setVariable('d', 3);
+    $formula1->setVariable('e', 4);
+    $formula1->setVariable('f', 5);
+    $parsedString = $formula1->getFormula();
+//     var_dump($parsedString);
+    $formula2 = new Formula($parsedString);
+    $formula2->setVariable('a', 0);
+    $formula2->setVariable('b', 1);
+    $formula2->setVariable('c', 2);
+    $formula2->setVariable('d', 3);
+    $formula2->setVariable('e', 4);
+    $formula2->setVariable('f', 5);
+    $formula2->calculate();
+    
+    $this->assertEquals($formula1->calculate(), $formula2->calculate());
+  }
 }

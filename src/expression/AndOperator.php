@@ -1,8 +1,8 @@
 <?php
 namespace TimoLehnertz\formula\expression;
 
-use TimoLehnertz\formula\operator\Operator;
 use TimoLehnertz\formula\operator\Calculateable;
+use TimoLehnertz\formula\operator\Operator;
 
 /**
  *

@@ -52,7 +52,9 @@ class Formula {
   public function setVariable(string $identifier, $value): void {
     foreach ($this->expression->getContent() as $content) {
       if($content instanceof Variable) {
-        if($content->getIdentifier() == $identifier) $content->setValue(Method::calculateableFromValue($value));
+        if($content->getIdentifier() == $identifier) {
+          $content->setValue(Method::calculateableFromValue($value));
+        }
       }
     }
   }
@@ -320,5 +322,13 @@ class Formula {
    */
   public function getSource(): string {
     return $this->source;
+  }
+  
+  public function getFormula(): string {
+//     foreach ($this->expression->expressionsAndOperators as $expressionsAndOperator) {
+//       $expression = get_class($expressionsAndOperator);
+//       var_dump($expression);
+//     }
+    return $this->expression->toString();
   }
 }

@@ -1,16 +1,17 @@
 <?php
 namespace TimoLehnertz\formula\expression;
 
-use TimoLehnertz\formula\Nestable;
-use TimoLehnertz\formula\operator\Calculateable;
 use TimoLehnertz\formula\ExpressionNotFoundException;
+use TimoLehnertz\formula\Nestable;
+use TimoLehnertz\formula\SubFormula;
+use TimoLehnertz\formula\operator\Calculateable;
 
 /**
  *
  * @author timo
  *        
  */
-class TernaryExpression implements Expression, Nestable {
+class TernaryExpression implements Expression, Nestable, SubFormula {
   
   /**
    * Condition
@@ -80,5 +81,9 @@ class TernaryExpression implements Expression, Nestable {
     if(!$this->leftExpression->validate($throwOnError)) return false;
     if(!$this->rightExpression->validate($throwOnError)) return false;
     return true;
+  }
+
+  public function toString(): string {
+    return '('.$this->condition->toString().'?'.$this->leftExpression->toString().':'.$this->rightExpression->toString().')';
   }
 }

@@ -9,11 +9,14 @@ namespace TimoLehnertz\formula\expression;
  */
 class TimeLiteral extends Number {
 
+  private string $stringRepresentation;
+  
   /**
    * @param int $value Timestamp
    */
-  public function __construct(int $value) {
+  public function __construct(int $value, string $stringRepresentation) {
     parent::__construct($value);
+    $this->stringRepresentation = $stringRepresentation;
   }
   
   /**
@@ -22,8 +25,15 @@ class TimeLiteral extends Number {
    */
   public static function fromString(string $string): ?TimeLiteral {
     $dateObj = date_create_immutable($string);
-    if($dateObj !== false) return new TimeLiteral($dateObj->getTimestamp());
+    if($dateObj !== false) return new TimeLiteral($dateObj->getTimestamp(), $string);
     return null;
   }
+  
+  /**
+   * {@inheritDoc}
+   * @see \TimoLehnertz\formula\SubFormula::toString()
+   */
+  public function toString(): string {
+    return '"'.$this->stringRepresentation.'"';
+  }
 }
-

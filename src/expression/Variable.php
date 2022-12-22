@@ -3,6 +3,7 @@ namespace TimoLehnertz\formula\expression;
 
 use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Parseable;
+use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\operator\Calculateable;
 
 /**
@@ -10,7 +11,7 @@ use TimoLehnertz\formula\operator\Calculateable;
  * @author Timo Lehnertz
  *
  */
-class Variable implements Expression, Parseable {
+class Variable implements Expression, Parseable, SubFormula {
 
   /**
    * @var ?string
@@ -65,5 +66,12 @@ class Variable implements Expression, Parseable {
    */
   public function setIdentifier(string $identifier): void {
     $this->identifier = $identifier;
+  }
+
+  /**
+   * @return string
+   */
+  public function toString(): string {
+    return $this->identifier;
   }
 }

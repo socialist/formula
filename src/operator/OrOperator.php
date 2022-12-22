@@ -12,7 +12,7 @@ use TimoLehnertz\formula\expression\BooleanExpression;
 class OrOperator extends Operator {
 
   public function __construct() {
-    parent::__construct(1, true, true);
+    parent::__construct('||', 1, true, true);
   }
   
   /**
@@ -22,4 +22,3 @@ class OrOperator extends Operator {
     return new BooleanExpression($left->calculate()->isTruthy() || $right->calculate()->isTruthy());
   }
 }
-

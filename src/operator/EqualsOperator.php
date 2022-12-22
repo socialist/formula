@@ -11,7 +11,7 @@ use TimoLehnertz\formula\expression\BooleanExpression;
 class EqualsOperator extends Operator {
 
   public function __construct() {
-    parent::__construct(0, true, true);
+    parent::__construct('==', 0, true, true);
   }
   
   /**

@@ -5,9 +5,10 @@ namespace TimoLehnertz\formula\expression;
 use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Nestable;
 use TimoLehnertz\formula\Parseable;
+use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\operator\Calculateable;
 
-class Vector implements Calculateable, Nestable, Parseable {
+class Vector implements Calculateable, Nestable, Parseable, SubFormula {
 	
 	/**
 	 * @var array<Calculateable>
@@ -179,9 +180,19 @@ class Vector implements Calculateable, Nestable, Parseable {
     foreach ($this->elements as $element) {
       $content[] = $element;
       if($element instanceof Nestable) {
-        $content[] = $element->getContent();
+        $content = array_merge($content, $element->getContent());
       }
     }
     return $content;
+  }
+
+  public function toString(): string {
+    $string = '{';
+    $delimiter = '';
+    foreach ($this->elements as $element) {
+      $string .= $delimiter.$element->toString();
+      $delimiter = ',';
+    }
+    return $string.'}';
   }
 }

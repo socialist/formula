@@ -12,11 +12,14 @@ use Exception;
  */
 class TimeIntervalLiteral extends Number {
 
+  private string $stringRepresentation;
+  
   /**
    * @param int $value milliseconds
    */
-  private function __construct(int $value) {
+  private function __construct(int $value, string $stringRepresentation) {
     parent::__construct($value);
+    $this->stringRepresentation = $stringRepresentation;
   }
   
   /**
@@ -26,7 +29,7 @@ class TimeIntervalLiteral extends Number {
   public static function fromString(string $string): ?TimeIntervalLiteral {
     try {
       $interval = new DateInterval($string);
-      return new TimeIntervalLiteral(TimeIntervalLiteral::intervalToMillis($interval));
+      return new TimeIntervalLiteral(TimeIntervalLiteral::intervalToMillis($interval), $string);
     } catch(Exception $e) {
       return nulL;
     }
@@ -37,5 +40,12 @@ class TimeIntervalLiteral extends Number {
     $date->add($interval);
     return $date->getTimestamp();
   }
+  
+  /**
+   * {@inheritDoc}
+   * @see \TimoLehnertz\formula\SubFormula::toString()
+   */
+  public function toString(): string {
+    return '"'.$this->stringRepresentation.'"';
+  }
 }
-

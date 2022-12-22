@@ -1,6 +1,7 @@
 <?php
 namespace TimoLehnertz\formula\expression;
 
+use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\operator\Calculateable;
 
 /**
@@ -8,15 +9,22 @@ use TimoLehnertz\formula\operator\Calculateable;
  * @author Timo Lehnertz
  *
  */
-class Number implements Calculateable {
+class Number implements Calculateable, SubFormula {
   
   /**
    * @var float
    */
   private float $value;
   
-  public function __construct(string $value) {
+  /**
+   * @readonly
+   * @var bool
+   */
+  private bool $placeholder;
+  
+  public function __construct(string $value, bool $placeholder = false) {
     $this->value = floatval($value);
+    $this->placeholder = $placeholder;
   }
   
   /**
@@ -63,4 +71,16 @@ class Number implements Calculateable {
     return $this->value != 0;
   }
 
+  /**
+   * {@inheritDoc}
+   * @see \TimoLehnertz\formula\SubFormula::toString()
+   */
+  public function toString(): string {
+    if($this->isPlaceholder()) return '';
+    return strval($this->value);
+  }
+  
+  public function isPlaceholder(): bool {
+    return $this->placeholder;
+  }
 }
