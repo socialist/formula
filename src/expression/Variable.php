@@ -12,16 +12,15 @@ use TimoLehnertz\formula\operator\Calculateable;
  */
 class Variable implements Expression, Parseable {
 
+  /**
+   * @var ?string
+   */
   private ?string $identifier = null;
 
   /**
    * @var float|string
    */
   private ?Calculateable $value = null;
-  
-  public function getIdentifier(): string {
-    return $this->identifier;
-  }
 
   /**
    *
@@ -52,5 +51,19 @@ class Variable implements Expression, Parseable {
    */
   public function setValue(Calculateable $value): void {
     $this->value = $value;
+  }
+  
+  /**
+   * @return string
+   */
+  public function getIdentifier(): string {
+    return $this->identifier;
+  }
+  
+  /**
+   * @param string $identifier
+   */
+  public function setIdentifier(string $identifier): void {
+    $this->identifier = $identifier;
   }
 }

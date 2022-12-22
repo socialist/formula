@@ -65,11 +65,52 @@ class Formula {
   public function setMethod(string $identifier, callable $method): void {
     foreach ($this->expression->getContent() as $content) {
       if($content instanceof Method) {
-        if($content->getIdentifier() == $identifier) $content->setMethod($method);
+        if($content->getIdentifier() === $identifier) $content->setMethod($method);
       }
     }
   }
 
+  /**
+   * @param string $oldName
+   * @param string $newName
+   */
+  public function renameVariables(string $oldName, string $newName): void {
+    foreach ($this->expression->getContent() as $content) {
+      if($content instanceof Variable) {
+        if($content->getIdentifier() == $oldName) $content->setIdentifier($newName);
+      }
+    }
+  }
+  
+  /**
+   * @param string $oldName
+   * @param string $newName
+   */
+  public function renameStrings(string $oldName, string $newName): void {
+    foreach ($this->expression->getContent() as $content) {
+      if($content instanceof StringLiteral) {
+        if($content->getValue() === $oldName) $content->setValue($newName);
+      }
+    }
+  }
+  
+  /**
+   * @param string $oldName
+   * @param string $newName
+   */
+  public function renameMethods(string $oldName, string $newName): void {
+    foreach ($this->expression->getContent() as $content) {
+      if($content instanceof Method) {
+        if($content->getIdentifier() === $oldName) $content->setIdentifier($newName);
+      }
+    }
+    $this->initDefaultMethods(); // in case a method got renamed to a buildin method
+  }
+  
+  /**
+   * Calculates and returnes the result of this formula
+   * @return mixed
+   */
   public function calculate() {
     return $this->expression->calculate()->getValue();
   }

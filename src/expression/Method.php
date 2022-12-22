@@ -102,6 +102,14 @@ class Method implements Expression, Parseable, Nestable {
   }
   
   /**
+   * @param string $identifier
+   * @return string
+   */
+  public function setIdentifier(string $identifier): void {
+    $this->identifier = $identifier;
+  }
+  
+  /**
    * Will return the calculated values of all parameters
    * @return array<mixed>
    */

@@ -398,4 +398,25 @@ class FormulaTest extends TestCase {
     $this->assertEquals("Hallo welt", $formula->calculate());
     $this->assertEquals(['hallo', 'welt', 'hallo', 'welt'], $formula->getStringLiterals());
   }
+  
+  public function testRenameVariables(): void {
+    $formula = new Formula('a+b+max(a,min(a,b))');
+    $formula->renameVariables('a', 'c');
+    $formula->renameVariables('b', 'd');
+    $formula->setVariable('c', 10);
+    $formula->setVariable('d', 20);
+    $this->assertEquals(10+20+max(10,min(10, 20)), $formula->calculate());
+  }
+  
+  public function testRenameStrings(): void {
+    $formula = new Formula('"Hallo"');
+    $formula->renameStrings('Hallo', 'Welt');
+    $this->assertEquals('Welt', $formula->calculate());
+  }
+  
+  public function testRenameMethods(): void {
+    $formula = new Formula('abc(1,2)');
+    $formula->renameMethods('abc', 'min');
+    $this->assertEquals(1, $formula->calculate());
+  }
 }

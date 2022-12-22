@@ -80,6 +80,13 @@ class StringLiteral implements Calculateable {
     return $this->string;
   }
 
+  /**
+   * @param string $value
+   */
+  public function setValue(string $value): void {
+    $this->string = $value;
+  }
+  
   public function calculate(): Calculateable {
     return $this;
   }
