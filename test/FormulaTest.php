@@ -5,7 +5,6 @@ namespace test;
 use PHPUnit\Framework\TestCase;
 use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Formula;
-use TimoLehnertz\formula\ParsingException;
 use DateTime;
 
 class FormulaTest extends TestCase {
@@ -400,9 +399,23 @@ class FormulaTest extends TestCase {
   }
   
   public function testRenameVariables(): void {
-    $formula = new Formula('a+b+max(a,min(a,b))');
+    $formula = new Formula('a+b+maxFunc(a,minFunc(a,b))');
     $formula->renameVariables('a', 'c');
     $formula->renameVariables('b', 'd');
+    $formula->renameVariables('D', 'f'); // to check that it is case sensitive
+    $formula->renameMethods('minFunc', 'min', false);
+    $formula->renameMethods('maxFunc', 'max', false);
+    $formula->setVariable('c', 10);
+    $formula->setVariable('d', 20);
+    $this->assertEquals(10+20+max(10,min(10, 20)), $formula->calculate());
+  }
+  
+  public function testRenameVariablesCaseInsensitive(): void {
+    $formula = new Formula('A+B+MAXFUNC(A,MINFUNC(a,b))');
+    $formula->renameVariables('a', 'c', false);
+    $formula->renameVariables('b', 'd', false);
+    $formula->renameMethods('minFunc', 'min', false);
+    $formula->renameMethods('maxFunc', 'max', false);
     $formula->setVariable('c', 10);
     $formula->setVariable('d', 20);
     $this->assertEquals(10+20+max(10,min(10, 20)), $formula->calculate());

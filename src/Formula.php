@@ -8,7 +8,7 @@ use TimoLehnertz\formula\expression\Variable;
 use TimoLehnertz\formula\tokens\Tokenizer;
 
 /**
- * 
+ *
  * @author Timo Lehnertz
  *
  */
@@ -32,11 +32,11 @@ class Formula {
    * @var MathExpression
    */
   private MathExpression $expression;
-
+  
   public function __construct(string $source) {
     $this->source = $source;
     $this->tokens = Formula::tokenize(Formula::clearComments($source));
-//     print_r($this->tokens);
+    //     print_r($this->tokens);
     $this->expression = new MathExpression();
     $this->parse();
     $this->validate();
@@ -71,15 +71,15 @@ class Formula {
       }
     }
   }
-
+  
   /**
    * @param string $oldName
    * @param string $newName
    */
-  public function renameVariables(string $oldName, string $newName): void {
+  public function renameVariables(string $oldName, string $newName, bool $caseSensitive = true): void {
     foreach ($this->expression->getContent() as $content) {
       if($content instanceof Variable) {
-        if($content->getIdentifier() == $oldName) $content->setIdentifier($newName);
+        if(self::strcmp($content->getIdentifier(), $oldName, $caseSensitive)) $content->setIdentifier($newName);
       }
     }
   }
@@ -88,10 +88,10 @@ class Formula {
    * @param string $oldName
    * @param string $newName
    */
-  public function renameStrings(string $oldName, string $newName): void {
+  public function renameStrings(string $oldName, string $newName, bool $caseSensitive = true): void {
     foreach ($this->expression->getContent() as $content) {
       if($content instanceof StringLiteral) {
-        if($content->getValue() === $oldName) $content->setValue($newName);
+        if(self::strcmp($content->getValue(), $oldName, $caseSensitive)) $content->setValue($newName);
       }
     }
   }
@@ -100,13 +100,24 @@ class Formula {
    * @param string $oldName
    * @param string $newName
    */
-  public function renameMethods(string $oldName, string $newName): void {
+  public function renameMethods(string $oldName, string $newName, bool $caseSensitive = true): void {
     foreach ($this->expression->getContent() as $content) {
       if($content instanceof Method) {
-        if($content->getIdentifier() === $oldName) $content->setIdentifier($newName);
+        if(self::strcmp($content->getIdentifier(), $oldName, $caseSensitive)) $content->setIdentifier($newName);
       }
     }
     $this->initDefaultMethods(); // in case a method got renamed to a buildin method
+  }
+  
+  /**
+   * @param string $a
+   * @param string $b
+   * @param bool $caseSensitive
+   * @return bool equal
+   */
+  private static function strcmp(string $a, string $b, bool $caseSensitive): bool {
+    if($caseSensitive) return $a === $b;
+    return strcasecmp($a, $b) == 0;
   }
   
   /**
@@ -177,8 +188,8 @@ class Formula {
   private static function clearComments(string $source): string {
     $patterns = [
       '/\/\*(.*)\*\//i',
-//       '/\{(.*)\}/i',
-//       '/\[(.*)\]/i'
+      //       '/\{(.*)\}/i',
+    //       '/\[(.*)\]/i'
     ];
     return preg_replace($patterns, '', $source);
   }
@@ -231,24 +242,24 @@ class Formula {
    * @return array
    */
   private static function mergeArraysRecursive($arrays): array {
-  	$merged = [];
-  	foreach ($arrays as $val) {
-  			if(is_array($val)) {
-  				$merged = array_merge($merged, Formula::mergeArraysRecursive($val));
-  			} else {
-  				$merged[] = $val;
-  			}
-  	}
-  	return $merged;
+    $merged = [];
+    foreach ($arrays as $val) {
+      if(is_array($val)) {
+        $merged = array_merge($merged, Formula::mergeArraysRecursive($val));
+      } else {
+        $merged[] = $val;
+      }
+    }
+    return $merged;
   }
   
   public function minFunc(...$values) {
-  	$values = Formula::mergeArraysRecursive($values);
+    $values = Formula::mergeArraysRecursive($values);
     return min($values);
   }
-
+  
   public function maxFunc(...$values) {
-  	$values = Formula::mergeArraysRecursive($values);
+    $values = Formula::mergeArraysRecursive($values);
     return max($values);
   }
   
@@ -283,11 +294,11 @@ class Formula {
   public function tanFunc(float $arg) {
     return tan($arg);
   }
-
+  
   public function is_nanFunc(float $val) {
     return is_nan($val);
   }
-
+  
   public function absFunc(float $number) {
     return abs($number);
   }
@@ -325,10 +336,10 @@ class Formula {
   }
   
   public function getFormula(): string {
-//     foreach ($this->expression->expressionsAndOperators as $expressionsAndOperator) {
-//       $expression = get_class($expressionsAndOperator);
-//       var_dump($expression);
-//     }
+    //     foreach ($this->expression->expressionsAndOperators as $expressionsAndOperator) {
+    //       $expression = get_class($expressionsAndOperator);
+    //       var_dump($expression);
+    //     }
     return $this->expression->toString();
   }
 }

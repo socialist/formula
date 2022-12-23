@@ -9,7 +9,7 @@
             "TimoLehnertz\\formula\\": "src/"
         }
     },
-    "version": "1.0.6",
+    "version": "1.0.7",
     "keywords": ["formula", "math"],
     "readme": "README.md",
     "license": "MIT",
