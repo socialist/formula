@@ -46,6 +46,6 @@ class TimeIntervalLiteral extends Number {
    * @see \TimoLehnertz\formula\SubFormula::toString()
    */
   public function toString(): string {
-    return '"'.$this->stringRepresentation.'"';
+    return "'".$this->stringRepresentation."'";
   }
 }

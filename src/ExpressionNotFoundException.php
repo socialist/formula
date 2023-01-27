@@ -26,7 +26,7 @@ class ExpressionNotFoundException extends \Exception {
     if(strlen($source) > 0) {
       $formulaStr = ". Formula: \"$source\" $indexStr";
     }
-    
     parent::__construct($message.$formulaStr);
   }
 }
+
