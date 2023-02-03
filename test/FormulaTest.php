@@ -9,10 +9,6 @@ use DateTime;
 
 class FormulaTest extends TestCase {
   
-  protected function setUp(): void {
-    parent::setUp();
-  }
-  
   public function testVariables(): void {
     $str = 'a+b+c+d+e';
     $formula = new Formula($str);
@@ -29,6 +25,13 @@ class FormulaTest extends TestCase {
       $formula->setVariable('e', $e);
       $this->assertEquals($a + $b + $c + $d + $e, $formula->calculate());
     }
+  }
+  
+  public function testDivisionByZero(): void {
+    $str = '1 / 0';
+    $formula = new Formula($str);
+    $result = $formula->calculate();
+    $this->assertNan($result);
   }
   
   public function testpow(): void {
@@ -461,7 +464,6 @@ class FormulaTest extends TestCase {
     $formula1->setVariable('e', 4);
     $formula1->setVariable('f', 5);
     $parsedString = $formula1->getFormula();
-//     var_dump($parsedString);
     $formula2 = new Formula($parsedString);
     $formula2->setVariable('a', 0);
     $formula2->setVariable('b', 1);

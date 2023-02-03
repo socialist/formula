@@ -23,7 +23,11 @@ class Number implements Calculateable, SubFormula {
   private bool $placeholder;
   
   public function __construct(string $value, bool $placeholder = false) {
-    $this->value = floatval($value);
+    if($value == 'NAN') {
+      $this->value = NAN;
+    } else {
+      $this->value = floatval($value);
+    }
     $this->placeholder = $placeholder;
   }
   
@@ -59,7 +63,7 @@ class Number implements Calculateable, SubFormula {
     if(!$divisor instanceof Number) throw new \InvalidArgumentException("Can only divide numbers got ". get_class($divisor));
     $divisorValue = $divisor->getValue();
     if($divisorValue == 0 || is_nan($divisorValue)) return new Number(NAN);
-    return new Number($divisorValue == 0 ? NAN : $this->value / $divisorValue);
+    return new Number($this->value / $divisorValue);
   }
   
   public function multiply(Calculateable $factor): Calculateable {
