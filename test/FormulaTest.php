@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Formula;
 use DateTime;
+use TimoLehnertz\formula\NullpointerException;
 
 class FormulaTest extends TestCase {
   
@@ -287,6 +288,16 @@ class FormulaTest extends TestCase {
     $this->assertEquals(0, $formula->calculate());
     $formula = new Formula('inRange(2,2,3)');
     $this->assertEquals(1, $formula->calculate());
+    
+    $formula = new Formula('reduce({1,2,4,5}, {1,3,5})');
+    $this->assertEquals([1,5], $formula->calculate());
+
+    $formula = new Formula('firstOrNull({1,2,4,5})');
+    $this->assertEquals(1, $formula->calculate());
+    $formula = new Formula('firstOrNull({})');
+    $this->expectException(NullpointerException::class);
+    $this->expectExceptionMessage('Tried to calculate on null');
+    $this->assertEquals(null, $formula->calculate());
   }
   
   // from original repo at https://github.com/socialist/formula
