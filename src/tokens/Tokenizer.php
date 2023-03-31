@@ -106,7 +106,7 @@ class Tokenizer {
       new Tokenizer("?", "/\?/"), // ternary ?
       new Tokenizer("O", "/[+\-*\/^]|&&|\|\||!=|!|==|<=|<|>=|>/"), // operator
       new Tokenizer("N", "/\d+([\.]\d+)?%?/"), // positive number
-      new Tokenizer("I", "/[a-zA-Z][\w\d]*/"), // identifier
+      new Tokenizer("I", "/[a-zA-Z][\w\d.]*/"), // identifier
       new Tokenizer("(", "/\(/"), // brackets opened
       new Tokenizer(")", "/\)/"), // brackets closed
       new Tokenizer("{", "/{/"), // brackets opened

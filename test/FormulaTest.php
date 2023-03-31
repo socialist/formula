@@ -501,4 +501,11 @@ class FormulaTest extends TestCase {
     $result = $formula->calculate();
     $this->assertEquals('S', $result);
   }
+
+  public function testDotVariables(): void {
+    $formula = new Formula('self.id');
+    $formula->setVariable('self.id', 123);
+    $result = $formula->calculate();
+    $this->assertEquals(123, $result);
+  }
 }
