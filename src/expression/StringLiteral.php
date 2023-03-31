@@ -25,7 +25,6 @@ class StringLiteral implements Calculateable, SubFormula {
    */
   private function __construct(string $string) {
     $this->string = $string;
-//     echo "constructed String litearl: $string";
   }
 
   public static function fromToken(Token $token): Calculateable {
@@ -55,9 +54,9 @@ class StringLiteral implements Calculateable, SubFormula {
    * @see \TimoLehnertz\formula\operator\Calculateable::add()
    */
   public function add(Calculateable $summand): Calculateable {
-    throw new InvalidArgumentException("Cant add strings");
-//   	if(!($summand instanceof StringLiteral)) throw new InvalidArgumentException("Cant add strings");
-//   	return new StringLiteral($this->string.$summand->string);
+    $concatination = $summand->getValue();
+    if(!is_string($concatination) && !is_numeric($concatination)) throw new InvalidArgumentException("Invalid string concatination");
+    return new StringLiteral($this->getValue().$concatination);
   }
 
   public function subtract(Calculateable $difference): Calculateable {

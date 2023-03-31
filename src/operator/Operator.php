@@ -48,9 +48,6 @@ abstract class Operator implements SubFormula {
    */
   private bool $usesRight;
   
-  /**
-   * @var ?string
-   */
   private ?string $stringRepresentation;
   
   public function __construct(?string $stringRepresentation, int $priority, bool $commutative, bool $needsLeft = true, bool $needsRight = true, bool $usesLeft = true, bool $usesRight = true) {
@@ -63,63 +60,41 @@ abstract class Operator implements SubFormula {
     $this->stringRepresentation = $stringRepresentation;
   }
   
-  /**
-   * @return int priority
-   */
   public function getPriority(): int {
     return $this->priority;
   }
   
-  /**
-   * @return bool needsLeft
-   */
   public function needsLeft(): bool {
     return $this->needsLeft;
   }
   
-  /**
-   * @return bool needsLeft
-   */
   public function needsRight(): bool {
     return $this->needsRight;
   }
   
-  /**
-   * @return bool usesLeft
-   */
   public function usesLeft(): bool {
     return $this->usesLeft;
   }
   
-  /**
-   * @return bool usesRight
-   */
   public function usesRight(): bool {
     return $this->usesRight;
   }
   
   /**
-   * @param Calculateable $left
-   * @param Expression $right
    * @throws InvalidArgumentException
-   * @return \TimoLehnertz\formula\operator\Calculateable
    */
-  public function calculate(Calculateable $left, Expression $right) {
+  public function calculate(Expression $left, Expression $right): Calculateable {
     try {
-      return $this->doCalculate($left->calculate($this), $right->calculate());
+      return $this->doCalculate($left->calculate(), $right->calculate());
     } catch(InvalidArgumentException $e) {
       if($this->commutative) { // try other direction
-        return $this->doCalculate($right->calculate($this), $left->calculate());
+        return $this->doCalculate($right->calculate(), $left->calculate());
       } else {
         throw $e;
       }
     }
   }
   
-  /**
-   * @param string $name
-   * @return Operator
-   */
   public static function fromString(string $name): Operator {
     switch($name) {
       case "+":   return new Increment();
@@ -142,16 +117,8 @@ abstract class Operator implements SubFormula {
     }
   }
 
-  /**
-   * @param mixed $left
-   * @param mixed $right
-   * @return mixed
-   */
   public abstract function doCalculate(Calculateable $left, Calculateable $right): Calculateable;
   
-  /**
-   * @return string
-   */
   public function toString(): string {
     return $this->stringRepresentation;
   }

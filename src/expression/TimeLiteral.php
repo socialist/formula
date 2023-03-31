@@ -24,6 +24,7 @@ class TimeLiteral extends Number {
    * @return TimeLiteral|NULL
    */
   public static function fromString(string $string): ?TimeLiteral {
+    if(strlen(trim($string)) === 0) return null;
     $dateObj = date_create_immutable($string);
     if($dateObj !== false) return new TimeLiteral($dateObj->getTimestamp(), $string);
     return null;

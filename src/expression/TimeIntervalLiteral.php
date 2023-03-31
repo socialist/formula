@@ -27,6 +27,7 @@ class TimeIntervalLiteral extends Number {
    * @return TimeLiteral|NULL
    */
   public static function fromString(string $string): ?TimeIntervalLiteral {
+    if(strlen(trim($string)) === 0) return null;
     try {
       $interval = new DateInterval($string);
       return new TimeIntervalLiteral(TimeIntervalLiteral::intervalToMillis($interval), $string);

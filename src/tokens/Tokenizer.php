@@ -38,15 +38,18 @@ class Tokenizer {
   private bool $valid = false;
 
   private int $position;
+  
+  private bool $allowWhiteSpaces;
 
   /**
    *
    * @param string $name
    * @param string $regex
    */
-  public function __construct(string $name, string $regex) {
+  public function __construct(string $name, string $regex, bool $allowWhitespaces = false) {
     $this->name = $name;
     $this->regex = $regex;
+    $this->allowWhiteSpaces = $allowWhitespaces;
   }
 
   /**
@@ -56,11 +59,10 @@ class Tokenizer {
    * @return bool true when parsing was succsessful
    */
   public function parse(string $char, int $position): bool {
-    if(ctype_space($char)) return false;
+    if(!$this->allowWhiteSpaces && ctype_space($char)) return false;
     $matches = [];
     $this->buffer .= $char;
     $this->position = $position;
-//     var_dump($char);
     preg_match($this->regex, $this->buffer, $matches);
     if($matches && $matches[0] == $this->buffer) {
       $this->valid = true;
@@ -112,7 +114,7 @@ class Tokenizer {
       new Tokenizer("[", "/\[/"), // brackets opened
       new Tokenizer("]", "/\]/"), // brackets closed
       new Tokenizer(",", "/,/"), // comma
-      new Tokenizer("S", '/("[^"]*"?)|(\'[^\']*\'?)/') // String literal "string" or 'string'
+      new Tokenizer("S", '/("[^"]*"?)|(\'[^\']*\'?)/', true) // String literal "string" or 'string'
     ];
   }
 

@@ -336,10 +336,6 @@ class Formula {
   }
   
   public function getFormula(): string {
-    //     foreach ($this->expression->expressionsAndOperators as $expressionsAndOperator) {
-    //       $expression = get_class($expressionsAndOperator);
-    //       var_dump($expression);
-    //     }
     return $this->expression->toString();
   }
 }

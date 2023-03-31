@@ -461,7 +461,6 @@ class FormulaTest extends TestCase {
     $formula1->setVariable('e', 4);
     $formula1->setVariable('f', 5);
     $parsedString = $formula1->getFormula();
-//     var_dump($parsedString);
     $formula2 = new Formula($parsedString);
     $formula2->setVariable('a', 0);
     $formula2->setVariable('b', 1);
@@ -472,5 +471,11 @@ class FormulaTest extends TestCase {
     $formula2->calculate();
     
     $this->assertEquals($formula1->calculate(), $formula2->calculate());
+  }
+  
+  public function testStringConcatination(): void {
+    $formula = new Formula('1.0 + "Hello" + " " + "world" + 1.0');
+    $result = $formula->calculate();
+    $this->assertEquals('1Hello world1', $result);
   }
 }
