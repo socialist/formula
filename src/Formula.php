@@ -311,6 +311,10 @@ class Formula {
     return sizeof($arr);
   }
   
+  public function inRangeFunc(float $value, float $min, float $max): bool {
+    return ($min <= $value) && ($value <= $max);
+  }
+  
   private function initDefaultMethods(): void {
     $this->setMethod("min", [$this, "minFunc"]);
     $this->setMethod("max", [$this, "maxFunc"]);
@@ -326,6 +330,7 @@ class Formula {
     $this->setMethod("abs", [$this, "absFunc"]);
     $this->setMethod("asVector", [$this, "asVectorFunc"]);
     $this->setMethod("sizeof", [$this, "sizeofFunc"]);
+    $this->setMethod("inRange", [$this, "inRangeFunc"]);
   }
   
   /**

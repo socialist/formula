@@ -282,6 +282,11 @@ class FormulaTest extends TestCase {
     
     $formula = new Formula('sizeof({1,2,3,4})');
     $this->assertEquals(4, $formula->calculate());
+
+    $formula = new Formula('inRange(1,2,3)');
+    $this->assertEquals(0, $formula->calculate());
+    $formula = new Formula('inRange(2,2,3)');
+    $this->assertEquals(1, $formula->calculate());
   }
   
   // from original repo at https://github.com/socialist/formula

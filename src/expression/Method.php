@@ -59,6 +59,9 @@ class Method implements Expression, Parseable, Nestable, SubFormula {
     if(is_array($value)) {
     	return Vector::fromArray($value);
     }
+    if(is_bool($value)) {
+      return new BooleanExpression($value);
+    }
     return StringLiteral::fromString($value);
   }
   
