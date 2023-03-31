@@ -496,5 +496,9 @@ class FormulaTest extends TestCase {
     $formula = new Formula('1.0 + "Hello" + " " + "world" + 1.0');
     $result = $formula->calculate();
     $this->assertEquals('1Hello world1', $result);
+
+    $formula = new Formula('"S"');
+    $result = $formula->calculate();
+    $this->assertEquals('S', $result);
   }
 }
