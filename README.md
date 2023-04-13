@@ -48,7 +48,7 @@ Strings are supported in the form of `"a string"` or `'a string'`.  Strings are 
 Formula supportes DateTimeImmutable and DateInterval. To define those use a string containing a Date or string Example:
 - DateTime: `"2022-11-25T23:05:47+0100"`
 - DateInterval: `P1M` (interval of one month)
-All php date formats are supported. Check out this site for a list of DateTimeFOrmats: https://www.php.net/manual/en/class.datetime.php
+All php date formats are supported. Check out this site for a list of DateTime formats: https://www.php.net/manual/en/class.datetime.php
 Here's a list for DateIntervals: https://www.php.net/manual/en/class.dateinterval.php
 Internally all dates and intervals get parsed to the UNIX timestamp for easier calculation. So if a date gets passed as parameter to a method the method will receive the timestamp and should also return a timestamp is thats what its purpose is.
 
