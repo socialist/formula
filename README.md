@@ -79,6 +79,11 @@ Those methods are predefined and ready to use in any formula script
 - `abs`
 
 All these are linked to their PHP counterpart and act just like php functions
-## additional methods
+## Additional methods
 - `asVector(...element)`
 - `sizeof(<Vector>)`
+
+## Other methods
+- `inRange(value, min, max)` returns true if value is between min and max (including)
+- `reduce(valueArray, filterArray)` returns the an array containing all elements that occour both in valueArray and filterArray
+- `firstOrNull(array)` returns the first element of the array or null
