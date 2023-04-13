@@ -45,8 +45,12 @@ class Number implements Calculateable, SubFormula {
   }
   
   public function add(Calculateable $summand): Calculateable {
-    if(!$summand instanceof Number) throw new \InvalidArgumentException("Can only add numbers got ". get_class($summand));
-    return new Number($this->value + $summand->getValue());
+    if(!$summand instanceof Number && !$summand instanceof StringLiteral) throw new \InvalidArgumentException("Can only add numbers got ". get_class($summand));
+    if($summand instanceof StringLiteral) {
+      return StringLiteral::fromString($this->value.$summand->getValue());
+    } else { // Number      
+      return new Number($this->value + $summand->getValue());
+    }
   }
   
   public function subtract(Calculateable $difference): Calculateable {

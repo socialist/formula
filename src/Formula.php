@@ -311,6 +311,25 @@ class Formula {
     return sizeof($arr);
   }
   
+  public function inRangeFunc(float $value, float $min, float $max): bool {
+    return ($min <= $value) && ($value <= $max);
+  }
+  
+  public function reduceFunc(array $values, array $filter): array {
+    $result = [];
+    foreach ($values as $value) {
+      if(in_array($value, $filter)) {
+        $result []= $value;
+      }
+    }
+    return $result;
+  }
+  
+  public function firstOrNullFunc($array) {
+    if(sizeof($array) === 0) return null;
+    return $array[0];
+  }
+  
   private function initDefaultMethods(): void {
     $this->setMethod("min", [$this, "minFunc"]);
     $this->setMethod("max", [$this, "maxFunc"]);
@@ -326,6 +345,9 @@ class Formula {
     $this->setMethod("abs", [$this, "absFunc"]);
     $this->setMethod("asVector", [$this, "asVectorFunc"]);
     $this->setMethod("sizeof", [$this, "sizeofFunc"]);
+    $this->setMethod("inRange", [$this, "inRangeFunc"]);
+    $this->setMethod("reduce", [$this, "reduceFunc"]);
+    $this->setMethod("firstOrNull", [$this, "firstOrNullFunc"]);
   }
   
   /**
@@ -336,10 +358,6 @@ class Formula {
   }
   
   public function getFormula(): string {
-    //     foreach ($this->expression->expressionsAndOperators as $expressionsAndOperator) {
-    //       $expression = get_class($expressionsAndOperator);
-    //       var_dump($expression);
-    //     }
     return $this->expression->toString();
   }
 }

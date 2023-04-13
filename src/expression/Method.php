@@ -7,8 +7,6 @@ use TimoLehnertz\formula\Parseable;
 use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\operator\Calculateable;
-use Exception;
-
 
 /**
  *
@@ -41,11 +39,12 @@ class Method implements Expression, Parseable, Nestable, SubFormula {
     if($this->method == null) throw new ExpressionNotFoundException("No method provided for $this->identifier!");
     $parameters = $this->getParameterValues();
     $value = call_user_func_array($this->method, $parameters);
-    if($value === null) throw new Exception("Return value of function $this->identifier was null");
+//     if($value === null) throw new Exception("Return value of function $this->identifier was null");
     return Method::calculateableFromValue($value);
   }
   
   public static function calculateableFromValue($value) : Calculateable {
+    if($value === null) return new NullExpression();
     if(is_numeric($value)) return new Number($value);
     if($value instanceof \DateTimeImmutable) {
       return new TimeLiteral($value);
@@ -58,6 +57,9 @@ class Method implements Expression, Parseable, Nestable, SubFormula {
     }
     if(is_array($value)) {
     	return Vector::fromArray($value);
+    }
+    if(is_bool($value)) {
+      return new BooleanExpression($value);
     }
     return StringLiteral::fromString($value);
   }

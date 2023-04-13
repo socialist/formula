@@ -5,6 +5,7 @@ namespace test;
 use PHPUnit\Framework\TestCase;
 use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Formula;
+use TimoLehnertz\formula\NullpointerException;
 use DateTime;
 
 class FormulaTest extends TestCase {
@@ -282,6 +283,21 @@ class FormulaTest extends TestCase {
     
     $formula = new Formula('sizeof({1,2,3,4})');
     $this->assertEquals(4, $formula->calculate());
+
+    $formula = new Formula('inRange(1,2,3)');
+    $this->assertEquals(0, $formula->calculate());
+    $formula = new Formula('inRange(2,2,3)');
+    $this->assertEquals(1, $formula->calculate());
+    
+    $formula = new Formula('reduce({1,2,4,5}, {1,3,5})');
+    $this->assertEquals([1,5], $formula->calculate());
+
+    $formula = new Formula('firstOrNull({1,2,4,5})');
+    $this->assertEquals(1, $formula->calculate());
+    $formula = new Formula('firstOrNull({})');
+    $this->expectException(NullpointerException::class);
+    $this->expectExceptionMessage('Tried to calculate on null');
+    $this->assertEquals(null, $formula->calculate());
   }
   
   // from original repo at https://github.com/socialist/formula
@@ -480,10 +496,27 @@ class FormulaTest extends TestCase {
     return 123;
   }
   
-  public function testMethofNoArgd(): void {
+  public function testMethofNoArgs(): void {
     $formula1 = new Formula('methodTest()');
     $formula1->setMethod('methodTest', [$this, 'methodTest']);
     
     $this->assertEquals(123, $formula1->calculate());
+  }
+  
+  public function testStringConcatination(): void {
+    $formula = new Formula('1.0 + "Hello" + " " + "world" + 1.0');
+    $result = $formula->calculate();
+    $this->assertEquals('1Hello world1', $result);
+
+    $formula = new Formula('"S"');
+    $result = $formula->calculate();
+    $this->assertEquals('S', $result);
+  }
+
+  public function testDotVariables(): void {
+    $formula = new Formula('self.id');
+    $formula->setVariable('self.id', 123);
+    $result = $formula->calculate();
+    $this->assertEquals(123, $result);
   }
 }

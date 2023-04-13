@@ -27,6 +27,10 @@ class TimeIntervalLiteral extends Number {
    * @return TimeLiteral|NULL
    */
   public static function fromString(string $string): ?TimeIntervalLiteral {
+    if(strlen(trim($string)) === 0) return null;
+    if(!preg_match('/^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$/', $string)) {
+      return null;
+    }
     try {
       $interval = new DateInterval($string);
       return new TimeIntervalLiteral(TimeIntervalLiteral::intervalToMillis($interval), $string);
