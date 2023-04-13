@@ -475,4 +475,15 @@ class FormulaTest extends TestCase {
     
     $this->assertEquals($formula1->calculate(), $formula2->calculate());
   }
+  
+  public function methodTest(): int {
+    return 123;
+  }
+  
+  public function testMethofNoArgd(): void {
+    $formula1 = new Formula('methodTest()');
+    $formula1->setMethod('methodTest', [$this, 'methodTest']);
+    
+    $this->assertEquals(123, $formula1->calculate());
+  }
 }

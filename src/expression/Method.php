@@ -65,7 +65,7 @@ class Method implements Expression, Parseable, Nestable, SubFormula {
   public function parse(array &$tokens, int &$index): bool {
     // identifier
     if($tokens[$index]->name != "I") return false;
-    if(sizeof($tokens) <= $index + 3) return false; // must be variable as there are no parameters following
+    if(sizeof($tokens) <= $index + 2) return false; // must be variable as there are no parameters following
     if($tokens[$index + 1]->name != "(") return false; // must be variable    $this->identifier = $tokens[$index]['value'];
     $this->identifier = $tokens[$index]->value;
     // parse parameters
