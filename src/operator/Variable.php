@@ -7,7 +7,7 @@ class Variable extends Expression
 {
     protected $key;
 
-    public function __construct(string $key, string $value = '0')
+    public function __construct(string $key, string $value = '')
     {
         $this->key = $key;
         parent::__construct($value);
@@ -26,6 +26,9 @@ class Variable extends Expression
      */
     public function calculate(Operator $operator): float
     {
+        if($this->value === ''){
+            throw new \BadMethodCallException('undefined variable: '.$this->key);
+        }
         $this->value = str_replace(',', '.', $this->value);
         return (float) $this->value;
     }

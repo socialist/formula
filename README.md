@@ -9,6 +9,26 @@ It can take a string with a math expression and parses it so it can be evaluated
 
 The packages supports operations like addition, subtraction, multiplication and division.
 
+Changes in comparison to original project
+-----------------------------------------
+
+- allow multi-character variable names
+- allow reuse of formula object:
+```php
+$formula = new Formula('a + b');
+$formula->setVariable('a', 1);
+$formula->setVariable('b', 41);
+$c = $formula->calculate();     // 42
+$formula->setVariable('a', 3);
+$formula->setVariable('b', 1334);
+$d = $formula->calculate();     // 1337    
+```
+- remove try-catch to hide exceptions from stdout (e.g. website)
+- bugfix for formulas that use brackets like `(a + b) * c`
+- remove `round(..., 2)` for divisions to avoid minor calculation errors
+- changed division-by-zero behavior from PHP's error to giving result `NAN` (a PHP constant) because I prefer silent error handling in this case ;-)
+- added exception if a variable is undefined (missing `setVariable(...)` statement)
+
 Installation
 ------------
 
