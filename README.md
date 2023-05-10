@@ -48,7 +48,7 @@ Strings are supported in the form of `"a string"` or `'a string'`.  Strings are 
 Formula supportes DateTimeImmutable and DateInterval. To define those use a string containing a Date or string Example:
 - DateTime: `"2022-11-25T23:05:47+0100"`
 - DateInterval: `P1M` (interval of one month)
-All php date formats are supported. Check out this site for a list of DateTimeFOrmats: https://www.php.net/manual/en/class.datetime.php
+All php date formats are supported. Check out this site for a list of DateTime formats: https://www.php.net/manual/en/class.datetime.php
 Here's a list for DateIntervals: https://www.php.net/manual/en/class.dateinterval.php
 Internally all dates and intervals get parsed to the UNIX timestamp for easier calculation. So if a date gets passed as parameter to a method the method will receive the timestamp and should also return a timestamp is thats what its purpose is.
 
@@ -79,6 +79,11 @@ Those methods are predefined and ready to use in any formula script
 - `abs`
 
 All these are linked to their PHP counterpart and act just like php functions
-## additional methods
+## Additional methods
 - `asVector(...element)`
 - `sizeof(<Vector>)`
+
+## Other methods
+- `inRange(value, min, max)` returns true if value is between min and max (including)
+- `reduce(valueArray, filterArray)` returns the an array containing all elements that occour both in valueArray and filterArray
+- `firstOrNull(array)` returns the first element of the array or null
