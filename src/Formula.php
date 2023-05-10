@@ -188,8 +188,6 @@ class Formula {
   private static function clearComments(string $source): string {
     $patterns = [
       '/\/\*(.*)\*\//i',
-      //       '/\{(.*)\}/i',
-    //       '/\[(.*)\]/i'
     ];
     return preg_replace($patterns, '', $source);
   }

@@ -508,4 +508,15 @@ class FormulaTest extends TestCase {
     $result = $formula->calculate();
     $this->assertEquals(123, $result);
   }
+  
+  public function dummyArrayFunc(int $index, array $arr) {
+    return $arr[$index];
+  }
+  
+  public function testdummyArrayFunc(): void {
+    $formula = new Formula('dummyArrayFunc(2, {"S3", "S4", "S10"})');
+    $formula->setMethod('dummyArrayFunc', [$this, 'dummyArrayFunc']);
+    $result = $formula->calculate();
+    $this->assertEquals('S10', $result);
+  }
 }
