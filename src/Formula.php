@@ -328,6 +328,18 @@ class Formula {
     return $array[0];
   }
   
+  /**
+   * @param float[] $values
+   * @return number sum of all numeric members in $values 
+   */
+  public function sumFunc(array $values) {
+    $res = 0;
+    foreach ($values as $value) {
+      if(is_numeric($value) && !is_string($value)) $res += $value;
+    }
+    return $res;
+  }
+  
   private function initDefaultMethods(): void {
     $this->setMethod("min", [$this, "minFunc"]);
     $this->setMethod("max", [$this, "maxFunc"]);
@@ -346,6 +358,7 @@ class Formula {
     $this->setMethod("inRange", [$this, "inRangeFunc"]);
     $this->setMethod("reduce", [$this, "reduceFunc"]);
     $this->setMethod("firstOrNull", [$this, "firstOrNullFunc"]);
+    $this->setMethod("sum", [$this, "sumFunc"]);
   }
   
   /**

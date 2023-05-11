@@ -292,8 +292,12 @@ class FormulaTest extends TestCase {
     $formula = new Formula('reduce({1,2,4,5}, {1,3,5})');
     $this->assertEquals([1,5], $formula->calculate());
 
+    $formula = new Formula('sum({1,2,true,false,"123",{}})');
+    $this->assertEquals(4, $formula->calculate());
+
     $formula = new Formula('firstOrNull({1,2,4,5})');
     $this->assertEquals(1, $formula->calculate());
+    
     $formula = new Formula('firstOrNull({})');
     $this->expectException(NullpointerException::class);
     $this->expectExceptionMessage('Tried to calculate on null');
