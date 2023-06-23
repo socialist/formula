@@ -534,4 +534,12 @@ class FormulaTest extends TestCase {
     $result = $formula->calculate();
     $this->assertEquals('S10', $result);
   }
+
+  public function testStringifyBrackets(): void {
+    $formula = new Formula("(((getModuleComponentIndex()==1)?(s362-s1857):((getModuleComponentIndex()>1)?(s362/getMeasurementAtComponentIndex((getModuleComponentIndex()-1),{'s362','s363','s364','s365','s366'})):0))*100)");
+    $string = $formula->getFormula();
+    var_dump($string);
+//     $this->assertEquals('S10', $result);
+    
+  }
 }

@@ -351,7 +351,7 @@ class MathExpression implements Expression, Nestable, SubFormula {
     }
     $string  = '';
     foreach ($this->expressionsAndOperators as $expressionsAndOperator) {
-      if($expressionsAndOperator instanceof MathExpression) {        
+      if($expressionsAndOperator instanceof MathExpression && sizeof(($expressionsAndOperator)->getContent()) > 1) {
         $string .= '('.$expressionsAndOperator->toString().')';
       } else {
         $string .= $expressionsAndOperator->toString();
