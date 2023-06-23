@@ -343,14 +343,21 @@ class MathExpression implements Expression, Nestable, SubFormula {
   }
   
   public function toString(): string {
+    if(sizeof($this->expressionsAndOperators) == 0) {
+      return '0';
+    }
     if(sizeof($this->expressionsAndOperators) == 1) {
       return $this->expressionsAndOperators[0]->toString();
     }
     $string  = '';
     foreach ($this->expressionsAndOperators as $expressionsAndOperator) {
-      $string .= $expressionsAndOperator->toString();
+      if($expressionsAndOperator instanceof MathExpression) {        
+        $string .= '('.$expressionsAndOperator->toString().')';
+      } else {
+        $string .= $expressionsAndOperator->toString();
+      }
     }
-    return "($string)";
+    return $string;
   }
 }
 
