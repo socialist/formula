@@ -60,8 +60,13 @@ class MathExpression implements Expression, Nestable, SubFormula {
         case ')': // end of this formula if nested
         case ',': // end of this formula if nested
         case ':': // Ternary delimiter
-        case ',': // Vector element delimiter
         case '}': // Vector delimiter
+        case ',': // Vector element delimiter
+          if(sizeof($this->expressionsAndOperators) === 0) {
+            throw new ExpressionNotFoundException('Expression can\'t be empty', $tokens, $index);
+          }
+          $this->parsingDone = true;
+          return true;
         case ']': // Array operator end
           $this->parsingDone = true;
           return true;
@@ -289,11 +294,6 @@ class MathExpression implements Expression, Nestable, SubFormula {
       return $this->expressionsAndOperators[1]->calculate($this->expressionsAndOperators[0]->calculate(), $this->expressionsAndOperators[2]->calculate());
     }
     
-//     echo PHP_EOL;
-//     foreach ($this->expressionsAndOperators as $value) {
-//       echo get_class($value).PHP_EOL;
-//     }
-    
     // find highest priority operator
     $maxPriority = 0;
     $bestOperator = 1; // start with index 1 as this will be the first operator if no better operators are found
@@ -343,18 +343,12 @@ class MathExpression implements Expression, Nestable, SubFormula {
   }
   
   public function toString(): string {
-    if(sizeof($this->expressionsAndOperators) == 0) {
-      return '0';
-    }
-    if(sizeof($this->expressionsAndOperators) == 1) {
-      return $this->expressionsAndOperators[0]->toString();
-    }
     $string  = '';
-    foreach ($this->expressionsAndOperators as $expressionsAndOperator) {
-      if($expressionsAndOperator instanceof MathExpression && sizeof(($expressionsAndOperator)->getContent()) > 1) {
-        $string .= '('.$expressionsAndOperator->toString().')';
+    foreach ($this->expressionsAndOperators as $expressionOrOperator) {
+      if($expressionOrOperator instanceof MathExpression && sizeof($expressionOrOperator->expressionsAndOperators) > 1) {
+        $string .= '('.$expressionOrOperator->toString().')';
       } else {
-        $string .= $expressionsAndOperator->toString();
+        $string .= $expressionOrOperator->toString();
       }
     }
     return $string;

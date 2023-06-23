@@ -119,10 +119,10 @@ class FormulaTest extends TestCase {
   }
   
   public function testEmptyBrackets(): void {
-    $str = '(1*((((())))1)2)';
+    $str = '(1((1)1)2)';
     $formula = new Formula($str);
     $res = $formula->calculate();
-    $this->assertEquals($res, 0);
+    $this->assertEquals(2, $res);
   }
   
   public function testNotClosedBracket(): void {
@@ -463,7 +463,7 @@ class FormulaTest extends TestCase {
       ['max(50, 3, 100) + (a ? b : min(b,a))'],
       ['"P1D" + "P2D"'],
       ['{a,b,c}[2]'],
-      ['(1*((((())))1)2)'],
+      ['(1((1)1)2)'],
       ['"Hallo welt"'],
       ['a+b+max(a,min(a,b))'],
       ['{1,2,a+max(a,b,c)} + {1,2,3}'],
@@ -492,7 +492,6 @@ class FormulaTest extends TestCase {
     $formula2->setVariable('e', 4);
     $formula2->setVariable('f', 5);
     $formula2->calculate();
-    
     $this->assertEquals($formula1->calculate(), $formula2->calculate());
   }
   
@@ -536,10 +535,7 @@ class FormulaTest extends TestCase {
   }
 
   public function testStringifyBrackets(): void {
-    $formula = new Formula("(((getModuleComponentIndex()==1)?(s362-s1857):((getModuleComponentIndex()>1)?(s362/getMeasurementAtComponentIndex((getModuleComponentIndex()-1),{'s362','s363','s364','s365','s366'})):0))*100)");
-    $string = $formula->getFormula();
-    var_dump($string);
-//     $this->assertEquals('S10', $result);
-    
+    $formula = new Formula("(((getModuleComponentIndex()==1)?(1):((getModuleComponentIndex()>1)?(s362/getMeasurementAtComponentIndex((getModuleComponentIndex()-1),{'s362','s363','s364','s365','s366'})):0))*100)");
+    $this->assertEquals("(((getModuleComponentIndex()==1)?1:((getModuleComponentIndex()>1)?(s362/getMeasurementAtComponentIndex((getModuleComponentIndex()-1),{'s362','s363','s364','s365','s366'})):0))*100)", $formula->getFormula());
   }
 }

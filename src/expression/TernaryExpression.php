@@ -84,6 +84,6 @@ class TernaryExpression implements Expression, Nestable, SubFormula {
   }
 
   public function toString(): string {
-    return $this->condition->toString().'?'.$this->leftExpression->toString().':'.$this->rightExpression->toString();
+    return '('.$this->condition->toString().'?'.$this->leftExpression->toString().':'.$this->rightExpression->toString().')';
   }
 }
