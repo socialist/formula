@@ -1,0 +1,91 @@
+{
+  keywords: [
+    "true","false","TRUE","FASLE","True","False",'getMeasurements','getMeasurement','getModuleComponentIndex'
+  ],
+
+  typeKeywords: [
+    'min','max','pow','sqrt','ceil','floor','round','sin','cos','tan','is_nan','abs','asVector','sizeof','inRange','reduce','firstOrNull'
+  ],
+
+  operators: [
+    '>', '<', '!', '?', ':', '==', '<=', '>=', '!=',
+    '&&', '||', '+', '-', '*', '/', '&', '|', '%'
+  ],
+
+  symbols:  /[=><!~?:&|+\-*\/\^%]+/,
+
+  // C# style strings
+  escapes: /\\(?:[abfnrtv\\"']|x[0-9A-Fa-f]{1,4}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})/,
+
+  // The main tokenizer for our languages
+  tokenizer: {
+    root: [
+      // Sensors and variables
+      [/[Ss][0-9]+|now|self\.componentID|self\.moduleID|self\.scopeID/, 'type.identifier'],
+      // identifiers and keywords
+      [/[a-z_$][\w$]*/, { cases: { '@typeKeywords': 'keyword',
+                                   '@keywords': 'keyword',
+                                   '@default': 'identifier' } }],
+
+      // whitespace
+      { include: '@whitespace' },
+
+      // delimiters and operators
+      [/[{}()\[\]]/, '@brackets'],
+      [/[<>](?!@symbols)/, '@brackets'],
+      [/@symbols/, { cases: { '@operators': 'operator',
+                              '@default'  : '' } } ],
+
+      // numbers
+      [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
+      [/0[xX][0-9a-fA-F]+/, 'number.hex'],
+      [/\d+/, 'number'],
+
+      // strings
+      [/"([^"\\]|\\.)*$/, 'string.invalid' ],  // non-teminated string
+      [/"/,  { token: 'string.quote', bracket: '@open', next: '@string' } ],
+      // Match single-quoted strings
+      [/(')(?:\\.|[^\n'\\])*(')/, "string"],
+    ],
+
+    comment: [
+      [/[^\/*]+/, 'comment' ],
+      ["\\*/",    'comment', '@pop'  ],
+    ],
+
+    string: [
+      [/[^\\"]+/,  'string'],
+      [/@escapes/, 'string.escape'],
+      [/\\./,      'string.escape.invalid'],
+      [/"/,        { token: 'string.quote', bracket: '@close', next: '@pop' } ]
+    ],
+
+    whitespace: [
+      [/[ \t\r\n]+/, 'white'],
+      [/\/\*/,       'comment', '@comment' ],
+    ],
+  }
+}
+
+// tests
+//1+1
+//a + b
+//max(50, 3, 100) + (a ? b : min(b,a))
+//"P1D" + 'P2D' + 's'
+//{a,b,c}[2]
+//(1*((((())))1)2)
+//"Hallo welt"
+//a+b+max(a,min(a,b))
+//{1,2,a+max(a,b,c)} + {1,2,3}
+//(a+(b-c))*(a/d)*e+pow(a,b)*(b/d)-pow(a,e)
+//S10 > 2 &&b/*true && false*/||c^d!=e>=f
+
+//getMeasurements(3)
+
+//a ? b : c
+
+//now + self.componentID + self.moduleID + self.scopeID
+
+//S10 + s20
+
+//true && false
