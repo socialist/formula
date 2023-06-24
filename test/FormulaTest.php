@@ -535,12 +535,32 @@ class FormulaTest extends TestCase {
   }
 
   public function testStringifyBrackets(): void {
-    $formula = new Formula("(((getModuleComponentIndex()==1)?(1):((getModuleComponentIndex()>1)?(s362/getMeasurementAtComponentIndex((getModuleComponentIndex()-1),{'s362','s363','s364','s365','s366'})):0))*100)");
-    $this->assertEquals("(((getModuleComponentIndex()==1)?1:((getModuleComponentIndex()>1)?(s362/getMeasurementAtComponentIndex((getModuleComponentIndex()-1),{'s362','s363','s364','s365','s366'})):0))*100)", $formula->getFormula());
+    $testFormula = "((((getModuleComponentIndex()==1)))?(1):((getModuleComponentIndex()>1)?(s362/getMeasurementAtComponentIndex((getModuleComponentIndex()-1),{'s362','s363','s364','s365','s366'})):0))*100";
+    $formula = new Formula($testFormula);
+    $stringified = $formula->getFormula();
+    $this->assertEquals("(getModuleComponentIndex()==1?1:getModuleComponentIndex()>1?s362/getMeasurementAtComponentIndex(getModuleComponentIndex()-1,{'s362','s363','s364','s365','s366'}):0)*100", $stringified);
+  }
+
+  public function testNegativeMultiplication(): void {
+    $this->expectException(ExpressionNotFoundException::class);
+    $this->expectExceptionMessage('TimoLehnertz\formula\operator\Multiplication needs a righthand expression. Formula: "5*-5');
+    new Formula("5*-5");
+  }
+  
+  public function testEmptyExpression(): void {
+    $testFormula = "testFunc(())";
+    $this->expectException(ExpressionNotFoundException::class);
+    $this->expectExceptionMessage('Expression can\'t be empty. Formula: "testFunc(())"  At position: 3');
+    new Formula($testFormula);
+  }
+  
+  function getModuleComponentIndexFunc(): int {
+    return -1;
   }
   
   public function testComplexTernary(): void {
-    $formula = new Formula("-1>=1&&-1<=2?1:-1>2?2:-1");
+    $formula = new Formula("((getModuleComponentIndex()>=1&&getModuleComponentIndex()<=2)?1:(getModuleComponentIndex()>2?2:-1))");
+    $formula->setMethod('getModuleComponentIndex', [$this, 'getModuleComponentIndexFunc']);
     $res = $formula->calculate();
     $this->assertEquals(-1, $res);
   }

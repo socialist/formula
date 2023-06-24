@@ -36,7 +36,6 @@ class Formula {
   public function __construct(string $source) {
     $this->source = $source;
     $this->tokens = Formula::tokenize(Formula::clearComments($source));
-    //     print_r($this->tokens);
     $this->expression = new MathExpression();
     $this->parse();
     $this->validate();
@@ -140,9 +139,10 @@ class Formula {
    * Validate formula
    */
   private function validate(): void {
+    $this->expression->setInsideBrackets(false); //for sure not needed
     $this->expression->validate(true);
   }
-  
+
   /**
    * Converts a string into Tokens
    *
