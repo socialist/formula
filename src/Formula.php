@@ -332,10 +332,16 @@ class Formula {
    * @param float[] $values
    * @return number sum of all numeric members in $values 
    */
-  public function sumFunc(array $values) {
+  public function sumFunc(...$values) {
     $res = 0;
     foreach ($values as $value) {
-      if(is_numeric($value) && !is_string($value)) $res += $value;
+      if(is_numeric($value) && !is_string($value)) {
+        $res += $value;
+      } else if(is_array($value)) {
+        $res += $this->sumFunc(...$value);
+      } else {
+        throw new \Exception('Only numeric values or vectors are allowed for sum');
+      }
     }
     return $res;
   }

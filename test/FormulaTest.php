@@ -7,6 +7,7 @@ use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Formula;
 use TimoLehnertz\formula\NullpointerException;
 use DateTime;
+use Exception;
 
 class FormulaTest extends TestCase {
   
@@ -292,7 +293,7 @@ class FormulaTest extends TestCase {
     $formula = new Formula('reduce({1,2,4,5}, {1,3,5})');
     $this->assertEquals([1,5], $formula->calculate());
 
-    $formula = new Formula('sum({1,2,true,false,"123",{}})');
+    $formula = new Formula('sum({1,2,true,false,{}})');
     $this->assertEquals(4, $formula->calculate());
 
     $formula = new Formula('firstOrNull({1,2,4,5})');
@@ -563,5 +564,14 @@ class FormulaTest extends TestCase {
     $formula->setMethod('getModuleComponentIndex', [$this, 'getModuleComponentIndexFunc']);
     $res = $formula->calculate();
     $this->assertEquals(-1, $res);
+  }
+  
+  public function testSumFunc(): void {
+    $res = (new Formula("sum({1,{{{2}},2},4}, 5, {6,7+8+9})"))->calculate();
+    $this->assertEquals(1+2+2+4+5+6+7+8+9, $res);
+    
+    $this->expectException(\Exception::class);
+    $this->expectExceptionMessage('Only numeric values or vectors are allowed for sum');
+    $res = (new Formula("sum({1,{{{'Error'}}}})"))->calculate();
   }
 }
