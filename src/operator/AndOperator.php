@@ -12,7 +12,7 @@ use TimoLehnertz\formula\expression\BooleanExpression;
 class AndOperator extends Operator {
 
   public function __construct() {
-    parent::__construct('&&', 2, true, true);
+    parent::__construct('&&', 14, true, true);
   }
   
   /**

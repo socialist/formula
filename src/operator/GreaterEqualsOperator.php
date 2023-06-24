@@ -12,7 +12,7 @@ use TimoLehnertz\formula\expression\BooleanExpression;
 class GreaterEqualsOperator extends Operator {
 
   public function __construct() {
-    parent::__construct('>=', 0, false, true);
+    parent::__construct('>=', 9, false, true);
   }
   
   /**

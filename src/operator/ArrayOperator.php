@@ -13,7 +13,7 @@ class ArrayOperator extends Operator implements Parseable, Nestable, SubFormula 
   private MathExpression $indexExpression;
   
   public function __construct() {
-    parent::__construct(null, 10000, false, true, false, true, false);
+    parent::__construct(null, 2, false, true, false, true, false);
   }
   
   /**

@@ -538,4 +538,10 @@ class FormulaTest extends TestCase {
     $formula = new Formula("(((getModuleComponentIndex()==1)?(1):((getModuleComponentIndex()>1)?(s362/getMeasurementAtComponentIndex((getModuleComponentIndex()-1),{'s362','s363','s364','s365','s366'})):0))*100)");
     $this->assertEquals("(((getModuleComponentIndex()==1)?1:((getModuleComponentIndex()>1)?(s362/getMeasurementAtComponentIndex((getModuleComponentIndex()-1),{'s362','s363','s364','s365','s366'})):0))*100)", $formula->getFormula());
   }
+  
+  public function testComplexTernary(): void {
+    $formula = new Formula("-1>=1&&-1<=2?1:-1>2?2:-1");
+    $res = $formula->calculate();
+    $this->assertEquals(-1, $res);
+  }
 }

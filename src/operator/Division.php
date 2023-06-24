@@ -9,7 +9,7 @@ namespace TimoLehnertz\formula\operator;
 class Division extends Operator {
 
   public function __construct() {
-    parent::__construct('/', 1, false);
+    parent::__construct('/', 5, false);
   }
   
   public function doCalculate(Calculateable $left, Calculateable $right): Calculateable {

@@ -11,7 +11,7 @@ use TimoLehnertz\formula\expression\BooleanExpression;
 class XorOperator extends Operator {
 
   public function __construct() {
-    parent::__construct('^', 1, true);
+    parent::__construct('^', 12, true);
   }
   
   public function doCalculate(Calculateable $left, Calculateable $right): Calculateable {

@@ -13,45 +13,46 @@ use InvalidArgumentException;
 abstract class Operator implements SubFormula {
 
   /**
-   * Prioriry of this operator over other operators
+   * precedence of this operator over other operators, lower is higher priority
+   * source https://en.cppreference.com/w/cpp/language/operator_precedence
    * @readonly
    */
-  private int $priority;
+  private int $precedence;
   
   /**
-   * Can left and right be intervhanged
+   * Can left and right be interchanged
    * @readonly
    */
   private bool $commutative;
   
   /**
-   * Is lefthand expression needed
+   * Is lefthand expression required
    * @readonly
    */
   private bool $needsLeft;
   
   /**
-   * Is righthand expression needed
+   * Is righthand expression required
    * @readonly
    */
   private bool $needsRight;
   
   /**
-   * Will use lefthand expression
+   * Will use lefthand expression if available
    * @readonly
    */
   private bool $usesLeft;
   
   /**
-   * Will use righthand expression
+   * Will use righthand expression if available
    * @readonly
    */
   private bool $usesRight;
   
   private ?string $stringRepresentation;
   
-  public function __construct(?string $stringRepresentation, int $priority, bool $commutative, bool $needsLeft = true, bool $needsRight = true, bool $usesLeft = true, bool $usesRight = true) {
-    $this->priority = $priority;
+  public function __construct(?string $stringRepresentation, int $precedence, bool $commutative, bool $needsLeft = true, bool $needsRight = true, bool $usesLeft = true, bool $usesRight = true) {
+    $this->precedence = $precedence;
     $this->commutative = $commutative;
     $this->needsLeft = $needsLeft;
     $this->needsRight = $needsRight;
@@ -60,8 +61,8 @@ abstract class Operator implements SubFormula {
     $this->stringRepresentation = $stringRepresentation;
   }
   
-  public function getPriority(): int {
-    return $this->priority;
+  public function getPrecedence(): int {
+    return $this->precedence;
   }
   
   public function needsLeft(): bool {

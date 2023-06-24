@@ -9,6 +9,7 @@ use TimoLehnertz\formula\operator\ArrayOperator;
 use TimoLehnertz\formula\operator\Calculateable;
 use TimoLehnertz\formula\operator\Multiplication;
 use TimoLehnertz\formula\operator\Operator;
+use TimoLehnertz\formula\operator\Subtraction;
 
 /**
  *
@@ -205,6 +206,20 @@ class MathExpression implements Expression, Nestable, SubFormula {
     // check that all operators have needed left and righthand expressions and insert dummy zeros
     $leftExpression = null;
     $rightExpression = null;
+    // alter negative numbers to be <0> <-> <number>
+    for ($i = 0; $i < sizeof($this->expressionsAndOperators); $i++) {
+      $expression = $this->expressionsAndOperators[$i];
+      if($i < sizeof($this->expressionsAndOperators) - 1) {
+        $rightExpression = $this->expressionsAndOperators[$i + 1];
+      }
+      if($expression instanceof Subtraction && !($leftExpression instanceof Expression)) {
+        array_splice($this->expressionsAndOperators, $i, 0, [new Number(0, true)]); // Add a dummy 0 in front to preserve alternating order
+        $i++; // skip inserted created array element
+      }
+      $leftExpression = $expression;
+    }
+    $leftExpression = null;
+    $rightExpression = null;
     for ($i = 0; $i < sizeof($this->expressionsAndOperators); $i++) {
       $expression = $this->expressionsAndOperators[$i];
       if($i < sizeof($this->expressionsAndOperators) - 1) {
@@ -213,7 +228,6 @@ class MathExpression implements Expression, Nestable, SubFormula {
       if($expression instanceof Operator) {
         if($expression->needsLeft() && !($leftExpression instanceof Expression)) throw new ExpressionNotFoundException(get_class($expression)." needs a lefthand expression", $this->tokens);
         if($expression->needsRight() && !($rightExpression instanceof Expression)) throw new ExpressionNotFoundException(get_class($expression)." needs a righthand expression", $this->tokens);
-        
         if(!$expression->needsLeft() && (!$expression->usesLeft() || !($leftExpression instanceof Expression))) {
           array_splice($this->expressionsAndOperators, $i, 0, [new Number(0, true)]); // Add a dummy 0 in front to preserve alternating order
           $i++; // skip inserted created array element
@@ -278,7 +292,7 @@ class MathExpression implements Expression, Nestable, SubFormula {
   /**
    * Recursivly calculates this Formula
    * procedure:
-   * Find the operator with the highest priority (* or /)
+   * Find the operator with the lowest precedence
    * calculate this operator based on its neighbours
    * replace the operator and neighbours by the resulting number
    * Call recursive until only one operator or one Expression is left
@@ -295,13 +309,13 @@ class MathExpression implements Expression, Nestable, SubFormula {
     }
     
     // find highest priority operator
-    $maxPriority = 0;
+    $minPrecedence = 1000;
     $bestOperator = 1; // start with index 1 as this will be the first operator if no better operators are found
     for($i = 0;$i < sizeof($this->expressionsAndOperators);$i++) {
       $expressionsAndOperator = $this->expressionsAndOperators[$i];
       if($expressionsAndOperator instanceof Operator) {
-        if($maxPriority < $expressionsAndOperator->getPriority()) {
-          $maxPriority = $expressionsAndOperator->getPriority();
+        if($minPrecedence > $expressionsAndOperator->getPrecedence()) {
+          $minPrecedence = $expressionsAndOperator->getPrecedence();
           $bestOperator = $i;
         }
       }
