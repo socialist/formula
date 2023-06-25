@@ -28,7 +28,7 @@ class Variable implements Expression, Parseable, SubFormula {
    * @inheritdoc
    */
   public function calculate(): Calculateable {
-    if($this->value === null) throw new NoVariableValueException("Can't calculate. Variable $this->identifier has no value");
+    if($this->value === null) throw new NoVariableValueException("Can't calculate. Variable $this->identifier has no value", $this->identifier);
     return $this->value->calculate();
   }
 

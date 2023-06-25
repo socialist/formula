@@ -9,6 +9,7 @@ use TimoLehnertz\formula\NoVariableValueException;
 use TimoLehnertz\formula\NullpointerException;
 use DateTime;
 
+
 class FormulaTest extends TestCase {
   
   public function testVariables(): void {
@@ -641,6 +642,16 @@ class FormulaTest extends TestCase {
     $this->expectException(ExpressionNotFoundException::class);
     $this->expectExceptionMessage("No method provided for testFunc1!");
     $formula->calculate();
+  }
+  
+  public function testNoVariableValueException(): void {
+    $formula = new Formula("a");
+    try {      
+      $formula->calculate();
+    } catch (NoVariableValueException $e) {
+      $this->once();
+      $this->assertEquals('a', $e->getMissingVariable());
+    }
   }
 
   /**

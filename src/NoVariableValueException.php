@@ -3,7 +3,14 @@ namespace TimoLehnertz\formula;
 
 class NoVariableValueException extends \Exception {
   
-  public function __construct(string $message) {
+  private string $missingVariable;
+  
+  public function __construct(string $message, string $missingVariable = '') {
     parent::__construct($message);
+    $this->missingVariable = $missingVariable;
+  }
+  
+  public function getMissingVariable(): string {
+    return $this->missingVariable;
   }
 }
