@@ -5,6 +5,7 @@ use TimoLehnertz\formula\NoVariableValueException;
 use TimoLehnertz\formula\Parseable;
 use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\operator\Calculateable;
+use TimoLehnertz\formula\procedure\Type;
 
 /**
  *
@@ -16,13 +17,20 @@ class Variable implements Expression, Parseable, SubFormula {
   /**
    * @var ?string
    */
-  private ?string $identifier = null;
+  private ?string $identifier;
 
   /**
    * @var float|string
    */
   private ?Calculateable $value = null;
 
+  private Type $type;
+  
+  public function __construct(?string $identifier = null, ?Type $type = null) {
+    $this->identifier = $identifier;
+    $this->type = $type;
+  }
+  
   /**
    *
    * @inheritdoc

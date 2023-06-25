@@ -5,6 +5,7 @@ use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Nestable;
 use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\operator\Calculateable;
+use TimoLehnertz\formula\procedure\Scope;
 
 /**
  *
@@ -75,7 +76,7 @@ class TernaryExpression implements Expression, Nestable, SubFormula {
     return $list;
   }
   
-  public function validate(bool $throwOnError): bool {
+  public function validate(bool $throwOnError, Scope $scope): bool {
     if($this->condition === null || $this->leftExpression === null || $this->rightExpression === null) throw new ExpressionNotFoundException("Incomplete ternary expression");
     if(!$this->condition->validate($throwOnError)) return false;
     if(!$this->leftExpression->validate($throwOnError)) return false;

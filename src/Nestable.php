@@ -1,6 +1,8 @@
 <?php
 namespace TimoLehnertz\formula;
 
+use TimoLehnertz\formula\procedure\Scope;
+
 /**
  *
  * @author Timo Lehnertz
@@ -19,5 +21,5 @@ interface Nestable {
    * @param bool $throwOnError
    * @return bool
    */
-  public function validate(bool $throwOnError): bool;
+  public function validate(bool $throwOnError, Scope $scope): bool;
 }

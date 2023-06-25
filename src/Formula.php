@@ -6,6 +6,7 @@ use TimoLehnertz\formula\expression\Method;
 use TimoLehnertz\formula\expression\StringLiteral;
 use TimoLehnertz\formula\expression\Variable;
 use TimoLehnertz\formula\tokens\Tokenizer;
+use TimoLehnertz\formula\procedure\Scope;
 
 /**
  *
@@ -27,19 +28,25 @@ class Formula {
    * @var array
    */
   private array $tokens = [];
+  
   /**
    * The top level math expression
    * @var MathExpression
    */
   private MathExpression $expression;
   
+  /**
+   * The global scope containing all local scopes
+   */
+  private Scope $scope;
+  
   public function __construct(string $source) {
     $this->source = $source;
     $this->tokens = Formula::tokenize(Formula::clearComments($source));
     $this->expression = new MathExpression();
     $this->parse();
+    $this->initDefaultScope();
     $this->validate();
-    $this->initDefaultMethods();
   }
   
   /**
@@ -402,7 +409,8 @@ class Formula {
     return $sum / $this->sizeofFunc($values);
   }
   
-  private function initDefaultMethods(): void {
+  private function initDefaultScope(): void {
+    $this->scope = new Scope();
     $this->setMethod("min", [$this, "minFunc"]);
     $this->setMethod("max", [$this, "maxFunc"]);
     $this->setMethod("pow", [$this, "powFunc"]);

@@ -7,6 +7,7 @@ use TimoLehnertz\formula\Parseable;
 use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\operator\Calculateable;
+use TimoLehnertz\formula\procedure\Scope;
 
 /**
  *
@@ -152,7 +153,7 @@ class Method implements Expression, Parseable, Nestable, SubFormula {
     $this->method = null;
   }
   
-  public function validate(bool $throwOnError): bool {
+  public function validate(bool $throwOnError, Scope $scope): bool {
     foreach ($this->parameters as $parameter) {
       if($parameter instanceof Nestable) {
         if(!$parameter->validate($throwOnError)) return false;

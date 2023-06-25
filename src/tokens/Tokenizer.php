@@ -105,6 +105,9 @@ class Tokenizer {
       new Tokenizer(":", "/:/"), // ternary :
       new Tokenizer("?", "/\?/"), // ternary ?
       new Tokenizer("O", "/[+\-*\/^]|&&|\|\||!=|!|==|<=|<|>=|>/"), // operator
+      new Tokenizer("A", "/(?<!=)=(?!=)/"), // assignment
+      new Tokenizer("++", "/\+\+/"), // increment
+      new Tokenizer("--", "/--/"), // decrement
       new Tokenizer("N", "/\d+([\.]\d+)?%?/"), // positive number
       new Tokenizer("I", "/[a-zA-Z][\w\d.]*/"), // identifier
       new Tokenizer("(", "/\(/"), // brackets opened
@@ -114,7 +117,8 @@ class Tokenizer {
       new Tokenizer("[", "/\[/"), // brackets opened
       new Tokenizer("]", "/\]/"), // brackets closed
       new Tokenizer(",", "/,/"), // comma
-      new Tokenizer("S", '/("[^"]*"?)|(\'[^\']*\'?)/', true) // String literal "string" or 'string'
+      new Tokenizer("S", '/("[^"]*"?)|(\'[^\']*\'?)/', true), // String literal "string" or 'string'
+      new Tokenizer(";", '/;/', true) // statement delimiter
     ];
   }
 

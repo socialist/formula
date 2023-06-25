@@ -7,6 +7,7 @@ use TimoLehnertz\formula\Nestable;
 use TimoLehnertz\formula\Parseable;
 use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\operator\Calculateable;
+use TimoLehnertz\formula\procedure\Scope;
 
 class Vector implements Calculateable, Nestable, Parseable, SubFormula {
 	
@@ -136,10 +137,10 @@ class Vector implements Calculateable, Nestable, Parseable, SubFormula {
 		}
 	}
 
-	public function validate(bool $throwOnError): bool {
+	public function validate(bool $throwOnError, Scope $scope): bool {
 		foreach ($this->elements as $element) {
 		  if($element instanceof Nestable) {
-  			if(!$element->validate($throwOnError)) return false;
+		    if(!$element->validate($throwOnError, $scope)) return false;
 		  }
 		}
 		return true;

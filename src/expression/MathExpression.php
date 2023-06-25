@@ -9,6 +9,7 @@ use TimoLehnertz\formula\operator\ArrayOperator;
 use TimoLehnertz\formula\operator\Calculateable;
 use TimoLehnertz\formula\operator\Multiplication;
 use TimoLehnertz\formula\operator\Operator;
+use TimoLehnertz\formula\procedure\Scope;
 
 /**
  *
@@ -117,7 +118,7 @@ class MathExpression implements Expression, Nestable, SubFormula {
           if($tokens[$index]->name != ")") throw new ParsingException("", $token);
           $this->expressionsAndOperators[] = $expression;
           break;
-        case 'I': // either variable or method
+        case 'I': // either variable, method or assignment
           $variable = new Variable();
           $method = new Method();
           if($variable->parse($tokens, $index)) {
@@ -182,7 +183,7 @@ class MathExpression implements Expression, Nestable, SubFormula {
    * @throws ExpressionNotFoundException if $throwOnError is true and an error is found
    * @return bool is valid
    */
-  public function validate(bool $throwOnError): bool {
+  public function validate(bool $throwOnError, Scope $scope): bool {
     if($this->validated) return true;
     // validate sub expressoins
     foreach ($this->expressionsAndOperators as $expressionsAndOperator) {
