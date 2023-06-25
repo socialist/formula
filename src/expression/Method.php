@@ -146,7 +146,7 @@ class Method implements Expression, Parseable, Nestable, SubFormula {
   }
   
   /**
-   * Unsets this method value and will throw an exception if used in calculation calculated
+   * Unsets this method value and will throw an exception if used in calculation
    */
   public function reset(): void {
     $this->method = null;

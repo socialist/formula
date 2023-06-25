@@ -1,6 +1,9 @@
 <?php
 namespace TimoLehnertz\formula\operator;
 
+use TimoLehnertz\formula\expression\Number;
+use src\expression\NoExpression;
+
 /**
  *
  * @author Timo Lehnertz
@@ -13,6 +16,10 @@ class Subtraction extends Operator {
   }
   
   public function doCalculate(Calculateable $left, Calculateable $right): Calculateable {
-    return $left->subtract($right);
+    if($left instanceof NoExpression) {
+      return (new Number(0))->subtract($right);
+    } else {      
+      return $left->subtract($right);
+    }
   }
 }

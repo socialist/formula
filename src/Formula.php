@@ -344,8 +344,16 @@ class Formula {
     return $values;
   }
   
-  public function sizeofFunc($arr) {
-    return sizeof($arr);
+  public function sizeofFunc(...$values) {
+    $count = 0;
+    foreach ($values as $value) {
+      if(is_array($value)) {
+        $count += $this->sizeofFunc(...$value);
+      } else {
+        $count++;
+      }
+    }
+    return $count;
   }
   
   public function inRangeFunc(float $value, float $min, float $max): bool {
@@ -384,6 +392,15 @@ class Formula {
     }
     return $res;
   }
+
+  /**
+   * @param float[] $values
+   * @return number sum of all numeric members in $values 
+   */
+  public function avgFunc(...$values) {
+    $sum = $this->sumFunc($values);
+    return $sum / $this->sizeofFunc($values);
+  }
   
   private function initDefaultMethods(): void {
     $this->setMethod("min", [$this, "minFunc"]);
@@ -404,6 +421,7 @@ class Formula {
     $this->setMethod("reduce", [$this, "reduceFunc"]);
     $this->setMethod("firstOrNull", [$this, "firstOrNullFunc"]);
     $this->setMethod("sum", [$this, "sumFunc"]);
+    $this->setMethod("avg", [$this, "avgFunc"]);
   }
   
   /**

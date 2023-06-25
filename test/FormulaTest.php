@@ -7,7 +7,6 @@ use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Formula;
 use TimoLehnertz\formula\NullpointerException;
 use DateTime;
-use Exception;
 
 class FormulaTest extends TestCase {
   
@@ -282,8 +281,8 @@ class FormulaTest extends TestCase {
     $formula = new Formula('asVector(1,2,3,4)[2]');
     $this->assertEquals(3, $formula->calculate());
     
-    $formula = new Formula('sizeof({1,2,3,4})');
-    $this->assertEquals(4, $formula->calculate());
+    $formula = new Formula('sizeof({1,2,3,4,{true,false}},"Test",2,true)');
+    $this->assertEquals(9, $formula->calculate());
 
     $formula = new Formula('inRange(1,2,3)');
     $this->assertEquals(0, $formula->calculate());
@@ -376,13 +375,26 @@ class FormulaTest extends TestCase {
   public function testVectorsOffsets(): void {
     $formula = new Formula('{1,2,3}[0]');
     $this->assertEquals($formula->calculate(), 1);
-    
     $formula = new Formula('{1,2,3}[max(a,b)]');
     $formula->setVariable('a', 2);
     $formula->setVariable('b', -1);
     $this->assertEquals(3, $formula->calculate());
+    
+    $formula = new Formula('{1,2,3}[0]');
+    $this->assertEquals($formula->calculate(), 1);
+    $formula = new Formula('4 + a[i]');
+    $formula->setVariable('a', [0,1,2,3,4,5]);
+    $formula->setVariable('i', 2);
+    $this->assertEquals(6, $formula->calculate());
+    
+    $formula = new Formula('{1,2,3}[0]');
+    $this->assertEquals($formula->calculate(), 1);
+    $formula = new Formula('avg(a) + a[i]');
+    $formula->setVariable('a', [0,1,2,3,4,5]);
+    $formula->setVariable('i', 2);
+    $this->assertEquals(4.5, $formula->calculate());
   }
-  
+
   public function testVectorInvalidIndex(): void {
     $this->expectException(ExpressionNotFoundException::class);
     $this->expectExceptionMessage('123 Is no valid array index');
@@ -542,12 +554,6 @@ class FormulaTest extends TestCase {
     $this->assertEquals("(getModuleComponentIndex()==1?1:getModuleComponentIndex()>1?s362/getMeasurementAtComponentIndex(getModuleComponentIndex()-1,{'s362','s363','s364','s365','s366'}):0)*100", $stringified);
   }
 
-  public function testNegativeMultiplication(): void {
-    $this->expectException(ExpressionNotFoundException::class);
-    $this->expectExceptionMessage('TimoLehnertz\formula\operator\Multiplication needs a righthand expression. Formula: "5*-5');
-    new Formula("5*-5");
-  }
-  
   public function testEmptyExpression(): void {
     $testFormula = "testFunc(())";
     $this->expectException(ExpressionNotFoundException::class);
@@ -634,5 +640,32 @@ class FormulaTest extends TestCase {
     $this->expectException(ExpressionNotFoundException::class);
     $this->expectExceptionMessage("No method provided for testFunc1!");
     $formula->calculate();
+  }
+
+  /**
+   * @dataProvider booleanDataProvider
+   */
+  public function testOperatorOrder($a, $b): void {
+    $formula = new Formula('a&&b==a||!b^a!=!b');
+    $formula->setVariable('a', $a);
+    $formula->setVariable('b', $b);
+    $this->assertEquals($a&&$b==$a||!$b^$a!=!$b, $formula->calculate() == 1);
+  }
+  
+  public function testNegativeNumber(): void {
+    $formula = new Formula("-5");
+    $this->assertEquals(-5, $formula->calculate());
+    $formula = new Formula("-5 + 3");
+    $this->assertEquals(-2, $formula->calculate());
+    $formula = new Formula("-(5) + 3");
+    $this->assertEquals(-2, $formula->calculate());
+    $formula = new Formula("(-5) + 3");
+    $this->assertEquals(-2, $formula->calculate());
+    $formula = new Formula("-(5 + 3)");
+    $this->assertEquals(-8, $formula->calculate());
+    $formula = new Formula("-(5 + -3)");
+    $this->assertEquals(-2, $formula->calculate());
+    $formula = new Formula("-(5 * -3)");
+    $this->assertEquals(15, $formula->calculate());
   }
 }

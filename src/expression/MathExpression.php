@@ -220,39 +220,43 @@ class MathExpression implements Expression, Nestable, SubFormula {
     }
     
     // n expressions
-    // check that all operators have needed left and righthand expressions and insert dummy zeros
-//     $leftExpression = null;
-//     $rightExpression = null;
-//     // alter negative numbers to be <0> <-> <number>
-//     for ($i = 0; $i < sizeof($this->expressionsAndOperators); $i++) {
-//       $expression = $this->expressionsAndOperators[$i];
-//       if($i < sizeof($this->expressionsAndOperators) - 1) {
-//         $rightExpression = $this->expressionsAndOperators[$i + 1];
-//       }
-//       if($expression instanceof Subtraction && !($leftExpression instanceof Expression)) {
-//         array_splice($this->expressionsAndOperators, $i, 0, [new Number(0, true)]); // Add a dummy 0 in front to preserve alternating order
-//         $i++; // skip inserted created array element
-//       }
-//       $leftExpression = $expression;
-//     }
+    // group operators that only affect one side with their expression to one new expression
     $leftExpression = null;
     $rightExpression = null;
     for ($i = 0; $i < sizeof($this->expressionsAndOperators); $i++) {
       $expression = $this->expressionsAndOperators[$i];
+      $rightExpression = null;
+      if($i < sizeof($this->expressionsAndOperators) - 1) {
+        $rightExpression = $this->expressionsAndOperators[$i + 1];
+      }
+      if($expression instanceof Operator) {
+        if(!$expression->needsLeft() && ($leftExpression === null || $leftExpression instanceof Operator)) { // example: (-1), 1&&-1
+          $mathExpression = new MathExpression();
+          $mathExpression->expressionsAndOperators = [new NoExpression(), $expression, $rightExpression];
+          array_splice($this->expressionsAndOperators, $i, 2, [$mathExpression]);
+          $expression = $mathExpression; // to have the correct $leftExpression later on
+        } else if(!$expression->needsRight() && ($rightExpression === null || $rightExpression instanceof Operator)) {
+          $mathExpression = new MathExpression();
+          $mathExpression->expressionsAndOperators = [$leftExpression, $expression, new NoExpression()];
+          array_splice($this->expressionsAndOperators, $i - 1, 2, [$mathExpression]);
+          $i--;
+          $expression = $mathExpression; // to have the correct $leftExpression later on
+        }
+      }
+      $leftExpression = $expression;
+    }
+    // check if all operators have sufficient expressions
+    $leftExpression = null;
+    $rightExpression = null;
+    for ($i = 0; $i < sizeof($this->expressionsAndOperators); $i++) {
+      $expression = $this->expressionsAndOperators[$i];
+      $rightExpression = null;
       if($i < sizeof($this->expressionsAndOperators) - 1) {
         $rightExpression = $this->expressionsAndOperators[$i + 1];
       }
       if($expression instanceof Operator) {
         if($expression->needsLeft() && !($leftExpression instanceof Expression)) throw new ExpressionNotFoundException($expression::class." needs a lefthand expression", $this->tokens);
         if($expression->needsRight() && !($rightExpression instanceof Expression)) throw new ExpressionNotFoundException($expression::class." needs a righthand expression", $this->tokens);
-        if(!$expression->needsLeft() && (!$expression->usesLeft() || !($leftExpression instanceof Expression))) {
-          array_splice($this->expressionsAndOperators, $i, 0, [new Number(0, true)]); // Add a dummy 0 in front to preserve alternating order
-          $i++; // skip inserted created array element
-        }
-        if(!$expression->needsRight() && (!$expression->usesRight() || !($rightExpression instanceof Expression))) {
-          array_splice($this->expressionsAndOperators, $i + 1, 0, [new Number(0, true)]); // Add a dummy 0 behind to preserve alternating order
-          $i++; // skip inserted created array element
-        }
       }
       $leftExpression = $expression;
     }
