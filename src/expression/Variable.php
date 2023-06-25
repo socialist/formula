@@ -1,7 +1,7 @@
 <?php
 namespace TimoLehnertz\formula\expression;
 
-use TimoLehnertz\formula\ExpressionNotFoundException;
+use TimoLehnertz\formula\NoVariableValueException;
 use TimoLehnertz\formula\Parseable;
 use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\operator\Calculateable;
@@ -28,7 +28,7 @@ class Variable implements Expression, Parseable, SubFormula {
    * @inheritdoc
    */
   public function calculate(): Calculateable {
-    if($this->value === null) throw new ExpressionNotFoundException("Can't calculate. Variable $this->identifier has no value");
+    if($this->value === null) throw new NoVariableValueException("Can't calculate. Variable $this->identifier has no value");
     return $this->value->calculate();
   }
 

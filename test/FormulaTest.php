@@ -5,6 +5,7 @@ namespace test;
 use PHPUnit\Framework\TestCase;
 use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Formula;
+use TimoLehnertz\formula\NoVariableValueException;
 use TimoLehnertz\formula\NullpointerException;
 use DateTime;
 
@@ -133,7 +134,7 @@ class FormulaTest extends TestCase {
   
   public function testNotAssignedVariable(): void {
     $formula = new Formula('(1*a)');
-    $this->expectException(ExpressionNotFoundException::class);
+    $this->expectException(NoVariableValueException::class);
     $this->expectExceptionMessage("Can't calculate. Variable a has no value");
     $formula->calculate();
   }
@@ -587,7 +588,7 @@ class FormulaTest extends TestCase {
     $formula->setVariable('b', 123);
     $this->assertEquals(123, $formula->calculate());
     $formula->setVariable('a', false);
-    $this->expectException(ExpressionNotFoundException::class);
+    $this->expectException(NoVariableValueException::class);
     $this->expectExceptionMessage("Can't calculate. Variable c has no value");
     $formula->calculate();
   }
@@ -598,7 +599,7 @@ class FormulaTest extends TestCase {
     $formula->setVariable('b', 2);
     $this->assertEquals(3, $formula->calculate());
     $formula->resetVariable('b');
-    $this->expectException(ExpressionNotFoundException::class);
+    $this->expectException(NoVariableValueException::class);
     $this->expectExceptionMessage("Can't calculate. Variable b has no value");
     $formula->calculate();
   }
@@ -609,7 +610,7 @@ class FormulaTest extends TestCase {
     $formula->setVariable('b', 2);
     $this->assertEquals(3, $formula->calculate());
     $formula->resetAllVariables();
-    $this->expectException(ExpressionNotFoundException::class);
+    $this->expectException(NoVariableValueException::class);
     $this->expectExceptionMessage("Can't calculate. Variable a has no value");
     $formula->calculate();
   }
