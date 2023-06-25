@@ -574,4 +574,65 @@ class FormulaTest extends TestCase {
     $this->expectExceptionMessage('Only numeric values or vectors are allowed for sum');
     $res = (new Formula("sum({1,{{{'Error'}}}})"))->calculate();
   }
+  
+  public function testUnusedVariable(): void {
+    $formula = new Formula("a ? b : c");
+    $formula->setVariable('a', true);
+    $formula->setVariable('b', 123);
+    $this->assertEquals(123, $formula->calculate());
+    $formula->setVariable('a', false);
+    $this->expectException(ExpressionNotFoundException::class);
+    $this->expectExceptionMessage("Can't calculate. Variable c has no value");
+    $formula->calculate();
+  }
+  
+  public function testResetVariable(): void {
+    $formula = new Formula("a + b");
+    $formula->setVariable('a', 1);
+    $formula->setVariable('b', 2);
+    $this->assertEquals(3, $formula->calculate());
+    $formula->resetVariable('b');
+    $this->expectException(ExpressionNotFoundException::class);
+    $this->expectExceptionMessage("Can't calculate. Variable b has no value");
+    $formula->calculate();
+  }
+  
+  public function testResetAllVariables(): void {
+    $formula = new Formula("a + b");
+    $formula->setVariable('a', 1);
+    $formula->setVariable('b', 2);
+    $this->assertEquals(3, $formula->calculate());
+    $formula->resetAllVariables();
+    $this->expectException(ExpressionNotFoundException::class);
+    $this->expectExceptionMessage("Can't calculate. Variable a has no value");
+    $formula->calculate();
+  }
+  
+  public function mockFunction(): int {
+    return 1;
+  }
+  
+  public function testResetMethod(): void {
+    $formula = new Formula("min(1,2,3)");
+    $formula->resetMethod('min');
+    $this->assertEquals(1, $formula->calculate());
+    $formula = new Formula("testFunc()");
+    $formula->setMethod('testFunc', [$this, 'mockFunction']);
+    $this->assertEquals(1, $formula->calculate());
+    $formula->resetMethod('testFunc');
+    $this->expectException(ExpressionNotFoundException::class);
+    $this->expectExceptionMessage("No method provided for testFunc!");
+    $formula->calculate();
+  }
+
+  public function testResetAllMethods(): void {
+    $formula = new Formula("testFunc1() + testFunc2()");
+    $formula->setMethod('testFunc1', [$this, 'mockFunction']);
+    $formula->setMethod('testFunc2', [$this, 'mockFunction']);
+    $this->assertEquals(2, $formula->calculate());
+    $formula->resetAllMethods();
+    $this->expectException(ExpressionNotFoundException::class);
+    $this->expectExceptionMessage("No method provided for testFunc1!");
+    $formula->calculate();
+  }
 }

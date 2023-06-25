@@ -58,6 +58,16 @@ class Formula {
     }
   }
   
+  public function resetVariable(string $identifier): void {
+    foreach ($this->expression->getContent() as $content) {
+      if($content instanceof Variable) {
+        if($content->getIdentifier() == $identifier) {
+          $content->reset();
+        }
+      }
+    }
+  }
+  
   /**
    * Will set all methods with this identifier
    *
@@ -68,6 +78,29 @@ class Formula {
       if($content instanceof Method) {
         if($content->getIdentifier() === $identifier) $content->setMethod($method);
       }
+    }
+  }
+  
+  public function resetMethod(string $identifier): void {
+    foreach ($this->expression->getContent() as $content) {
+      if($content instanceof Method) {
+        if($content->getIdentifier() == $identifier) {
+          $content->reset();
+        }
+      }
+    }
+    $this->initDefaultMethods(); // in case a buildin method got resetted
+  }
+  
+  public function resetAllVariables(): void {
+    foreach ($this->getVariables() as $variableIdentifier) {
+      $this->resetVariable($variableIdentifier);
+    }
+  }
+  
+  public function resetAllMethods(): void {
+    foreach ($this->getMethodIdentifiers() as $methodIdentifiers) {
+      $this->resetMethod($methodIdentifiers);
     }
   }
   
@@ -213,7 +246,13 @@ class Formula {
     foreach ($this->expression->getContent() as $content) {
       if($content instanceof Method) $methods[] = $content;
     }
-    return $methods;
+    $identifiers = [];
+    foreach ($methods as $method) {
+      if(!in_array($method->getIdentifier(), $identifiers)) {
+        $identifiers []= $method->getIdentifier();
+      }
+    }
+    return $identifiers;
   }
   
   /**

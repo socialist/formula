@@ -145,6 +145,13 @@ class Method implements Expression, Parseable, Nestable, SubFormula {
     $this->method = $method;
   }
   
+  /**
+   * Unsets this method value and will throw an exception if used in calculation calculated
+   */
+  public function reset(): void {
+    $this->method = null;
+  }
+  
   public function validate(bool $throwOnError): bool {
     foreach ($this->parameters as $parameter) {
       if($parameter instanceof Nestable) {

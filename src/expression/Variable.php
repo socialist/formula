@@ -69,6 +69,13 @@ class Variable implements Expression, Parseable, SubFormula {
   }
 
   /**
+   * Unsets this variables value and will throw an exception if used in calculation
+   */
+  public function reset(): void {
+    $this->value = null;
+  }
+  
+  /**
    * @return string
    */
   public function toString(): string {
