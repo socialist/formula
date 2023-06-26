@@ -14,7 +14,7 @@ use TimoLehnertz\formula\procedure\Scope;
  * @author Timo Lehnertz
  * 
  */
-class Method implements Expression, Parseable, Nestable, SubFormula {
+class MethodExpression implements Expression, Parseable, Nestable, SubFormula {
 
   /**
    * Identifier of this method. To be set by parse()
@@ -26,22 +26,20 @@ class Method implements Expression, Parseable, Nestable, SubFormula {
    * Parameters of this method. To be set by parse()
    * @var ?MathExpression[]
    */
-  private ?array $parameters = null;
+  private ?array $parameterExpressions = null;
 
-  /**
-   * @var callable
-   */
-  private $method = null;
+  private Scope $scope;
   
   /**
    * @inheritdoc
    */
   public function calculate(): Calculateable {
-    if($this->method == null) throw new ExpressionNotFoundException("No method provided for $this->identifier!");
+    $method = $this->scope->getMethod($this->identifier);
+    if($method === null) throw new ExpressionNotFoundException("No method provided for $this->identifier!");
     $parameters = $this->getParameterValues();
-    $value = call_user_func_array($this->method, $parameters);
+    $value = call_user_func_array($method->getCallable(), $parameters);
 //     if($value === null) throw new Exception("Return value of function $this->identifier was null");
-    return Method::calculateableFromValue($value);
+    return MethodExpression::calculateableFromValue($value);
   }
   
   public static function calculateableFromValue($value) : Calculateable {
@@ -72,7 +70,7 @@ class Method implements Expression, Parseable, Nestable, SubFormula {
     if($tokens[$index + 1]->name != "(") return false; // must be variable    $this->identifier = $tokens[$index]['value'];
     $this->identifier = $tokens[$index]->value;
     // parse parameters
-    $this->parameters = [];
+    $this->parameterExpressions = [];
     $index += 2; // skipping identifier and opening bracket
     $first = true;
     for ($index; $index < sizeof($tokens); $index++) {
@@ -90,7 +88,7 @@ class Method implements Expression, Parseable, Nestable, SubFormula {
       if($param->size() == 0) throw new ExpressionNotFoundException("Invalid Method argument", $tokens, $index);
       
       $index--;
-      $this->parameters []= $param;
+      $this->parameterExpressions []= $param;
       $first = false;
     }
     throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
@@ -118,7 +116,7 @@ class Method implements Expression, Parseable, Nestable, SubFormula {
    */
   private function getParameterValues(): array {
     $values = [];
-    foreach($this->parameters as $parameter) {
+    foreach($this->parameterExpressions as $parameter) {
       $values[] = $parameter->calculate()->getValue();
     }
     return $values;
@@ -130,7 +128,7 @@ class Method implements Expression, Parseable, Nestable, SubFormula {
    */
   public function getContent(): array {
     $content = [];
-    foreach ($this->parameters as $parameter) {
+    foreach ($this->parameterExpressions as $parameter) {
       $content[] = $parameter;
       if($parameter instanceof Nestable) {
         $content = array_merge($content, $parameter->getContent());
@@ -139,24 +137,11 @@ class Method implements Expression, Parseable, Nestable, SubFormula {
     return $content;
   }
   
-  /**
-   * @param callable $method
-   */
-  public function setMethod(callable $method): void {
-    $this->method = $method;
-  }
-  
-  /**
-   * Unsets this method value and will throw an exception if used in calculation
-   */
-  public function reset(): void {
-    $this->method = null;
-  }
-  
   public function validate(bool $throwOnError, Scope $scope): bool {
-    foreach ($this->parameters as $parameter) {
+    $this->scope = $scope;
+    foreach ($this->parameterExpressions as $parameter) {
       if($parameter instanceof Nestable) {
-        if(!$parameter->validate($throwOnError)) return false;
+        if(!$parameter->validate($throwOnError, $scope)) return false;
       }
     }
     return true;
@@ -165,7 +150,7 @@ class Method implements Expression, Parseable, Nestable, SubFormula {
   public function toString(): string {
     $parameters = '';
     $delimiter = '';
-    foreach ($this->parameters as $parameter) {
+    foreach ($this->parameterExpressions as $parameter) {
       $parameters .= $delimiter.$parameter->toString();
       $delimiter = ',';
     }

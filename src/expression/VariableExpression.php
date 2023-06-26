@@ -5,14 +5,16 @@ use TimoLehnertz\formula\NoVariableValueException;
 use TimoLehnertz\formula\Parseable;
 use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\operator\Calculateable;
-use TimoLehnertz\formula\procedure\Type;
+use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\types\Type;
+use TimoLehnertz\formula\procedure\Method;
 
 /**
  *
  * @author Timo Lehnertz
  *
  */
-class Variable implements Expression, Parseable, SubFormula {
+class VariableExpression implements Expression, Parseable, SubFormula {
 
   /**
    * @var ?string
@@ -25,6 +27,8 @@ class Variable implements Expression, Parseable, SubFormula {
   private ?Calculateable $value = null;
 
   private Type $type;
+
+  private Scope $scope;
   
   public function __construct(?string $identifier = null, ?Type $type = null) {
     $this->identifier = $identifier;
@@ -36,8 +40,9 @@ class Variable implements Expression, Parseable, SubFormula {
    * @inheritdoc
    */
   public function calculate(): Calculateable {
-    if($this->value === null) throw new NoVariableValueException("Can't calculate. Variable $this->identifier has no value", $this->identifier);
-    return $this->value->calculate();
+    $variable = $this->scope->getvariable($this->identifier);
+    if($variable === null) throw new NoVariableValueException("Can't calculate. Variable $this->identifier is undefined", $this->identifier);
+    return MethodExpression::calculateableFromValue($variable->getValue());
   }
 
   public function parse(array &$tokens, int &$index): bool {

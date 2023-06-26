@@ -1,5 +1,5 @@
 <?php
-namespace TimoLehnertz\formula;
+namespace TimoLehnertz\formula\procedure;
 
 class Procedure {
   
