@@ -22,11 +22,11 @@ class NullExpression implements Calculateable {
   }
 
   public function getValue() {
-    $this->throw();
+    return null;
   }
 
   public function isTruthy(): bool {
-    $this->throw();
+    return false;
   }
 
   public function subtract(Calculateable $difference): Calculateable {
@@ -42,7 +42,7 @@ class NullExpression implements Calculateable {
   }
 
   public function calculate(): Calculateable {
-    $this->throw();
+    return $this;
   }
 
   public function multiply(Calculateable $factor): Calculateable {
