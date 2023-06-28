@@ -89,6 +89,9 @@ class MathExpression implements Expression, Nestable, SubFormula {
         case 'S': // String literal
           $this->expressionsAndOperators[] = StringLiteral::fromToken($token);
           break;
+        case 'null': // null
+          $this->expressionsAndOperators[] = new NullExpression();
+          break;
         case 'N': // number
           if(str_contains($token->value, "%")) {
             $this->expressionsAndOperators[] = new Percent($token->value);

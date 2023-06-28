@@ -301,8 +301,6 @@ class FormulaTest extends TestCase {
     $this->assertEquals(1, $formula->calculate());
     
     $formula = new Formula('firstOrNull({})');
-    $this->expectException(NullpointerException::class);
-    $this->expectExceptionMessage('Tried to calculate on null');
     $this->assertEquals(null, $formula->calculate());
   }
   
@@ -679,5 +677,13 @@ class FormulaTest extends TestCase {
     $this->assertEquals(-2, $formula->calculate());
     $formula = new Formula("-(5 * -3)");
     $this->assertEquals(15, $formula->calculate());
+  }
+  
+  public function testNull(): void {
+    $formula = new Formula("null");
+    $this->assertEquals(null, $formula->calculate());
+    $formula = new Formula("a");
+    $formula->setVariable('a', null);
+    $this->assertEquals(null, $formula->calculate());
   }
 }
