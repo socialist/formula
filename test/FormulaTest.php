@@ -685,5 +685,13 @@ class FormulaTest extends TestCase {
     $formula = new Formula("a");
     $formula->setVariable('a', null);
     $this->assertEquals(null, $formula->calculate());
+    
+    $formula = new Formula("getModuleComponentIndex()>=1&&getModuleComponentIndex()<=2?s1858*s1883/1000*24:getModuleComponentIndex()>2?s1858*s564/1000*24:null");
+    $formula->setMethod('getModuleComponentIndex', function() {return -1;});
+    $formula->setVariable('s1858', 1);
+    $formula->setVariable('s1883', 1);
+    $formula->setVariable('s1858', 1);
+    $formula->setVariable('s564', 1);
+    $this->assertEquals(null, $formula->calculate());
   }
 }
