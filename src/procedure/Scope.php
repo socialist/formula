@@ -1,8 +1,6 @@
 <?php
 namespace TimoLehnertz\formula\procedure;
 
-use TimoLehnertz\formula\types\Type;
-
 class Scope {
 
   /**
@@ -42,21 +40,35 @@ class Scope {
   }
   
   public function getMethod(string $identifier): ?Method {
-    if(!isset($this->methods[$identifier])) return null;
-    return $this->methods[$identifier];
+    if(isset($this->methods[$identifier])) {
+      return $this->methods[$identifier];
+    }
+    if($this->parent !== null) {      
+      return $this->parent->getMethod($identifier);
+    }
+    return null;
   }
 
   public function getVariable(string $identifier): ?Variable {
-    if(!isset($this->variables[$identifier])) return null;
-    return $this->variables[$identifier];
+    if(isset($this->variables[$identifier])) {
+      return $this->variables[$identifier];
+    }
+    if($this->parent !== null) {
+      $this->parent->getVariable($identifier);
+    }
+    return null;
   }
   
-  public function unsetVariable(string $identifier): void {
-    unset($this->variables[$identifier]);
-  }
+  /**
+   * Dont delete
+   * might be useful for user defined functions and variables
+   */
+//   public function unsetVariable(string $identifier): void {
+//     unset($this->variables[$identifier]);
+//   }
 
-  public function unsetMethod(string $identifier): void {
-    unset($this->methods[$identifier]);
-  }
+//   public function unsetMethod(string $identifier): void {
+//     unset($this->methods[$identifier]);
+//   }
 }
 

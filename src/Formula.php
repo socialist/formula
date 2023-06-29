@@ -2,11 +2,11 @@
 namespace TimoLehnertz\formula;
 
 use TimoLehnertz\formula\expression\MathExpression;
-use TimoLehnertz\formula\expression\Method;
 use TimoLehnertz\formula\expression\StringLiteral;
-use TimoLehnertz\formula\expression\Variable;
-use TimoLehnertz\formula\tokens\Tokenizer;
+use TimoLehnertz\formula\procedure\Method;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\procedure\Variable;
+use TimoLehnertz\formula\tokens\Tokenizer;
 
 /**
  *
