@@ -14,21 +14,18 @@ use TimoLehnertz\formula\procedure\Scope;
  * @author Timo Lehnertz
  * 
  */
-class MethodExpression implements Expression, Parseable, Nestable, SubFormula {
+class MethodExpression implements Expression, Nestable, SubFormula {
 
-  /**
-   * Identifier of this method. To be set by parse()
-   * @var string|null
-   */
-  protected ?string $identifier = null;
+  protected string $identifier;
 
-  /**
-   * Parameters of this method. To be set by parse()
-   * @var ?MathExpression[]
-   */
-  private ?array $parameterExpressions = null;
+  private array $parameterExpressions;
 
   private Scope $scope;
+  
+  public function __construct(string $identifier, array $parameterExpressions) {
+    $this->identifier = $identifier;
+    $this->parameterExpressions = $parameterExpressions;
+  }
   
   /**
    * @inheritdoc
@@ -38,7 +35,6 @@ class MethodExpression implements Expression, Parseable, Nestable, SubFormula {
     if($method === null) throw new ExpressionNotFoundException("No method provided for $this->identifier!");
     $parameters = $this->getParameterValues();
     $value = call_user_func_array($method->getCallable(), $parameters);
-//     if($value === null) throw new Exception("Return value of function $this->identifier was null");
     return MethodExpression::calculateableFromValue($value);
   }
   
@@ -55,43 +51,12 @@ class MethodExpression implements Expression, Parseable, Nestable, SubFormula {
       return new TimeIntervalLiteral($value);
     }
     if(is_array($value)) {
-    	return Vector::fromArray($value);
+    	return ArrayExpression::fromArray($value);
     }
     if(is_bool($value)) {
       return new BooleanExpression($value);
     }
     return StringLiteral::fromString($value);
-  }
-  
-  public function parse(array &$tokens, int &$index): bool {
-    // identifier
-    if($tokens[$index]->name != "I") return false;
-    if(sizeof($tokens) <= $index + 2) return false; // must be variable as there are no parameters following
-    if($tokens[$index + 1]->name != "(") return false; // must be variable    $this->identifier = $tokens[$index]['value'];
-    $this->identifier = $tokens[$index]->value;
-    // parse parameters
-    $this->parameterExpressions = [];
-    $index += 2; // skipping identifier and opening bracket
-    $first = true;
-    for ($index; $index < sizeof($tokens); $index++) {
-      $token = $tokens[$index];
-      if($token->name == ')') {
-        $index++;
-        return true; // parsing succsessfull
-      }
-      if($first && $token->name == ',') throw new ParsingException("", $token);
-      if(!$first && $token->name != ',') throw new ParsingException("", $token);
-      if(!$first) $index++;
-      $param = new MathExpression();
-      
-      $param->parse($tokens, $index); // will throw on error
-      if($param->size() == 0) throw new ExpressionNotFoundException("Invalid Method argument", $tokens, $index);
-      
-      $index--;
-      $this->parameterExpressions []= $param;
-      $first = false;
-    }
-    throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
   }
   
   /**

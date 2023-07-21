@@ -1,17 +1,26 @@
 <?php
 namespace TimoLehnertz\formula\expression;
 
-use TimoLehnertz\formula\operator\Calculateable;
+use TimoLehnertz\formula\FormulaPart;
+use TimoLehnertz\formula\procedure\ReturnValue;
+use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\types\Type;
 
 /**
  * 
  * @author Timo Lehnertz
  *
  */
-interface Expression {
+interface Expression extends FormulaPart {
+    
+    public function validate(Scope $scope): Type;
+    
+    public function run(): ReturnValue;
+    
     /**
-     * THis function will calculate the value of this Expression and all sub expressions if neccessary
-     * @return float|string calculated value
+     * Converts this expression back to code
+     * @return string
      */
-    public function calculate(): Calculateable;
+    public function toString(): string;
 }
+

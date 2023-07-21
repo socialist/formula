@@ -8,29 +8,21 @@ use TimoLehnertz\formula\operator\Calculateable;
 use TimoLehnertz\formula\procedure\Scope;
 
 /**
- *
- * @author timo
- *        
+ * @author Timo Lehnertz
  */
 class TernaryExpression implements Expression, Nestable, SubFormula {
   
-  /**
-   * Condition
-   * @var Calculateable|null
-   */
-  public ?MathExpression $condition = null;
+  public FormulaExpression $condition = null;
   
-  /**
-   * Left expression
-   * @var Calculateable|null
-   */
-  public ?MathExpression $leftExpression = null;
+  public FormulaExpression $leftExpression = null;
   
-  /**
-   * Right expression
-   * @var Calculateable|null
-   */
-  public ?MathExpression $rightExpression = null;
+  public FormulaExpression $rightExpression = null;
+  
+  public function __construct(FormulaExpression $condition, FormulaExpression $leftExpression, FormulaExpression $rightExpression) {
+    $this->condition = $condition;
+    $this->leftExpression = $leftExpression;
+    $this->rightExpression = $rightExpression;
+  }
   
   public function calculate(): Calculateable {
     return $this->condition->calculate()->isTruthy() ? $this->leftExpression->calculate() : $this->rightExpression->calculate();

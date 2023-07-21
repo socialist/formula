@@ -2,35 +2,26 @@
 namespace TimoLehnertz\formula\expression;
 
 use TimoLehnertz\formula\ExpressionNotFoundException;
-use TimoLehnertz\formula\Nestable;
-use TimoLehnertz\formula\ParsingException;
-use TimoLehnertz\formula\SubFormula;
-use TimoLehnertz\formula\operator\ArrayOperator;
 use TimoLehnertz\formula\operator\Calculateable;
 use TimoLehnertz\formula\operator\Multiplication;
 use TimoLehnertz\formula\operator\Operator;
+use TimoLehnertz\formula\procedure\ReturnValue;
 use TimoLehnertz\formula\procedure\Scope;
+use src\FormulaPart;
 
 /**
  *
  * @author Timo Lehnertz
  *        
  */
-class MathExpression implements Expression, Nestable, SubFormula {
+class FormulaExpression implements Expression {
 
   /**
    * Array containing all expressions and operators that make up this formula
    *
-   * @var SubFormula[]
+   * @var FormulaPart[]
    */
   public array $expressionsAndOperators = [];
-
-  /**
-   * Will be set to true after succsessfull parsing so parsing only needs to occour once
-   *
-   * @var boolean
-   */
-  private bool $parsingDone = false;
 
   /**
    * True if validation has been completed succsessfully
@@ -38,136 +29,12 @@ class MathExpression implements Expression, Nestable, SubFormula {
    * @var boolean
    */
   private bool $validated = false;
-
-  /**
-   * @var array<Token> array of all tokens
-   */
-  private array $tokens = [];
   
   private bool $insideBrackets;
   
-  public function __construct(bool $insideBrackets = false) {
+  public function __construct(array $expressionsAndOperators, bool $insideBrackets) {
     $this->insideBrackets = $insideBrackets;
-  }
-  
-  /**
-   * Primary parsing function
-   * Will parse this formula, create and parse all subformulas
-   *
-   * @inheritdoc
-   */
-  public function parse(array &$tokens, int &$index): bool {
-    if($this->parsingDone) return true;
-    $this->tokens = $tokens;
-    $this->expressionsAndOperators = [];
-    for($index;$index < sizeof($tokens);$index++) {
-      $token = $tokens[$index];
-      //       echo "top level:".$this->topLevel.", token: ".$token["name"].", index: $index".PHP_EOL;
-      switch($token->name) {
-        case ')': // end of this formula if nested
-        case ',': // end of this formula if nested
-        case ':': // Ternary delimiter
-        case '}': // Vector delimiter
-        case ',': // Vector element delimiter
-          if(sizeof($this->expressionsAndOperators) === 0) {
-            throw new ExpressionNotFoundException('Expression can\'t be empty', $tokens, $index);
-          }
-          $this->parsingDone = true;
-          return true;
-        case ']': // Array operator end
-          $this->parsingDone = true;
-          return true;
-        case '?': // Ternary delimiter
-          $this->parseTernary($tokens, $index);
-          $this->parsingDone = true;
-          return true;
-        case 'B': // Boolean
-          $this->expressionsAndOperators[] = new BooleanExpression(strtolower($token->value) == "true");
-          break;
-        case 'O': // Operator
-          $this->expressionsAndOperators[] = Operator::fromString($token->value);
-          break;
-        case 'S': // String literal
-          $this->expressionsAndOperators[] = StringLiteral::fromToken($token);
-          break;
-        case 'null': // null
-          $this->expressionsAndOperators[] = new NullExpression();
-          break;
-        case 'N': // number
-          if(str_contains($token->value, "%")) {
-            $this->expressionsAndOperators[] = new Percent($token->value);
-          } else {
-            $this->expressionsAndOperators[] = new Number($token->value);
-          }
-          break;
-        case '{': // vector
-        	$vector = new Vector();
-        	$vector->parse($tokens, $index); // will throw on error
-        	$this->expressionsAndOperators[] = $vector;
-        	$index--; // prevent $index++
-        	break;
-        case '[': // Array operator
-          $arrayOperator = new ArrayOperator();
-          $arrayOperator->parse($tokens, $index); // will throw on error
-          $this->expressionsAndOperators[] = $arrayOperator;
-          $index--; // prevent $index++
-          break;
-        case '(': // must be start of new formula
-          $expression = new MathExpression(true);
-          $index++;
-          if($index >= sizeof($tokens)) throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
-          $expression->parse($tokens, $index); // will throw on failure
-          if($index >= sizeof($tokens)) throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
-          if($tokens[$index]->name != ")") throw new ParsingException("", $token);
-          $this->expressionsAndOperators[] = $expression;
-          break;
-        case 'I': // either variable, method or assignment
-          $variable = new Variable();
-          $method = new Method();
-          if($variable->parse($tokens, $index)) {
-            $this->expressionsAndOperators[] = $variable;
-          } else if($method->parse($tokens, $index)) {
-            $this->expressionsAndOperators[] = $method;
-          } else {
-            throw new ParsingException("", $token);
-          }
-          $index--;
-          break;
-      }
-    }
-    $this->parsingDone = true;
-    return true;
-  }
-
-  private function parseTernary(array &$tokens, int &$index): void {
-    $ternaryExpression = new TernaryExpression();
-    // clone this MathExpression and complete its parsing
-    $condition = new MathExpression();
-    $condition->expressionsAndOperators = $this->expressionsAndOperators;
-    if($condition->size() == 0) throw new ExpressionNotFoundException("Invalid ternary condition", $tokens, $index);
-    $condition->parsingDone = true;
-    
-    $index++;
-    if(sizeof($tokens) <= $index) throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
-    // left expression
-    $leftExpression = new MathExpression();
-    $leftExpression->parse($tokens, $index);
-    if($leftExpression->size() == 0) throw new ExpressionNotFoundException("Invalid ternary expression", $tokens, $index);
-    if(sizeof($tokens) <= $index) throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
-    if($tokens[$index]->name != ":") throw new ExpressionNotFoundException("Expected \":\" (Ternary)", $tokens, $index);
-    $index++;
-    if(sizeof($tokens) <= $index) throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
-    // right expression
-    $rightExpression = new MathExpression();
-    $rightExpression->parse($tokens, $index);
-    if($rightExpression->size() == 0) throw new ExpressionNotFoundException("Invalid ternary expression", $tokens, $index);
-    
-    $ternaryExpression->condition = $condition;
-    $ternaryExpression->leftExpression = $leftExpression;
-    $ternaryExpression->rightExpression = $rightExpression;
-    
-    // replace this MathExpressions content by the ternary Operator
-    $this->expressionsAndOperators = [$ternaryExpression];
+    $this->expressionsAndOperators = $expressionsAndOperators;
   }
 
   /**
@@ -202,7 +69,7 @@ class MathExpression implements Expression, Nestable, SubFormula {
 
     // remove unnecessary brackets
     foreach ($this->expressionsAndOperators as $expressionOrOperator) {
-      if(!($expressionOrOperator instanceof MathExpression)) continue;
+      if(!($expressionOrOperator instanceof FormulaExpression)) continue;
       if($this->size() === 1) {
         $expressionOrOperator->setInsideBrackets(false);
       }
@@ -217,7 +84,7 @@ class MathExpression implements Expression, Nestable, SubFormula {
         if($throwOnError) throw new ExpressionNotFoundException("Single Expression can not be an Operator", $this->tokens);
         return false;
       }
-      if($this->expressionsAndOperators[0] instanceof MathExpression) {
+      if($this->expressionsAndOperators[0] instanceof FormulaExpression) {
         return $this->expressionsAndOperators[0]->validate($throwOnError);
       }
       return true;
@@ -235,12 +102,12 @@ class MathExpression implements Expression, Nestable, SubFormula {
       }
       if($expression instanceof Operator) {
         if(!$expression->needsLeft() && ($leftExpression === null || $leftExpression instanceof Operator)) { // example: (-1), 1&&-1
-          $mathExpression = new MathExpression();
+          $mathExpression = new FormulaExpression();
           $mathExpression->expressionsAndOperators = [new NoExpression(), $expression, $rightExpression];
           array_splice($this->expressionsAndOperators, $i, 2, [$mathExpression]);
           $expression = $mathExpression; // to have the correct $leftExpression later on
         } else if(!$expression->needsRight() && ($rightExpression === null || $rightExpression instanceof Operator)) {
-          $mathExpression = new MathExpression();
+          $mathExpression = new FormulaExpression();
           $mathExpression->expressionsAndOperators = [$leftExpression, $expression, new NoExpression()];
           array_splice($this->expressionsAndOperators, $i - 1, 2, [$mathExpression]);
           $i--;
@@ -324,7 +191,7 @@ class MathExpression implements Expression, Nestable, SubFormula {
    *
    * @return mixed
    */
-  private function calculateRecursive(): Calculateable {
+  private function calculateRecursive(): ReturnValue {
     if(sizeof($this->expressionsAndOperators) == 1) {
       return $this->expressionsAndOperators[0]->calculate();
     }
@@ -354,24 +221,18 @@ class MathExpression implements Expression, Nestable, SubFormula {
    * {@inheritdoc}
    * @see \TimoLehnertz\formula\expression\Expression::calculate()
    */
-  public function calculate(): Calculateable {
+  public function run(): ReturnValue {
     $expressionsAndOperatorsBackup = $this->getExpressionsAndOperatorsBackup();
     $calculateable = $this->calculateRecursive();
     $this->expressionsAndOperators = $expressionsAndOperatorsBackup;
     return $calculateable;
   }
   
-  /**
-   * {@inheritDoc}
-   * @see \TimoLehnertz\formula\Nestable::getContent()
-   */
-  public function getContent(): array {
+  public function getSubExpressions(): array {
     $content = [];
     foreach ($this->expressionsAndOperators as $expressionOrOperator) {
       $content[] = $expressionOrOperator;
-      if($expressionOrOperator instanceof Nestable) {
-        $content = array_merge($content, $expressionOrOperator->getContent());
-      }
+      $content = array_merge($content, $expressionOrOperator->getContent());
     }
     return $content;
   }

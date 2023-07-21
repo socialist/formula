@@ -1,10 +1,10 @@
 <?php
-namespace TimoLehnertz\formula\procedure;
+namespace src\procedure;
 
-class Statement {
+use TimoLehnertz\formula\expression\Expression;
+use TimoLehnertz\formula\procedure\ReturnValue;
+
+interface Statement extends Expression {
   
-  public function __construct() {
-    
-  }
 }
 

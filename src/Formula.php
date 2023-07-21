@@ -1,8 +1,9 @@
 <?php
 namespace TimoLehnertz\formula;
 
-use TimoLehnertz\formula\expression\MathExpression;
 use TimoLehnertz\formula\expression\StringLiteral;
+use TimoLehnertz\formula\parsing\CodeBlockParser;
+use TimoLehnertz\formula\procedure\CodeBlock;
 use TimoLehnertz\formula\procedure\Method;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\procedure\Variable;
@@ -16,37 +17,24 @@ use TimoLehnertz\formula\tokens\Tokenizer;
 class Formula {
   
   /**
-   * String containing the original input to this formula
-   *
-   * @var string
-   */
-  protected ?string $source = '';
-  
-  /**
    * Array of tokens that have been found in tokenizing stage
    *
    * @var array
    */
   private array $tokens = [];
   
-  /**
-   * The top level math expression
-   * @var MathExpression
-   */
-  private MathExpression $expression;
+  private CodeBlock $codeBlock;
   
   /**
    * The global scope containing all local scopes
    */
   private Scope $scope;
   
-  public function __construct(string $source) {
-    $this->source = $source;
+  public function __construct(string $source, bool $throwOnMissingDependencies = true) {
     $this->tokens = Formula::tokenize(Formula::clearComments($source));
-    $this->expression = new MathExpression();
-    $this->parse();
+    $this->codeBlock = CodeBlockParser::parse($this->tokens, 0);
     $this->initDefaultScope();
-    $this->validate();
+    $this->validate($throwOnMissingDependencies);
   }
   
   /**
@@ -178,9 +166,8 @@ class Formula {
   /**
    * Validate formula
    */
-  private function validate(): void {
-    $this->expression->setInsideBrackets(false); //for sure not needed
-    $this->expression->validate(true);
+  private function validate(bool $throwOnMissingDependencies): void {
+    $this->codeBlock->validate($this->scope, $throwOnMissingDependencies);
   }
 
   /**
@@ -430,13 +417,6 @@ class Formula {
     $this->setMethod("firstOrNull", [$this, "firstOrNullFunc"]);
     $this->setMethod("sum", [$this, "sumFunc"]);
     $this->setMethod("avg", [$this, "avgFunc"]);
-  }
-  
-  /**
-   * @return string source string
-   */
-  public function getSource(): string {
-    return $this->source;
   }
   
   public function getFormula(): string {

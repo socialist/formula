@@ -15,6 +15,11 @@ class Scope {
   
   private ?Scope $parent = null;
   
+  /**
+   * @var Scope[]
+   */
+  private array $children = [];
+  
   public function __construct() {
     
   }
@@ -22,6 +27,7 @@ class Scope {
   public function getChild(): Scope {
     $child = clone $this;
     $child->parent = $this;
+    $this->children[] = $child;
     return $child;
   }
   

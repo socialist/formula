@@ -1,16 +1,19 @@
 <?php
 namespace TimoLehnertz\formula\operator;
 
-use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\expression\Expression;
+use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\types\Type;
 use InvalidArgumentException;
+use TimoLehnertz\formula\FormulaPart;
+use TimoLehnertz\formula\procedure\ReturnValue;
 
 /**
  *
  * @author Timo Lehnertz
  *
  */
-abstract class Operator implements SubFormula {
+abstract class Operator implements FormulaPart {
 
   /**
    * precedence of this operator over other operators, lower is higher priority
@@ -81,6 +84,8 @@ abstract class Operator implements SubFormula {
     return $this->usesRight;
   }
   
+  public abstract function validate(Scope $scope, ?Expression $leftExpression, ?Expression $rightExpression, array $exceptions): Type;
+  
   /**
    * @throws InvalidArgumentException
    */
@@ -118,7 +123,11 @@ abstract class Operator implements SubFormula {
     }
   }
 
-  public abstract function doCalculate(Calculateable $left, Calculateable $right): Calculateable;
+  public function getSubExpressions(): array {
+    return [];
+  }
+  
+  public abstract function doCalculate(?ReturnValue $left, ?ReturnValue $right): ReturnValue;
   
   public function toString(): string {
     return $this->stringRepresentation;

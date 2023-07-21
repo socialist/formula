@@ -108,7 +108,7 @@ class Tokenizer {
       new Tokenizer("A", "/(?<!=)=(?!=)/"), // assignment
       new Tokenizer("++", "/\+\+/"), // increment
       new Tokenizer("--", "/--/"), // decrement
-      new Tokenizer("N", "/\d+([\.]\d+)?%?/"), // positive number
+      new Tokenizer("N", "/\d+([\.]\d+)/"), // positive number
       new Tokenizer("null", "/null/"), // identifier
       new Tokenizer("I", "/[a-zA-Z][\w\d.]*/"), // identifier
       new Tokenizer("(", "/\(/"), // brackets opened

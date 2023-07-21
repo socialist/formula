@@ -2,34 +2,19 @@
 namespace TimoLehnertz\formula\operator;
 
 use TimoLehnertz\formula\ExpressionNotFoundException;
-use TimoLehnertz\formula\Nestable;
-use TimoLehnertz\formula\Parseable;
-use TimoLehnertz\formula\SubFormula;
-use TimoLehnertz\formula\expression\MathExpression;
-use TimoLehnertz\formula\expression\Vector;
+use TimoLehnertz\formula\expression\ArrayExpression;
+use TimoLehnertz\formula\expression\Expression;
+use TimoLehnertz\formula\expression\FormulaExpression;
+use TimoLehnertz\formula\procedure\Scope;
+use src\ValidationException;
 
-class ArrayOperator extends Operator implements Parseable, Nestable, SubFormula {
+class ArrayOperator extends Operator {
 
-  private MathExpression $indexExpression;
+  private FormulaExpression $indexExpression;
   
-  public function __construct() {
+  public function __construct(FormulaExpression $indexExpression) {
     parent::__construct(null, 2, false, true, false, true, false);
-  }
-  
-  /**
-   * 
-   * {@inheritDoc}
-   * @see \TimoLehnertz\formula\Parseable::parse()
-   */
-  public function parse(array &$tokens, int &$index): bool {
-    if($tokens[$index]->value != "[") return false;
-    if(sizeof($tokens) < $index + 3) throw new ExpressionNotFoundException("Invalid array operator", $tokens, $index);
-    $index++;
-    $this->indexExpression = new MathExpression();
-    $this->indexExpression->parse($tokens, $index); // will throw on error
-    if($tokens[$index]->value != "]") throw new ExpressionNotFoundException("Invalid array operator", $tokens, $index);
-    $index++;
-    return true;
+    $this->indexExpression = $indexExpression;
   }
 
   /**
@@ -38,22 +23,27 @@ class ArrayOperator extends Operator implements Parseable, Nestable, SubFormula 
    * @see \TimoLehnertz\formula\operator\Operator::doCalculate()
    */
   public function doCalculate(Calculateable $left, Calculateable $right): Calculateable {
-    if(!($left instanceof Vector)) throw new ExpressionNotFoundException("Cant access array index of ".get_class($left));
+    if(!($left instanceof ArrayExpression)) throw new ExpressionNotFoundException("Cant access array index of ".get_class($left));
     $index = $this->indexExpression->calculate()->getValue();
     if(!is_numeric($index) || is_string($index)) throw new ExpressionNotFoundException($index." Is no valid array index");
     $index = intVal($index);
     return $left->getElement($index)->calculate();
   }
   
-  public function getContent(): array {
-    if($this->indexExpression instanceof Nestable) {      
-      return $this->indexExpression->getContent();
+  public function getSubExpressions(): array {
+    $arr = [$this->indexExpression];
+    foreach($this->indexExpression->getSubExpressions() as $aubExpression) {      
+      $arr []= $aubExpression;
     }
-    return $this->indexExpression;
+    return $arr;
   }
 
-  public function validate(bool $throwOnError): bool {
-    return $this->indexExpression->validate($throwOnError);
+  public function validate(Scope $scope, ?Expression $leftExpression, ?Expression $rightExpression, array $exceptions): bool {
+    if($leftExpression === null) {
+      $exceptions []= new ValidationException('No Array for Array operator');
+    }
+    
+    return $this->indexExpression->validate($scope, $exceptions);
   }
   
   /**

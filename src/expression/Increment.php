@@ -2,13 +2,13 @@
 namespace src\expression;
 
 use TimoLehnertz\formula\Nestable;
-use TimoLehnertz\formula\Parseable;
 use TimoLehnertz\formula\SubFormula;
 use TimoLehnertz\formula\expression\Expression;
-use TimoLehnertz\formula\expression\Variable;
+use TimoLehnertz\formula\parsing\Parseable;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\procedure\Variable;
 
-class increment implements Expression, Parseable, SubFormula, Nestable {
+class Increment implements Expression, Parseable, SubFormula, Nestable {
 
   public static const TYPE_PRE_INCREMENT = 1;
   public static const TYPE_POST_INCREMENT = 2;

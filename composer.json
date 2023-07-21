@@ -9,7 +9,7 @@
 			"TimoLehnertz\\formula\\" : "src/"
 		}
 	},
-	"version" : "1.0.30",
+	"version" : "1.2.0",
 	"keywords" : [
 		"formula",
 		"math"
