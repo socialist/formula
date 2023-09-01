@@ -1,8 +1,11 @@
 <?php
-namespace src\procedure;
+namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\types\Type;
-
+/**
+ * 
+ * @author Timo Lehnertz
+ *
+ */
 class IntegerType extends Type {
 
   public function __construct(bool $isArray) {

@@ -2,19 +2,18 @@
 namespace TimoLehnertz\formula\expression;
 
 use TimoLehnertz\formula\ExpressionNotFoundException;
-use TimoLehnertz\formula\operator\Calculateable;
+use TimoLehnertz\formula\FormulaSettings;
 use TimoLehnertz\formula\operator\Multiplication;
 use TimoLehnertz\formula\operator\Operator;
 use TimoLehnertz\formula\procedure\ReturnValue;
-use TimoLehnertz\formula\procedure\Scope;
-use src\FormulaPart;
+use TimoLehnertz\formula\types\Type;
 
 /**
  *
  * @author Timo Lehnertz
  *        
  */
-class FormulaExpression implements Expression {
+class FormulaExpression extends Expression {
 
   /**
    * Array containing all expressions and operators that make up this formula
@@ -53,41 +52,41 @@ class FormulaExpression implements Expression {
    * @throws ExpressionNotFoundException if $throwOnError is true and an error is found
    * @return bool is valid
    */
-  public function validate(bool $throwOnError, Scope $scope): bool {
+  public function validate(FormulaSettings $formulaSettings): Type {
     if($this->validated) return true;
     // validate sub expressoins
     foreach ($this->expressionsAndOperators as $expressionsAndOperator) {
-      if($expressionsAndOperator instanceof Nestable) {
-        if(!$expressionsAndOperator->validate($throwOnError)) return false;
+      if($expressionsAndOperator instanceof FormulaPart) {
+        if(!$expressionsAndOperator->validate($formulaSettings)) return false;
       }
     }
     
     // 0 expressions
     if(sizeof($this->expressionsAndOperators) == 0) {
-      if($throwOnError) throw new ExpressionNotFoundException("Empty expression is not allowed", $this->tokens);
+      throw new ExpressionNotFoundException("Empty expression is not allowed", $this->tokens);
     }
 
     // remove unnecessary brackets
-    foreach ($this->expressionsAndOperators as $expressionOrOperator) {
-      if(!($expressionOrOperator instanceof FormulaExpression)) continue;
-      if($this->size() === 1) {
-        $expressionOrOperator->setInsideBrackets(false);
-      }
-      if($expressionOrOperator->size() === 1 && !($expressionOrOperator->expressionsAndOperators[0] instanceof TernaryExpression)) {
-        $expressionOrOperator->setInsideBrackets(false);
-      }
-    }
+//     if($this->size() === 1 && $this->expressionsAndOperators[0] instanceof FormulaExpression) {
+//       $this->expressionsAndOperators[0]->setInsideBrackets(false);
+//     }
+//     foreach ($this->expressionsAndOperators as $expressionOrOperator) {
+//       if(!($expressionOrOperator instanceof FormulaExpression)) continue;
+//       if($expressionOrOperator->size() === 1 && !($expressionOrOperator->expressionsAndOperators[0] instanceof TernaryExpression)) {
+//         $expressionOrOperator->setInsideBrackets(false);
+//       }
+//     }
     
     // one expression
     if(sizeof($this->expressionsAndOperators) == 1) { 
-      if(!($this->expressionsAndOperators[0] instanceof Expression)) {
-        if($throwOnError) throw new ExpressionNotFoundException("Single Expression can not be an Operator", $this->tokens);
-        return false;
+      if($this->expressionsAndOperators[0] instanceof Operator) {
+        throw new ExpressionNotFoundException("Single Expression can not be an Operator", $this->tokens);
       }
       if($this->expressionsAndOperators[0] instanceof FormulaExpression) {
-        return $this->expressionsAndOperators[0]->validate($throwOnError);
+        return $this->expressionsAndOperators[0]->validate($formulaSettings);
       }
-      return true;
+      // it is a different expression
+      return $this->expressionsAndOperators[0]->validate($formulaSettings);
     }
     
     // n expressions
@@ -141,20 +140,17 @@ class FormulaExpression implements Expression {
         if(!(($expressionOrOperator instanceof Number) && ($this->expressionsAndOperators[$i - 1] instanceof Number))) { // not (this one and last one are a number)
           array_splice($this->expressionsAndOperators, $i, 0, [ new Multiplication() ]);
         } else {
-          if($throwOnError) throw new ExpressionNotFoundException("Can't chain expressions without operators in between!", $this->tokens);
-          return false;
+          throw new ExpressionNotFoundException("Can't chain expressions without operators in between!", $this->tokens);
         }
       }
       if($expressionOrOperator instanceof Operator && $expectExpression) {
-        if($throwOnError) throw new ExpressionNotFoundException("Can't chain operators without expressions in between!", $this->tokens);
-        return false;
+        throw new ExpressionNotFoundException("Can't chain operators without expressions in between!", $this->tokens);
       }
       $expectExpression = !$expectExpression;
     }
     // check if last one is no operator
     if($expectExpression) {
-      if($throwOnError) throw new ExpressionNotFoundException("Cant end an expression with an operator", $this->tokens);
-      return false;
+      throw new ExpressionNotFoundException("Cant end an expression with an operator", $this->tokens);
     }
     $this->validated = true;
     return true;

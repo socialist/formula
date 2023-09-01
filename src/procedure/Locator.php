@@ -3,9 +3,8 @@ namespace TimoLehnertz\formula\procedure;
 
 use TimoLehnertz\formula\NullpointerException;
 use TimoLehnertz\formula\types\Type;
-use src\procedure\TypeMissmatchException;
 
-class Variable {
+class Locator {
   
   private Type $type;
   
@@ -13,8 +12,12 @@ class Variable {
   
   private $value = null;
   
-  public function __construct() {
-    
+  /**
+   * Trust that value is of tyoe type
+   */
+  public function __construct(Type $type, $value) {
+    $this->type = $type;
+    $this->value = $value;
   }
   
   public function getType(): Type {

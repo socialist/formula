@@ -3,8 +3,6 @@ namespace TimoLehnertz\formula\procedure;
 
 class ReturnValue {
   
-  private Value $value;
-  
   private ?Variable $locator;
   
   public function __construct(Value $value, ?Variable $locator) {

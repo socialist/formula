@@ -1,8 +1,11 @@
 <?php
-namespace TimoLehnertz\formula\procedure;
+namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\types\Type;
-
+/**
+ * 
+ * @author Timo Lehnertz
+ *
+ */
 class BooleanType extends Type {
   
   public function __construct(bool $isArray) {

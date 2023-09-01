@@ -1,5 +1,5 @@
 <?php
-namespace src\procedure;
+namespace TimoLehnertz\formula\procedure;
 
 class TypeMissmatchException extends \Exception {
   

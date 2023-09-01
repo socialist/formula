@@ -1,5 +1,5 @@
 <?php
-namespace src\procedure;
+namespace TimoLehnertz\formula\procedure;
 
 use TimoLehnertz\formula\types\Type;
 

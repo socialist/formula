@@ -30,11 +30,14 @@ class Formula {
    */
   private Scope $scope;
   
-  public function __construct(string $source, bool $throwOnMissingDependencies = true) {
+  private FormulaSettings $formulaSettings;
+  
+  public function __construct(string $source, FormulaSettings $formulaSettings = true) {
+    $this->formulaSettings = $formulaSettings;
     $this->tokens = Formula::tokenize(Formula::clearComments($source));
     $this->codeBlock = CodeBlockParser::parse($this->tokens, 0);
     $this->initDefaultScope();
-    $this->validate($throwOnMissingDependencies);
+    $this->validate();
   }
   
   /**
@@ -166,8 +169,8 @@ class Formula {
   /**
    * Validate formula
    */
-  private function validate(bool $throwOnMissingDependencies): void {
-    $this->codeBlock->validate($this->scope, $throwOnMissingDependencies);
+  private function validate(): void {
+    $this->codeBlock->validate($this->scope, $this->formulaSettings);
   }
 
   /**
@@ -398,25 +401,44 @@ class Formula {
   
   private function initDefaultScope(): void {
     $this->scope = new Scope();
-    $this->setMethod("min", [$this, "minFunc"]);
-    $this->setMethod("max", [$this, "maxFunc"]);
-    $this->setMethod("pow", [$this, "powFunc"]);
-    $this->setMethod("sqrt", [$this, "sqrtFunc"]);
-    $this->setMethod("ceil", [$this, "ceilFunc"]);
-    $this->setMethod("floor", [$this, "floorFunc"]);
-    $this->setMethod("round", [$this, "roundFunc"]);
-    $this->setMethod("sin", [$this, "sinFunc"]);
-    $this->setMethod("cos", [$this, "cosFunc"]);
-    $this->setMethod("tan", [$this, "tanFunc"]);
-    $this->setMethod("is_nan", [$this, "is_nanFunc"]);
-    $this->setMethod("abs", [$this, "absFunc"]);
-    $this->setMethod("asVector", [$this, "asVectorFunc"]);
-    $this->setMethod("sizeof", [$this, "sizeofFunc"]);
-    $this->setMethod("inRange", [$this, "inRangeFunc"]);
-    $this->setMethod("reduce", [$this, "reduceFunc"]);
-    $this->setMethod("firstOrNull", [$this, "firstOrNullFunc"]);
-    $this->setMethod("sum", [$this, "sumFunc"]);
-    $this->setMethod("avg", [$this, "avgFunc"]);
+    $this->scope->defineMethod(new Method("min", [$this, "minFunc"]));
+    $this->scope->defineMethod(new Method("max", [$this, "maxFunc"]));
+    $this->scope->defineMethod(new Method("pow", [$this, "powFunc"]));
+    $this->scope->defineMethod(new Method("sqrt", [$this, "sqrtFunc"]));
+    $this->scope->defineMethod(new Method("ceil", [$this, "ceilFunc"]));
+    $this->scope->defineMethod(new Method("floor", [$this, "floorFunc"]));
+    $this->scope->defineMethod(new Method("round", [$this, "roundFunc"]));
+    $this->scope->defineMethod(new Method("sin", [$this, "sinFunc"]));
+    $this->scope->defineMethod(new Method("cos", [$this, "cosFunc"]));
+    $this->scope->defineMethod(new Method("tan", [$this, "tanFunc"]));
+    $this->scope->defineMethod(new Method("is_nan", [$this, "is_nanFunc"]));
+    $this->scope->defineMethod(new Method("abs", [$this, "absFunc"]));
+    $this->scope->defineMethod(new Method("asVector", [$this, "asVectorFunc"]));
+    $this->scope->defineMethod(new Method("sizeof", [$this, "sizeofFunc"]));
+    $this->scope->defineMethod(new Method("inRange", [$this, "inRangeFunc"]));
+    $this->scope->defineMethod(new Method("reduce", [$this, "reduceFunc"]));
+    $this->scope->defineMethod(new Method("firstOrNull", [$this, "firstOrNullFunc"]));
+    $this->scope->defineMethod(new Method("sum", [$this, "sumFunc"]));
+
+    // $this->setMethod("min", [$this, "minFunc"]);
+    // $this->setMethod("max", [$this, "maxFunc"]);
+    // $this->setMethod("pow", [$this, "powFunc"]);
+    // $this->setMethod("sqrt", [$this, "sqrtFunc"]);
+    // $this->setMethod("ceil", [$this, "ceilFunc"]);
+    // $this->setMethod("floor", [$this, "floorFunc"]);
+    // $this->setMethod("round", [$this, "roundFunc"]);
+    // $this->setMethod("sin", [$this, "sinFunc"]);
+    // $this->setMethod("cos", [$this, "cosFunc"]);
+    // $this->setMethod("tan", [$this, "tanFunc"]);
+    // $this->setMethod("is_nan", [$this, "is_nanFunc"]);
+    // $this->setMethod("abs", [$this, "absFunc"]);
+    // $this->setMethod("asVector", [$this, "asVectorFunc"]);
+    // $this->setMethod("sizeof", [$this, "sizeofFunc"]);
+    // $this->setMethod("inRange", [$this, "inRangeFunc"]);
+    // $this->setMethod("reduce", [$this, "reduceFunc"]);
+    // $this->setMethod("firstOrNull", [$this, "firstOrNullFunc"]);
+    // $this->setMethod("sum", [$this, "sumFunc"]);
+    // $this->setMethod("avg", [$this, "avgFunc"]);
   }
   
   public function getFormula(): string {
