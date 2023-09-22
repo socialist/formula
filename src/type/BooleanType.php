@@ -9,10 +9,22 @@ namespace TimoLehnertz\formula\type;
 class BooleanType extends Type {
   
   public function __construct(bool $isArray) {
-    parent::__construct($isArray, 'bool');
+    parent::__construct($isArray);
   }
 
   public function isAssignableWith(Type $type) {
+    return true;
+  }
+  
+  public function canCastTo(Type $type): bool {
+    
+  }
+  
+  public function castTo(Type $type): Type {
+    
+  }
+  
+  protected function getTypeName(): string {
     
   }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace src;
+namespace TimoLehnertz\formula;
 
 class UnexpectedEndOfInputException extends \Exception {
   

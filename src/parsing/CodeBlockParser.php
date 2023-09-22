@@ -1,25 +1,35 @@
 <?php
 namespace TimoLehnertz\formula\parsing;
 
+use TimoLehnertz\formula\FormulaPart;
 use TimoLehnertz\formula\procedure\CodeBlock;
-use src\UnexpectedEndOfInputException;
-use TimoLehnertz\formula\ExpressionNotFoundException;
 
-class CodeBlockParser {
+/**
+ * CodeBlock ::= <Statement> | '{' ...<Statement> '}'
+ * 
+ * @author Timo Lehnertz
+ *
+ */
+class CodeBlockParser extends Parser {
 
-  public static function parse(array &$tokens, int &$index): CodeBlock {
-    if(sizeof($tokens) <= $index) throw new UnexpectedEndOfInputException();
-    $executables = [];
-    for ($index; $index < sizeof($tokens); $index++) {
-      if($formulaExpression = FormulaExpressionParser::parse($tokens, $index, false) !== null) {
-        $executables[] = $formulaExpression;
-      } else if($codeBlock = self::parse($tokens, $index) !== null) {
-        $executables[] = $codeBlock;
-      }else {
-        throw new ExpressionNotFoundException('Invalid formula', $tokens, $index);
+  protected static function parsePart(array &$tokens, int &$index): ?FormulaPart {
+    if($tokens[$index]->value === '{') {
+      $index++; // skipping {
+      if(sizeof($tokens) <= $index) return null;
+      $statements = [];
+      for ($index; $index < sizeof($tokens); $index++) {
+        if($tokens[$index]->value === '}') {
+          $index++;
+          return new CodeBlock($statements);
+        } else if($statement = StatementParser::parse($tokens, $index) !== null) {
+          $statements[] = $statement;
+        } else {
+          return null;
+        }
       }
+    } else {
+      return StatementParser::parse($tokens, $index);
     }
-    return new CodeBlock($executables);
   }
 }
 

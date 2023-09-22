@@ -2,10 +2,12 @@
 namespace TimoLehnertz\formula\statement;
 
 use TimoLehnertz\formula\FormulaSettings;
+use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
-use TimoLehnertz\formula\procedure\Locator;
+use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\procedure\StatementReturnInfo;
 use TimoLehnertz\formula\src\statement\Statement;
-use src\PrettyPrintOptions;
+use TimoLehnertz\formula\type\Type;
 
 /**
  * 
@@ -24,20 +26,21 @@ class ExpressionStatement extends Statement {
     // do nothing
   }
 
-  public function run(): Locator {
-    return $this->expression->run();
+  public function run(Scope $scope): StatementReturnInfo {
+    $this->expression->run($scope);
+    return StatementReturnInfo::buildBoring();
+  }
+
+  public function validate(Scope $scope, FormulaSettings $formulaSettings): Type {
+    return $this->expression->validate($formulaSettings);
+  }
+
+  public function getSubParts(): array {
+    return [$this->expression];
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
     return $this->expression->toString($prettyPrintOptions).';';
-  }
-
-  public function getSubExpressions(): array {
-    return [$this->expression];
-  }
-
-  public function validate(FormulaSettings $formulaSettings): string {
-    return $this->expression->validate($formulaSettings);
   }
 }
 

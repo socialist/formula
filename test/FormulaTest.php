@@ -6,9 +6,7 @@ use PHPUnit\Framework\TestCase;
 use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Formula;
 use TimoLehnertz\formula\NoVariableValueException;
-use TimoLehnertz\formula\NullpointerException;
 use DateTime;
-
 
 class FormulaTest extends TestCase {
   

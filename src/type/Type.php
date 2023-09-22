@@ -10,7 +10,6 @@ namespace TimoLehnertz\formula\type;
 abstract class Type {
   
   private bool $isArray;
-  private string $name;
   
   public function __construct(bool $isArray) {
     $this->isArray = $isArray;
@@ -18,17 +17,21 @@ abstract class Type {
   
   public abstract function isAssignableWith(Type $type): bool;
   
-  public function toString(): string {
-    if($this->isArray) {
-      return $this->getTypeName().'[]';
-    } else {
-      return $this->getTypeName();
-    }
-  }
   
-  protected abstract function getTypeName(): string;
+  protected static abstract function getTypeName(): string;
   
   public abstract function canCastTo(Type $type): bool;
   
   public abstract function castTo(Type $type): Type;
+
+  public abstract function buildNewLocator(): Locator;
+  
+  public function toString(): string {
+    if($this->isArray) {
+      return $this::getTypeName().'[]';
+    } else {
+      return $this::getTypeName();
+    }
+  }
 }
+

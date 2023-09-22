@@ -2,11 +2,11 @@
 namespace TimoLehnertz\formula\operator;
 
 use TimoLehnertz\formula\ExpressionNotFoundException;
+use TimoLehnertz\formula\ValidationException;
 use TimoLehnertz\formula\expression\ArrayExpression;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\expression\FormulaExpression;
 use TimoLehnertz\formula\procedure\Scope;
-use src\ValidationException;
 
 class ArrayOperator extends Operator {
 
@@ -30,7 +30,7 @@ class ArrayOperator extends Operator {
     return $left->getElement($index)->calculate();
   }
   
-  public function getSubExpressions(): array {
+  public function getSubParts(): array {
     $arr = [$this->indexExpression];
     foreach($this->indexExpression->getSubExpressions() as $aubExpression) {      
       $arr []= $aubExpression;

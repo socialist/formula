@@ -2,6 +2,7 @@
 namespace TimoLehnertz\formula\parsing;
 
 use TimoLehnertz\formula\ExpressionNotFoundException;
+use TimoLehnertz\formula\UnexpectedEndOfInputException;
 use TimoLehnertz\formula\expression\BooleanExpression;
 use TimoLehnertz\formula\expression\FormulaExpression;
 use TimoLehnertz\formula\expression\NullExpression;
@@ -10,18 +11,15 @@ use TimoLehnertz\formula\expression\StringLiteral;
 use TimoLehnertz\formula\expression\TernaryExpression;
 use TimoLehnertz\formula\expression\VariableExpression;
 use TimoLehnertz\formula\operator\Operator;
-use src\UnexpectedEndOfInputException;
-use src\parsing\ArrayParser;
-use src\parsing\MethodParser;
 
-
-class FormulaExpressionParser implements Parseable {
+/**
+ * 
+ * @author Timo Lehnertz
+ *
+ */
+class ExpressionParser extends Parser {
   
-  public static function parse(array &$tokens, int &$index): ?FormulaExpression {
-    if(sizeof($tokens) <= $index) {
-      return null;
-    }
-    $startIndex = $index;
+  protected static function parsePart(array &$tokens, int &$index): ?FormulaExpression {
     $insideBrackets = false;
     if($tokens[$index]->name === '(') {
       $insideBrackets = true;
@@ -31,12 +29,10 @@ class FormulaExpressionParser implements Parseable {
     $expressionsAndOperators = [];
     for($index;$index < sizeof($tokens);$index++) {
       $token = $tokens[$index];
-      //       echo "top level:".$this->topLevel.", token: ".$token["name"].", index: $index".PHP_EOL;
       switch($token->name) {
         case '(': // must be start of new formula
           $formulaExpression = self::parse($tokens, $index);
           if($formulaExpression === null) {
-            $index = $startIndex;
             return null;
           }
           $expressionsAndOperators[] = $formulaExpression;
@@ -52,7 +48,6 @@ class FormulaExpressionParser implements Parseable {
         case ',': // Vector element delimiter
         case ']': // Array operator end
           if(sizeof($expressionsAndOperators) === 0 || $insideBrackets) {
-            $index = $startIndex;
             return null;
           }
           return new FormulaExpression($expressionsAndOperators, $insideBrackets);
@@ -106,11 +101,6 @@ class FormulaExpressionParser implements Parseable {
       }
     }
     return new FormulaExpression($expressionsAndOperators, $insideBrackets);
-  }
-  
-  private static function addIndex(array &$tokens, int &$index): void {
-    $index++;
-    if(sizeof($tokens) <= $index) throw new UnexpectedEndOfInputException();
   }
 }
 

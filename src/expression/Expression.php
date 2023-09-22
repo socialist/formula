@@ -1,43 +1,25 @@
 <?php
 namespace TimoLehnertz\formula\expression;
 
+use TimoLehnertz\formula\FormulaPart;
 use TimoLehnertz\formula\FormulaSettings;
-use TimoLehnertz\formula\procedure\Locator;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\types\Type;
-use src\PrettyPrintOptions;
+use TimoLehnertz\formula\type\Locator;
+use TimoLehnertz\formula\type\Type;
 
 /**
  * An Expression is a executable piece of code that can exist anywhere.
- * Specifically right to an equal sign.
- * Expressions can not define anything in their scope
+ * Specifically right to an equal sign if its returntype is not void.
+ * Expressions don't define anything in their scopes
  * 
  * @author Timo Lehnertz
- *
  */
-abstract class Expression {
-  
-  protected Scope $scope;
-  
-  public function __construct(Scope $scope) {
-    $this->scope = $scope;
-  }
-  
-  /**
-   * Will be called after registerDefines(). Should validate this and all sub expressions.
-   * Throws exceptions in case of invalidation.
-   * Finds and returns the implicit return type of this expression
-   */
-  public abstract function validate(FormulaSettings $formulaSettings): Type;
-  
-  public abstract function run(): Locator;
-  
-  public abstract function getSubExpressions(): array;
+abstract class Expression extends FormulaPart {
 
   /**
-   * Converts this expression back to code
-   * @return string
+   * Run this Expression and all neccessary sub expressions
+   * @return Locator
    */
-  public abstract function toString(?PrettyPrintOptions $prettyPrintOptions): string;
+  public abstract function run(): Locator;
 }
 

@@ -2,10 +2,12 @@
 namespace TimoLehnertz\formula\procedure;
 
 use TimoLehnertz\formula\FormulaSettings;
+use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\src\statement\Statement;
 use TimoLehnertz\formula\statement\ReturnStatement;
-use TimoLehnertz\formula\types\Type;
-use src\PrettyPrintOptions;
+use TimoLehnertz\formula\type\Locator;
+use TimoLehnertz\formula\type\Type;
+use TimoLehnertz\formula\type\VoidType;
 
 class CodeBlock extends Statement {
   
@@ -45,6 +47,7 @@ class CodeBlock extends Statement {
   }
   
   public function run(): Locator {
+    $this->scope->undefineVariables();
     $locator = null;
     foreach ($this->expressions as $expression) {
       $locator = $expression->run();
@@ -57,6 +60,10 @@ class CodeBlock extends Statement {
     } else {
       return new Locator(new VoidType(), null);
     }
+  }
+  
+  public function getSubParts(): array {
+    return $this->statements;
   }
   
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
@@ -72,7 +79,4 @@ class CodeBlock extends Statement {
     return $string;
   }
   
-  public function getSubExpressions(): array {
-    return $this->statements;
-  }
 }

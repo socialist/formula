@@ -1,5 +1,5 @@
 <?php
-namespace src;
+namespace TimoLehnertz\formula;
 
 class ValidationException extends \Exception {
   

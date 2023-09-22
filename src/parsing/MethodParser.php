@@ -1,15 +1,20 @@
 <?php
-namespace src\parsing;
+namespace TimoLehnertz\formula\parsing;
 
 use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\ParsingException;
+use TimoLehnertz\formula\UnexpectedEndOfInputException;
 use TimoLehnertz\formula\expression\MethodExpression;
-use TimoLehnertz\formula\parsing\FormulaExpressionParser;
-use src\UnexpectedEndOfInputException;
 
-class MethodParser {
+/**
+ * @deprecated replaced by operator
+ */
+class MethodParser extends Parser {
   
-  public static function parseMethod(array &$tokens, int &$index): ?MethodExpression {
+  /**
+   * @deprecated
+   */
+  protected static function parsePart(array &$tokens, int &$index): ?MethodExpression {
     // identifier
     if($tokens[$index]->name != "I") return null;
     if(sizeof($tokens) <= $index + 2) return null; // must be variable as there are no parameters following
@@ -28,7 +33,7 @@ class MethodParser {
       if($first && $token->name == ',') throw new ParsingException("", $token);
       if(!$first && $token->name != ',') throw new ParsingException("", $token);
       if(!$first) $index++;
-      $param = FormulaExpressionParser::parse($tokens, $index);
+      $param = ExpressionParser::parse($tokens, $index);
       if($param === null) throw new ExpressionNotFoundException("Invalid Method argument", $tokens, $index);
       $parameterExpressions []= $param;
       $index--; // skipping increment

@@ -1,19 +1,21 @@
 <?php
 namespace TimoLehnertz\formula\operator;
 
-use TimoLehnertz\formula\expression\Expression;
-use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\types\Type;
-use InvalidArgumentException;
 use TimoLehnertz\formula\FormulaPart;
+use TimoLehnertz\formula\FormulaSettings;
+use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\ReturnValue;
+use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\type\Type;
+use InvalidArgumentException;
 
 /**
  *
  * @author Timo Lehnertz
  *
  */
-abstract class Operator implements FormulaPart {
+abstract class Operator extends FormulaPart {
 
   /**
    * precedence of this operator over other operators, lower is higher priority
@@ -64,27 +66,12 @@ abstract class Operator implements FormulaPart {
     $this->stringRepresentation = $stringRepresentation;
   }
   
-  public function getPrecedence(): int {
-    return $this->precedence;
-  }
-  
-  public function needsLeft(): bool {
-    return $this->needsLeft;
-  }
-  
-  public function needsRight(): bool {
-    return $this->needsRight;
-  }
-  
-  public function usesLeft(): bool {
-    return $this->usesLeft;
-  }
-  
-  public function usesRight(): bool {
-    return $this->usesRight;
-  }
-  
-  public abstract function validate(Scope $scope, ?Expression $leftExpression, ?Expression $rightExpression, array $exceptions): Type;
+  /**
+   * MUST validate this operator and all sub parts based on the input expressions
+   * MUST check for type compatibility
+   * CAN validate left and right expression but doesnt have to
+   */
+  public abstract function validate(Scope $scope, ?Expression $leftExpression, ?Expression $rightExpression, FormulaSettings $formulaSettings): Type;
   
   /**
    * @throws InvalidArgumentException
@@ -101,6 +88,11 @@ abstract class Operator implements FormulaPart {
     }
   }
   
+  public abstract function doCalculate(?ReturnValue $left, ?ReturnValue $right): ReturnValue;
+  
+  /**
+   * @deprecated
+   */
   public static function fromString(string $name): Operator {
     switch($name) {
       case "+":   return new Increment();
@@ -123,13 +115,34 @@ abstract class Operator implements FormulaPart {
     }
   }
 
-  public function getSubExpressions(): array {
+  public function getSubParts(): array {
     return [];
   }
   
-  public abstract function doCalculate(?ReturnValue $left, ?ReturnValue $right): ReturnValue;
+  public function getPrecedence(): int {
+    return $this->precedence;
+  }
   
-  public function toString(): string {
+  public function needsLeft(): bool {
+    return $this->needsLeft;
+  }
+  
+  public function needsRight(): bool {
+    return $this->needsRight;
+  }
+  
+  public function usesLeft(): bool {
+    return $this->usesLeft;
+  }
+  
+  public function usesRight(): bool {
+    return $this->usesRight;
+  }
+  
+  /**
+   * Default implementation might be overridden
+   */
+  public function toString(PrettyPrintOptions $prettyprintOptions): string {
     return $this->stringRepresentation;
   }
 }
