@@ -12,34 +12,35 @@ use TimoLehnertz\formula\tokens\Tokenizer;
 /**
  *
  * @author Timo Lehnertz
- *
+ *        
  */
 class Formula {
-  
+
   /**
    * Array of tokens that have been found in tokenizing stage
    *
    * @var array
    */
   private array $tokens = [];
-  
+
   private CodeBlock $codeBlock;
-  
+
   /**
    * The global scope containing all local scopes
    */
   private Scope $scope;
-  
+
   private FormulaSettings $formulaSettings;
-  
-  public function __construct(string $source, FormulaSettings $formulaSettings = true) {
+
+  public function __construct(string $source, FormulaSettings $formulaSettings) {
     $this->formulaSettings = $formulaSettings;
     $this->tokens = Formula::tokenize(Formula::clearComments($source));
-    $this->codeBlock = CodeBlockParser::parse($this->tokens, 0);
+    $index = 0;
+    $this->codeBlock = CodeBlockParser::parse($this->tokens, $index);
     $this->initDefaultScope();
     $this->validate();
   }
-  
+
   /**
    * Will set all variables with the given identifier to a value
    *
@@ -47,7 +48,7 @@ class Formula {
    * @param mixed $value
    */
   public function setVariable(string $identifier, $value): void {
-    foreach ($this->expression->getContent() as $content) {
+    foreach($this->expression->getContent() as $content) {
       if($content instanceof Variable) {
         if($content->getIdentifier() == $identifier) {
           $content->setValue(Method::calculateableFromValue($value));
@@ -55,9 +56,9 @@ class Formula {
       }
     }
   }
-  
+
   public function resetVariable(string $identifier): void {
-    foreach ($this->expression->getContent() as $content) {
+    foreach($this->expression->getContent() as $content) {
       if($content instanceof Variable) {
         if($content->getIdentifier() == $identifier) {
           $content->reset();
@@ -65,22 +66,22 @@ class Formula {
       }
     }
   }
-  
+
   /**
    * Will set all methods with this identifier
    *
    * @param string $identifier
    */
   public function setMethod(string $identifier, callable $method): void {
-    foreach ($this->expression->getContent() as $content) {
+    foreach($this->expression->getContent() as $content) {
       if($content instanceof Method) {
         if($content->getIdentifier() === $identifier) $content->setMethod($method);
       }
     }
   }
-  
+
   public function resetMethod(string $identifier): void {
-    foreach ($this->expression->getContent() as $content) {
+    foreach($this->expression->getContent() as $content) {
       if($content instanceof Method) {
         if($content->getIdentifier() == $identifier) {
           $content->reset();
@@ -89,57 +90,61 @@ class Formula {
     }
     $this->initDefaultMethods(); // in case a buildin method got resetted
   }
-  
+
   public function resetAllVariables(): void {
-    foreach ($this->getVariables() as $variableIdentifier) {
+    foreach($this->getVariables() as $variableIdentifier) {
       $this->resetVariable($variableIdentifier);
     }
   }
-  
+
   public function resetAllMethods(): void {
-    foreach ($this->getMethodIdentifiers() as $methodIdentifiers) {
+    foreach($this->getMethodIdentifiers() as $methodIdentifiers) {
       $this->resetMethod($methodIdentifiers);
     }
   }
-  
+
   /**
+   *
    * @param string $oldName
    * @param string $newName
    */
   public function renameVariables(string $oldName, string $newName, bool $caseSensitive = true): void {
-    foreach ($this->expression->getContent() as $content) {
+    foreach($this->expression->getContent() as $content) {
       if($content instanceof Variable) {
         if(self::strcmp($content->getIdentifier(), $oldName, $caseSensitive)) $content->setIdentifier($newName);
       }
     }
   }
-  
+
   /**
+   *
    * @param string $oldName
    * @param string $newName
    */
   public function renameStrings(string $oldName, string $newName, bool $caseSensitive = true): void {
-    foreach ($this->expression->getContent() as $content) {
+    foreach($this->expression->getContent() as $content) {
       if($content instanceof StringLiteral) {
         if(self::strcmp($content->getValue(), $oldName, $caseSensitive)) $content->setValue($newName);
       }
     }
   }
-  
+
   /**
+   *
    * @param string $oldName
    * @param string $newName
    */
   public function renameMethods(string $oldName, string $newName, bool $caseSensitive = true): void {
-    foreach ($this->expression->getContent() as $content) {
+    foreach($this->expression->getContent() as $content) {
       if($content instanceof Method) {
         if(self::strcmp($content->getIdentifier(), $oldName, $caseSensitive)) $content->setIdentifier($newName);
       }
     }
     $this->initDefaultMethods(); // in case a method got renamed to a buildin method
   }
-  
+
   /**
+   *
    * @param string $a
    * @param string $b
    * @param bool $caseSensitive
@@ -149,15 +154,17 @@ class Formula {
     if($caseSensitive) return $a === $b;
     return strcasecmp($a, $b) == 0;
   }
-  
+
   /**
    * Calculates and returnes the result of this formula
+   *
    * @return mixed
    */
   public function calculate() {
-    return $this->expression->calculate()->getValue();
+    return $this->expression->calculate()
+      ->getValue();
   }
-  
+
   private function parse(): void {
     $index = 0;
     $this->expression->parse($this->tokens, $index);
@@ -165,7 +172,7 @@ class Formula {
       throw new ExpressionNotFoundException("Unexpected end of input", $this->source);
     }
   }
-  
+
   /**
    * Validate formula
    */
@@ -180,7 +187,7 @@ class Formula {
    * @throws ExpressionNotFoundException in case of failed tokenizing
    * @return array<Token>
    */
-  private static function tokenize(string $string): array {
+  public static function tokenize(string $string): array {
     $tokenizers = Tokenizer::getPrimitiveTokenizers();
     $tokens = [];
     $chars = str_split($string);
@@ -191,8 +198,8 @@ class Formula {
         $tokens[] = $tokenizer->getParsedToken();
         foreach($tokenizers as $tokenizer)
           $tokenizer->reset();
-          $i--;
-          break;
+        $i--;
+        break;
       }
     }
     $parsedEnd = false;
@@ -208,7 +215,7 @@ class Formula {
     }
     return $tokens;
   }
-  
+
   /**
    * Clear all comments in a string
    *
@@ -217,67 +224,71 @@ class Formula {
    */
   private static function clearComments(string $source): string {
     $patterns = [
-      '/\/\*(.*)\*\//i',
+      '/\/\*(.*)\*\//i'
     ];
     return preg_replace($patterns, '', $source);
   }
-  
+
   /**
    * Gets all string literals
+   *
    * @return array<string>
    */
   public function getStringLiterals(): array {
     $strings = [];
-    foreach ($this->expression->getContent() as $content) {
+    foreach($this->expression->getContent() as $content) {
       if($content instanceof StringLiteral) $strings[] = $content->getValue();
     }
     return $strings;
   }
-  
+
   /**
    * Gets all method identifiers
+   *
    * @return array<string>
    */
   public function getMethodIdentifiers(): array {
     $methods = [];
-    foreach ($this->expression->getContent() as $content) {
+    foreach($this->expression->getContent() as $content) {
       if($content instanceof Method) $methods[] = $content;
     }
     $identifiers = [];
-    foreach ($methods as $method) {
+    foreach($methods as $method) {
       if(!in_array($method->getIdentifier(), $identifiers)) {
-        $identifiers []= $method->getIdentifier();
+        $identifiers[] = $method->getIdentifier();
       }
     }
     return $identifiers;
   }
-  
+
   /**
    * Gets all variable identifiers present in this formula
+   *
    * @return string[]
    */
   public function getVariables(): array {
     $variables = [];
-    foreach ($this->expression->getContent() as $content) {
+    foreach($this->expression->getContent() as $content) {
       if($content instanceof Variable) $variables[] = $content;
     }
     $identifiers = [];
-    foreach ($variables as $variable) {
+    foreach($variables as $variable) {
       if(!in_array($variable->getIdentifier(), $identifiers)) {
-        $identifiers []= $variable->getIdentifier();
+        $identifiers[] = $variable->getIdentifier();
       }
     }
     return $identifiers;
   }
-  
+
   /**
    * Merges an array of arrays into one flat array (Recursively)
+   *
    * @param array $arrays
    * @return array
    */
   private static function mergeArraysRecursive($arrays): array {
     $merged = [];
-    foreach ($arrays as $val) {
+    foreach($arrays as $val) {
       if(is_array($val)) {
         $merged = array_merge($merged, Formula::mergeArraysRecursive($val));
       } else {
@@ -286,64 +297,64 @@ class Formula {
     }
     return $merged;
   }
-  
+
   public function minFunc(...$values) {
     $values = Formula::mergeArraysRecursive($values);
     return min($values);
   }
-  
+
   public function maxFunc(...$values) {
     $values = Formula::mergeArraysRecursive($values);
     return max($values);
   }
-  
+
   public function powFunc($base, $exp) {
     return pow($base, $exp);
   }
-  
+
   public function sqrtFunc(float $arg) {
     return sqrt($arg);
   }
-  
+
   public function ceilFunc(float $value) {
     return ceil($value);
   }
-  
+
   public function floorFunc(float $value) {
     return floor($value);
   }
-  
+
   public function roundFunc(float $val, int $precision = null, int $mode = null) {
     return round($val, $precision, $mode);
   }
-  
+
   public function sinFunc(float $arg) {
     return sin($arg);
   }
-  
+
   public function cosFunc(float $arg) {
     return cos($arg);
   }
-  
+
   public function tanFunc(float $arg) {
     return tan($arg);
   }
-  
+
   public function is_nanFunc(float $val) {
     return is_nan($val);
   }
-  
+
   public function absFunc(float $number) {
     return abs($number);
   }
-  
+
   public function asVectorFunc(...$values) {
     return $values;
   }
-  
+
   public function sizeofFunc(...$values) {
     $count = 0;
-    foreach ($values as $value) {
+    foreach($values as $value) {
       if(is_array($value)) {
         $count += $this->sizeofFunc(...$value);
       } else {
@@ -352,33 +363,34 @@ class Formula {
     }
     return $count;
   }
-  
+
   public function inRangeFunc(float $value, float $min, float $max): bool {
     return ($min <= $value) && ($value <= $max);
   }
-  
+
   public function reduceFunc(array $values, array $filter): array {
     $result = [];
-    foreach ($values as $value) {
+    foreach($values as $value) {
       if(in_array($value, $filter)) {
-        $result []= $value;
+        $result[] = $value;
       }
     }
     return $result;
   }
-  
+
   public function firstOrNullFunc($array) {
     if(sizeof($array) === 0) return null;
     return $array[0];
   }
-  
+
   /**
+   *
    * @param float[] $values
-   * @return number sum of all numeric members in $values 
+   * @return number sum of all numeric members in $values
    */
   public function sumFunc(...$values) {
     $res = 0;
-    foreach ($values as $value) {
+    foreach($values as $value) {
       if(is_numeric($value) && !is_string($value)) {
         $res += $value;
       } else if(is_array($value)) {
@@ -391,34 +403,89 @@ class Formula {
   }
 
   /**
+   *
    * @param float[] $values
-   * @return number sum of all numeric members in $values 
+   * @return number sum of all numeric members in $values
    */
   public function avgFunc(...$values) {
     $sum = $this->sumFunc($values);
     return $sum / $this->sizeofFunc($values);
   }
-  
+
   private function initDefaultScope(): void {
     $this->scope = new Scope();
-    $this->scope->defineMethod(new Method("min", [$this, "minFunc"]));
-    $this->scope->defineMethod(new Method("max", [$this, "maxFunc"]));
-    $this->scope->defineMethod(new Method("pow", [$this, "powFunc"]));
-    $this->scope->defineMethod(new Method("sqrt", [$this, "sqrtFunc"]));
-    $this->scope->defineMethod(new Method("ceil", [$this, "ceilFunc"]));
-    $this->scope->defineMethod(new Method("floor", [$this, "floorFunc"]));
-    $this->scope->defineMethod(new Method("round", [$this, "roundFunc"]));
-    $this->scope->defineMethod(new Method("sin", [$this, "sinFunc"]));
-    $this->scope->defineMethod(new Method("cos", [$this, "cosFunc"]));
-    $this->scope->defineMethod(new Method("tan", [$this, "tanFunc"]));
-    $this->scope->defineMethod(new Method("is_nan", [$this, "is_nanFunc"]));
-    $this->scope->defineMethod(new Method("abs", [$this, "absFunc"]));
-    $this->scope->defineMethod(new Method("asVector", [$this, "asVectorFunc"]));
-    $this->scope->defineMethod(new Method("sizeof", [$this, "sizeofFunc"]));
-    $this->scope->defineMethod(new Method("inRange", [$this, "inRangeFunc"]));
-    $this->scope->defineMethod(new Method("reduce", [$this, "reduceFunc"]));
-    $this->scope->defineMethod(new Method("firstOrNull", [$this, "firstOrNullFunc"]));
-    $this->scope->defineMethod(new Method("sum", [$this, "sumFunc"]));
+    $this->scope->defineMethod(new Method("min", [
+      $this,
+      "minFunc"
+    ]));
+    $this->scope->defineMethod(new Method("max", [
+      $this,
+      "maxFunc"
+    ]));
+    $this->scope->defineMethod(new Method("pow", [
+      $this,
+      "powFunc"
+    ]));
+    $this->scope->defineMethod(new Method("sqrt", [
+      $this,
+      "sqrtFunc"
+    ]));
+    $this->scope->defineMethod(new Method("ceil", [
+      $this,
+      "ceilFunc"
+    ]));
+    $this->scope->defineMethod(new Method("floor", [
+      $this,
+      "floorFunc"
+    ]));
+    $this->scope->defineMethod(new Method("round", [
+      $this,
+      "roundFunc"
+    ]));
+    $this->scope->defineMethod(new Method("sin", [
+      $this,
+      "sinFunc"
+    ]));
+    $this->scope->defineMethod(new Method("cos", [
+      $this,
+      "cosFunc"
+    ]));
+    $this->scope->defineMethod(new Method("tan", [
+      $this,
+      "tanFunc"
+    ]));
+    $this->scope->defineMethod(new Method("is_nan", [
+      $this,
+      "is_nanFunc"
+    ]));
+    $this->scope->defineMethod(new Method("abs", [
+      $this,
+      "absFunc"
+    ]));
+    $this->scope->defineMethod(new Method("asVector", [
+      $this,
+      "asVectorFunc"
+    ]));
+    $this->scope->defineMethod(new Method("sizeof", [
+      $this,
+      "sizeofFunc"
+    ]));
+    $this->scope->defineMethod(new Method("inRange", [
+      $this,
+      "inRangeFunc"
+    ]));
+    $this->scope->defineMethod(new Method("reduce", [
+      $this,
+      "reduceFunc"
+    ]));
+    $this->scope->defineMethod(new Method("firstOrNull", [
+      $this,
+      "firstOrNullFunc"
+    ]));
+    $this->scope->defineMethod(new Method("sum", [
+      $this,
+      "sumFunc"
+    ]));
 
     // $this->setMethod("min", [$this, "minFunc"]);
     // $this->setMethod("max", [$this, "maxFunc"]);
@@ -440,7 +507,7 @@ class Formula {
     // $this->setMethod("sum", [$this, "sumFunc"]);
     // $this->setMethod("avg", [$this, "avgFunc"]);
   }
-  
+
   public function getFormula(): string {
     return $this->expression->toString();
   }

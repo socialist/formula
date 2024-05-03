@@ -1,21 +1,31 @@
-ll<?php
+<?php
 namespace TimoLehnertz\formula\type;
 
 /**
- * 
- * @author Timo Lehnertz
  *
+ * @author Timo Lehnertz
+ *        
  */
-class IntegerType extends Type {
+class IntegerType implements Type {
 
-  public function __construct(bool $isArray) {
-    parent::__construct($isArray, 'int');
+  public function canCastTo(Type $type): bool {
+    return $type instanceof IntegerType;
   }
-  
-  
-  
-  public function isAssignableWith(Type $type) {
-    
+
+  public function getIdentifier(bool $nested = false): string {
+    return 'int';
+  }
+
+  public function getImplementedOperators(): array {
+    return [];
+  }
+
+  /**
+   *
+   * @return SubProperty[]
+   */
+  public function getSubProperties(): array {
+    return [];
   }
 }
 

@@ -2,147 +2,102 @@
 namespace TimoLehnertz\formula\operator;
 
 use TimoLehnertz\formula\FormulaPart;
-use TimoLehnertz\formula\FormulaSettings;
-use TimoLehnertz\formula\PrettyPrintOptions;
-use TimoLehnertz\formula\expression\Expression;
-use TimoLehnertz\formula\procedure\ReturnValue;
-use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\Type;
-use InvalidArgumentException;
+use src\operator\OperatorType;
 
 /**
  *
  * @author Timo Lehnertz
- *
+ *        
  */
-abstract class Operator extends FormulaPart {
+abstract class Operator implements FormulaPart {
+
+  public const ADDITION = 0;
+
+  public const SUBTRACION = 1;
+
+  public const UNARY_PLUS = 2;
+
+  public const UNARY_MINUS = 3;
+
+  public const MULTIPLICATION = 4;
+
+  public const DIVISION = 5;
+
+  public const MODULO = 6;
+
+  public const INCREMENT_PREFIX = 7;
+
+  public const INCREMENT_POSTFIX = 8;
+
+  public const DECREMENT_PREFIX = 9;
+
+  public const DECREMENT_POSTFIX = 10;
+
+  public const EQUAL = 11;
+
+  public const NOT_EQUAL = 12;
+
+  public const GREATER = 13;
+
+  public const LESS = 14;
+
+  public const GREATER_EQUALS = 15;
+
+  public const LESS_EQUALS = 16;
+
+  public const LOGICAL_NEGOTIATION = 17;
+
+  public const LOGICAL_AND = 18;
+
+  public const LOGICAL_OR = 19;
+
+  public const DIRECT_ASIGNMENT = 20;
+
+  public const ADDITION_ASIGNMENT = 21;
+
+  public const SUBTRACTION_ASIGNMENT = 22;
+
+  public const MULTIPLICATION_ASIGNMENT = 23;
+
+  public const DIVISION_ASIGNMENT = 24;
+
+  public const MODULO_ASIGNMENT = 25;
+
+  public const OBJECT_REFERENCE = 26;
+
+  public const FUNCTION_CALL = 27;
+
+  public const TYPEOF = 28;
 
   /**
    * precedence of this operator over other operators, lower is higher priority
    * source https://en.cppreference.com/w/cpp/language/operator_precedence
-   * @readonly
    */
-  private int $precedence;
-  
-  /**
-   * Can left and right be interchanged
-   * @readonly
-   */
-  private bool $commutative;
-  
-  /**
-   * Is lefthand expression required
-   * @readonly
-   */
-  private bool $needsLeft;
-  
-  /**
-   * Is righthand expression required
-   * @readonly
-   */
-  private bool $needsRight;
-  
-  /**
-   * Will use lefthand expression if available
-   * @readonly
-   */
-  private bool $usesLeft;
-  
-  /**
-   * Will use righthand expression if available
-   * @readonly
-   */
-  private bool $usesRight;
-  
-  private ?string $stringRepresentation;
-  
-  public function __construct(?string $stringRepresentation, int $precedence, bool $commutative, bool $needsLeft = true, bool $needsRight = true, bool $usesLeft = true, bool $usesRight = true) {
+  private readonly int $precedence;
+
+  private readonly OperatorType $type;
+
+  private readonly string $identifier;
+
+  public function __construct(string $identifier, int $precedence, OperatorType $type) {
     $this->precedence = $precedence;
-    $this->commutative = $commutative;
-    $this->needsLeft = $needsLeft;
-    $this->needsRight = $needsRight;
-    $this->usesLeft = $usesLeft;
-    $this->usesRight = $usesRight;
-    $this->stringRepresentation = $stringRepresentation;
-  }
-  
-  /**
-   * MUST validate this operator and all sub parts based on the input expressions
-   * MUST check for type compatibility
-   * CAN validate left and right expression but doesnt have to
-   */
-  public abstract function validate(Scope $scope, ?Expression $leftExpression, ?Expression $rightExpression, FormulaSettings $formulaSettings): Type;
-  
-  /**
-   * @throws InvalidArgumentException
-   */
-  public function calculate(Expression $left, Expression $right): Calculateable {
-    try {
-      return $this->doCalculate($left->calculate(), $right->calculate());
-    } catch(InvalidArgumentException $e) {
-      if($this->commutative) { // try other direction
-        return $this->doCalculate($right->calculate(), $left->calculate());
-      } else {
-        throw $e;
-      }
-    }
-  }
-  
-  public abstract function doCalculate(?ReturnValue $left, ?ReturnValue $right): ReturnValue;
-  
-  /**
-   * @deprecated
-   */
-  public static function fromString(string $name): Operator {
-    switch($name) {
-      case "+":   return new Increment();
-      case "-":   return new Subtraction();
-      case "*":   return new Multiplication();
-      case "/":   return new Division();
-      case "^":   return new XorOperator();
-      case "&&":  return new AndOperator();
-      case "||":  return new OrOperator();
-      case "!=":  return new NotEqualsOperator();
-      case "!":   return new NotOperator();
-      case "==":  return new EqualsOperator();
-      case "<":  return new SmallerOperator();
-      case ">":  return new GreaterOperator();
-      case "<=":  return new SmallerEqualsOperator();
-      case "<":   return new SmallerOperator();
-      case ">=":  return new GreaterEqualsOperator();
-      case "<":   return new GreaterOperator();
-      default: throw new \Exception("Invalid operator: $name"); // shouldnt happen as this gets sorted out in tokenizer stage
-    }
+    $this->type = $type;
+    $this->identifier = $identifier;
   }
 
-  public function getSubParts(): array {
-    return [];
+  public function defineReferences(): void {
+    //Operators dont define References 
   }
-  
+
   public function getPrecedence(): int {
     return $this->precedence;
   }
-  
-  public function needsLeft(): bool {
-    return $this->needsLeft;
+
+  public function getType(): OperatorType {
+    return $this->type;
   }
-  
-  public function needsRight(): bool {
-    return $this->needsRight;
-  }
-  
-  public function usesLeft(): bool {
-    return $this->usesLeft;
-  }
-  
-  public function usesRight(): bool {
-    return $this->usesRight;
-  }
-  
-  /**
-   * Default implementation might be overridden
-   */
-  public function toString(PrettyPrintOptions $prettyprintOptions): string {
-    return $this->stringRepresentation;
+
+  public function getIdentifier(): string {
+    return $this->identifier;
   }
 }

@@ -38,7 +38,7 @@ class Tokenizer {
   private bool $valid = false;
 
   private int $position;
-  
+
   private bool $allowWhiteSpaces;
 
   /**
@@ -102,6 +102,10 @@ class Tokenizer {
   public static function getPrimitiveTokenizers(): array {
     return [
       new Tokenizer("B", "/true|false/i"), // boolean
+      new Tokenizer("int", '/int/'), // int type
+      new Tokenizer("float", '/float/'), // float type
+      new Tokenizer("bool", '/bool/'), // bool type
+      new Tokenizer("string", '/string/'), // string type
       new Tokenizer(":", "/:/"), // ternary :
       new Tokenizer("?", "/\?/"), // ternary ?
       new Tokenizer("O", "/[+\-*\/^]|&&|\|\||!=|!|==|<=|<|>=|>/"), // operator
@@ -109,8 +113,7 @@ class Tokenizer {
       new Tokenizer("++", "/\+\+/"), // increment
       new Tokenizer("--", "/--/"), // decrement
       new Tokenizer("N", "/\d+([\.]\d+)/"), // positive number
-      new Tokenizer("null", "/null/"), // identifier
-      new Tokenizer("I", "/[a-zA-Z][\w\d.]*/"), // identifier
+      new Tokenizer("null", "/null/"), // null
       new Tokenizer("(", "/\(/"), // brackets opened
       new Tokenizer(")", "/\)/"), // brackets closed
       new Tokenizer("{", "/{/"), // brackets opened
@@ -119,7 +122,9 @@ class Tokenizer {
       new Tokenizer("]", "/\]/"), // brackets closed
       new Tokenizer(",", "/,/"), // comma
       new Tokenizer("S", '/("[^"]*"?)|(\'[^\']*\'?)/', true), // String literal "string" or 'string'
-      new Tokenizer(";", '/;/', true) // statement delimiter
+      new Tokenizer("|", '/\|/'), // type delimiter
+      new Tokenizer(";", '/;/', true), // statement delimiter
+      new Tokenizer("I", "/[a-zA-Z][\w\d.]*/") // identifier
     ];
   }
 

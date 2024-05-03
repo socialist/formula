@@ -1,39 +1,26 @@
 <?php
 namespace TimoLehnertz\formula\type;
 
-
 /**
- * 
- * @author Timo Lehnertz
  *
+ * @author Timo Lehnertz
+ *        
  */
-class VoidType extends Type {
-  
-  public function __construct() {
-    parent::__construct(false);
-  }
+class VoidType implements Type {
 
-  public function isAssignableWith(Type $type): bool {
-    return false;
-  }
-  
-  public function getValue() {
-    throw new \Exception("Can't get value of void type");
-  }
-  
-  public function setValue($value) {
-    throw new \Exception("Can't set value of void type");
-  }
-  
-  protected function getTypeName(): string {
+  public function getIdentifier(bool $nested = false): string {
     return 'void';
   }
-  
+
   public function canCastTo(Type $type): bool {
-    
+    return $type instanceof VoidType;
   }
-  
-  public function castTo(Type $type): Type {
-    
+
+  public function getSubProperties(): array {
+    return [];
+  }
+
+  public function getImplementedOperators(): array {
+    return [];
   }
 }

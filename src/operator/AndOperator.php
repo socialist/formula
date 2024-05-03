@@ -1,12 +1,12 @@
 <?php
 namespace TimoLehnertz\formula\operator;
 
-use TimoLehnertz\formula\FormulaSettings;
-use TimoLehnertz\formula\expression\BooleanExpression;
+use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\procedure\StatementReturnInfo;
 use TimoLehnertz\formula\type\Type;
-
+use src\operator\OperatorType;
 
 /**
  *
@@ -15,21 +15,26 @@ use TimoLehnertz\formula\type\Type;
  */
 class AndOperator extends Operator {
 
-  public function __construct() {
-    parent::__construct('&&', 14, true, true);
-  }
-  
-  /**
-   * @see \TimoLehnertz\formula\operator\Operator::doCalculate()
-   */
-  public function doCalculate(Calculateable $left, Calculateable $right): Calculateable {
-    return new BooleanExpression($left->calculate()->isTruthy() && $right->calculate()->isTruthy());
+  private Expression $leftExpression;
+
+  private Expression $rightExpression;
+
+  public function __construct(Expression $leftExpression, Expression $rightExpression) {
+    parent::__construct('&&', 14, OperatorType::Infix);
+    $this->leftExpression = $leftExpression;
+    $this->rightExpression = $rightExpression;
   }
 
-  public function validate(Scope $scope, ?Expression $leftExpression, ?Expression $rightExpression, FormulaSettings $formulaSettings): Type {
-    $leftType = $leftExpression->validate($formulaSettings);
-    $rightType = $rightExpression->validate($formulaSettings);
-//     if()
+  public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
+    return $this->leftExpression->toString($prettyPrintOptions).'&&'.$this->rightExpression->toString($prettyPrintOptions);
   }
+
+  public function run(): StatementReturnInfo {}
+
+  public function setScope(Scope $scope) {}
+
+  public function getSubParts(): array {}
+
+  public function validate(): Type {}
 }
 

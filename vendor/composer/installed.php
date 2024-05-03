@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'timo-lehnertz/formula',
-        'pretty_version' => '1.0.28',
-        'version' => '1.0.28.0',
+        'pretty_version' => '1.2.0',
+        'version' => '1.2.0.0',
         'reference' => NULL,
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
@@ -108,6 +108,15 @@
             'install_path' => __DIR__ . '/../phpunit/phpunit',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'psalm/phar' => array(
+            'pretty_version' => '5.24.0',
+            'version' => '5.24.0.0',
+            'reference' => '6ca1cbe47bbda0759b22ffe555594b547ff8351b',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../psalm/phar',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'sebastian/cli-parser' => array(
             'pretty_version' => '1.0.1',
@@ -263,8 +272,8 @@
             'dev_requirement' => true,
         ),
         'timo-lehnertz/formula' => array(
-            'pretty_version' => '1.0.28',
-            'version' => '1.0.28.0',
+            'pretty_version' => '1.2.0',
+            'version' => '1.2.0.0',
             'reference' => NULL,
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',

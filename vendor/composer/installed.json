@@ -750,6 +750,44 @@
             "install-path": "../phpunit/phpunit"
         },
         {
+            "name": "psalm/phar",
+            "version": "5.24.0",
+            "version_normalized": "5.24.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/psalm/phar.git",
+                "reference": "6ca1cbe47bbda0759b22ffe555594b547ff8351b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/psalm/phar/zipball/6ca1cbe47bbda0759b22ffe555594b547ff8351b",
+                "reference": "6ca1cbe47bbda0759b22ffe555594b547ff8351b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1 || ^8.0"
+            },
+            "conflict": {
+                "vimeo/psalm": "*"
+            },
+            "time": "2024-05-01T20:28:41+00:00",
+            "bin": [
+                "psalm.phar"
+            ],
+            "type": "library",
+            "installation-source": "dist",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Composer-based Psalm Phar",
+            "support": {
+                "issues": "https://github.com/psalm/phar/issues",
+                "source": "https://github.com/psalm/phar/tree/5.24.0"
+            },
+            "install-path": "../psalm/phar"
+        },
+        {
             "name": "sebastian/cli-parser",
             "version": "1.0.1",
             "version_normalized": "1.0.1.0",

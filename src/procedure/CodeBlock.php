@@ -10,28 +10,33 @@ use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\VoidType;
 
 class CodeBlock extends Statement {
-  
+
   /**
+   *
    * @var Statement[]
    */
-  private array $expressions;
-  
+  private array $statements;
+
   private Type $returnType;
-  
-  public function __construct(Scope $scope, array $expressions) {
+
+  /**
+   *
+   * @param Statement[] $statements
+   */
+  public function __construct(array $statements) {
     parent::__construct($scope);
-    $this->expressions = $expressions;
+    $this->statements = $statements;
   }
-  
+
   public function registerDefines() {
-    foreach ($this->expressions as $expression) {
+    foreach($this->expressions as $expression) {
       $expression->registerDefines();
     }
   }
-  
+
   public function validate(FormulaSettings $formulaSettings): Type {
     $parentReturnType = new VoidType();
-    foreach ($this->expressions as $expression) {
+    foreach($this->expressions as $expression) {
       $returnType = $expression->validate($formulaSettings);
       if($expression instanceof ReturnStatement) {
         if($parentReturnType->isAssignableWith($returnType)) {
@@ -45,31 +50,31 @@ class CodeBlock extends Statement {
     }
     return $parentReturnType;
   }
-  
+
   public function run(): Locator {
     $this->scope->undefineVariables();
     $locator = null;
-    foreach ($this->expressions as $expression) {
+    foreach($this->expressions as $expression) {
       $locator = $expression->run();
       if($expression instanceof ReturnStatement) {
         return $locator;
       }
     }
-    if($locator !== null) {      
+    if($locator !== null) {
       return $locator;
     } else {
       return new Locator(new VoidType(), null);
     }
   }
-  
+
   public function getSubParts(): array {
     return $this->statements;
   }
-  
+
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
     $string = '';
     $first = true;
-    foreach ($this->expressions as $expression) {
+    foreach($this->expressions as $expression) {
       if(!$first) {
         $string .= $prettyPrintOptions->getStatementSeperator();
       }
@@ -78,5 +83,4 @@ class CodeBlock extends Statement {
     }
     return $string;
   }
-  
 }

@@ -1,35 +1,39 @@
 <?php
 namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\FormulaPart;
+use TimoLehnertz\formula\UnexpectedEndOfInputException;
 use TimoLehnertz\formula\procedure\CodeBlock;
 
 /**
  * CodeBlock ::= <Statement> | '{' ...<Statement> '}'
- * 
- * @author Timo Lehnertz
  *
+ * @author Timo Lehnertz
+ *        
  */
-class CodeBlockParser extends Parser {
+class CodeBlockParser {
 
-  protected static function parsePart(array &$tokens, int &$index): ?FormulaPart {
-    if($tokens[$index]->value === '{') {
-      $index++; // skipping {
-      if(sizeof($tokens) <= $index) return null;
-      $statements = [];
-      for ($index; $index < sizeof($tokens); $index++) {
-        if($tokens[$index]->value === '}') {
-          $index++;
-          return new CodeBlock($statements);
-        } else if($statement = StatementParser::parse($tokens, $index) !== null) {
-          $statements[] = $statement;
-        } else {
-          return null;
-        }
+  protected static function parsePart(array &$tokens, int &$index, bool $forceBrackets = false): CodeBlock|int {
+    $token = $tokens[$index];
+    $insideBrackets = $token->value === '{';
+    if($insideBrackets) {
+      $index++;
+      if($index >= sizeof($tokens)) {
+        throw new UnexpectedEndOfInputException();
       }
-    } else {
-      return StatementParser::parse($tokens, $index);
     }
+    $statements = [];
+    do {
+      if($index >= sizeof($tokens)) {
+        throw new UnexpectedEndOfInputException();
+      }
+      if($insideBrackets && $tokens[$index]->value === '}') {
+        $insideBrackets = false;
+        $index++;
+      } else {
+        $statements[] = StatementParser::parse($tokens, $index);
+      }
+    } while($insideBrackets);
+    return new CodeBlock($statements);
   }
 }
 

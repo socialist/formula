@@ -1,0 +1,44 @@
+<?php
+namespace TimoLehnertz\formula\type;
+
+class ArrayType implements Type {
+
+  private Type $keyType;
+
+  private Type $elementsType;
+
+  public function __construct(Type $keyType, Type $elementsType) {
+    $this->keyType = $keyType;
+    $this->elementsType = $elementsType;
+  }
+
+  public function canCastTo(Type $type): bool {
+    if(!($type instanceof ArrayType)) {
+      return false;
+    }
+    return $this->keyType->canCastTo($type->keyType) && $this->elementsType->canCastTo($type->elementsType);
+  }
+
+  /**
+   *
+   * @return SubProperty[]
+   */
+  public function getSubProperties(): array {
+    return [];
+  }
+
+  public function getIdentifier(bool $isNested = false): string {
+    if($this->keyType instanceof IntegerType) {
+      return $this->elementsType->getIdentifier(true).'[]';
+    } else {
+      return 'array<'.$this->keyType->getIdentifier().','.$this->elementsType->getIdentifier().' >';
+    }
+  }
+
+  public function getImplementedOperators(): array {}
+
+  public function getType(): Type {
+    return new ArrayType($this->keyType, $this->elementsType);
+  }
+}
+

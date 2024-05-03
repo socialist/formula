@@ -1,25 +1,37 @@
 <?php
 namespace TimoLehnertz\formula\operator;
 
-use TimoLehnertz\formula\expression\Number;
-use src\expression\NoExpression;
+use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\expression\Expression;
+use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\type\Type;
+use src\operator\OperatorType;
+use src\type\Value;
 
 /**
  *
  * @author Timo Lehnertz
- *
+ *        
  */
 class Subtraction extends Operator {
 
-  public function __construct() {
-    parent::__construct('-', 6, false, false, true);
+  private Expression $leftExpression;
+
+  private Expression $rightExpression;
+
+  public function __construct(Expression $leftExpression, Expression $rightExpression) {
+    parent::__construct('-', 6, OperatorType::Infix);
+    $this->leftExpression = $leftExpression;
+    $this->rightExpression = $rightExpression;
   }
-  
-  public function doCalculate(Calculateable $left, Calculateable $right): Calculateable {
-    if($left instanceof NoExpression) {
-      return (new Number(0))->subtract($right);
-    } else {      
-      return $left->subtract($right);
-    }
-  }
+
+  public function run(): Value {}
+
+  public function toString(?PrettyPrintOptions $prettyPrintOptions): string {}
+
+  public function setScope(Scope $scope) {}
+
+  public function getSubParts(): array {}
+
+  public function validate(): Type {}
 }

@@ -2,30 +2,24 @@
 namespace TimoLehnertz\formula\type;
 
 /**
- * 
- * @author Timo Lehnertz
  *
+ * @author Timo Lehnertz
+ *        
  */
-class BooleanType extends Type {
-  
-  public function __construct(bool $isArray) {
-    parent::__construct($isArray);
+class BooleanType implements Type {
+
+  public function canCastTo(Type $type): bool {
+    return $type instanceof BooleanType;
   }
 
-  public function isAssignableWith(Type $type) {
-    return true;
+  public function getIdentifier(bool $nested = false): string {
+    return 'bool';
   }
-  
-  public function canCastTo(Type $type): bool {
-    
+
+  public function getSubProperties(): array {
+    return [];
   }
-  
-  public function castTo(Type $type): Type {
-    
-  }
-  
-  protected function getTypeName(): string {
-    
-  }
+
+  public function getImplementedOperators(): array {}
 }
 

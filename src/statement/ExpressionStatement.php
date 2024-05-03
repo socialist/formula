@@ -1,46 +1,46 @@
 <?php
 namespace TimoLehnertz\formula\statement;
 
-use TimoLehnertz\formula\FormulaSettings;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\procedure\StatementReturnInfo;
-use TimoLehnertz\formula\src\statement\Statement;
 use TimoLehnertz\formula\type\Type;
 
 /**
- * 
- * @author Timo Lehnertz
  *
+ * @author Timo Lehnertz
+ *        
  */
-class ExpressionStatement extends Statement {
+class ExpressionStatement implements Statement {
 
   private Expression $expression;
-  
+
   public function __construct(Expression $expression) {
     $this->expression = $expression;
   }
-  
-  public function registerDefines() {
-    // do nothing
+
+  public function defineReferences(): void {
+    // expressions dont define anything
   }
 
-  public function run(Scope $scope): StatementReturnInfo {
-    $this->expression->run($scope);
-    return StatementReturnInfo::buildBoring();
-  }
-
-  public function validate(Scope $scope, FormulaSettings $formulaSettings): Type {
-    return $this->expression->validate($formulaSettings);
-  }
-
-  public function getSubParts(): array {
-    return [$this->expression];
+  public function run(): StatementValue {
+    $value = $this->expression->run();
+    return new StatementValue($value);
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
     return $this->expression->toString($prettyPrintOptions).';';
   }
-}
 
+  public function setScope(Scope $scope) {
+    $this->expression->setScope($scope);
+  }
+
+  public function getSubParts(): array {
+    return $this->expression->getSubParts();
+  }
+
+  public function validate(): Type {
+    return $this->expression->validate();
+  }
+}
