@@ -2,6 +2,7 @@
 namespace TimoLehnertz\formula\expression;
 
 use TimoLehnertz\formula\FormulaPart;
+use TimoLehnertz\formula\type\Value;
 
 /**
  * An Expression is a executable piece of code that can exist anywhere.
@@ -10,5 +11,8 @@ use TimoLehnertz\formula\FormulaPart;
  *
  * @author Timo Lehnertz
  */
-interface Expression extends FormulaPart {}
+interface Expression extends FormulaPart {
+
+  public function run(): Value;
+}
 

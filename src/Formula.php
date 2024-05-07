@@ -8,8 +8,10 @@ use TimoLehnertz\formula\procedure\Method;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\procedure\Variable;
 use TimoLehnertz\formula\tokens\Tokenizer;
+use TimoLehnertz\formula\type\Value;
 
 /**
+ * This class represents a formula session that can interpret/run code
  *
  * @author Timo Lehnertz
  *        
@@ -32,13 +34,23 @@ class Formula {
 
   private FormulaSettings $formulaSettings;
 
-  public function __construct(string $source, FormulaSettings $formulaSettings) {
+  private string $source;
+
+  public function __construct(string $source, ?FormulaSettings $formulaSettings = null) {
+    $this->source = $source;
+    if($formulaSettings = null) {
+      $formulaSettings = FormulaSettings::buildDefaultSettings();
+    }
     $this->formulaSettings = $formulaSettings;
+    $this->scope = $this->buildDefaultScope();
     $this->tokens = Formula::tokenize(Formula::clearComments($source));
     $index = 0;
-    $this->codeBlock = CodeBlockParser::parse($this->tokens, $index);
-    $this->initDefaultScope();
-    $this->validate();
+    $this->codeBlock = CodeBlockParser::parse($this->tokens, $index, $this->scope);
+    if($index !== sizeof($this->tokens)) {
+      throw new ParsingException('Expected end of input', $this->tokens[$index]);
+    }
+    $this->codeBlock->registerDefines();
+    $this->codeBlock->validate();
   }
 
   /**
@@ -171,49 +183,6 @@ class Formula {
     if($index != sizeof($this->tokens)) {
       throw new ExpressionNotFoundException("Unexpected end of input", $this->source);
     }
-  }
-
-  /**
-   * Validate formula
-   */
-  private function validate(): void {
-    $this->codeBlock->validate($this->scope, $this->formulaSettings);
-  }
-
-  /**
-   * Converts a string into Tokens
-   *
-   * @param string $string
-   * @throws ExpressionNotFoundException in case of failed tokenizing
-   * @return array<Token>
-   */
-  public static function tokenize(string $string): array {
-    $tokenizers = Tokenizer::getPrimitiveTokenizers();
-    $tokens = [];
-    $chars = str_split($string);
-    for($i = 0;$i < sizeof($chars);$i++) {
-      $char = $chars[$i];
-      foreach($tokenizers as $tokenizer) {
-        if(!$tokenizer->parse($char, $i)) continue;
-        $tokens[] = $tokenizer->getParsedToken();
-        foreach($tokenizers as $tokenizer)
-          $tokenizer->reset();
-        $i--;
-        break;
-      }
-    }
-    $parsedEnd = false;
-    foreach($tokenizers as $tokenizer) {
-      if($tokenizer->parseEndOfinput(sizeof($chars) - 1)) {
-        $tokens[] = $tokenizer->getParsedToken();
-        $parsedEnd = true;
-        break;
-      }
-    }
-    if(!$parsedEnd) {
-      throw new ExpressionNotFoundException("Unexpected end of input", $string);
-    }
-    return $tokens;
   }
 
   /**
@@ -412,80 +381,81 @@ class Formula {
     return $sum / $this->sizeofFunc($values);
   }
 
-  private function initDefaultScope(): void {
-    $this->scope = new Scope();
-    $this->scope->defineMethod(new Method("min", [
+  private function buildDefaultScope(): Scope {
+    $scope = new Scope();
+    $scope->defineMethod(new Method("min", [
       $this,
       "minFunc"
     ]));
-    $this->scope->defineMethod(new Method("max", [
+    $scope->defineMethod(new Method("max", [
       $this,
       "maxFunc"
     ]));
-    $this->scope->defineMethod(new Method("pow", [
+    $scope->defineMethod(new Method("pow", [
       $this,
       "powFunc"
     ]));
-    $this->scope->defineMethod(new Method("sqrt", [
+    $scope->defineMethod(new Method("sqrt", [
       $this,
       "sqrtFunc"
     ]));
-    $this->scope->defineMethod(new Method("ceil", [
+    $scope->defineMethod(new Method("ceil", [
       $this,
       "ceilFunc"
     ]));
-    $this->scope->defineMethod(new Method("floor", [
+    $scope->defineMethod(new Method("floor", [
       $this,
       "floorFunc"
     ]));
-    $this->scope->defineMethod(new Method("round", [
+    $scope->defineMethod(new Method("round", [
       $this,
       "roundFunc"
     ]));
-    $this->scope->defineMethod(new Method("sin", [
+    $scope->defineMethod(new Method("sin", [
       $this,
       "sinFunc"
     ]));
-    $this->scope->defineMethod(new Method("cos", [
+    $scope->defineMethod(new Method("cos", [
       $this,
       "cosFunc"
     ]));
-    $this->scope->defineMethod(new Method("tan", [
+    $scope->defineMethod(new Method("tan", [
       $this,
       "tanFunc"
     ]));
-    $this->scope->defineMethod(new Method("is_nan", [
+    $scope->defineMethod(new Method("is_nan", [
       $this,
       "is_nanFunc"
     ]));
-    $this->scope->defineMethod(new Method("abs", [
+    $scope->defineMethod(new Method("abs", [
       $this,
       "absFunc"
     ]));
-    $this->scope->defineMethod(new Method("asVector", [
+    $scope->defineMethod(new Method("asVector", [
       $this,
       "asVectorFunc"
     ]));
-    $this->scope->defineMethod(new Method("sizeof", [
+    $scope->defineMethod(new Method("sizeof", [
       $this,
       "sizeofFunc"
     ]));
-    $this->scope->defineMethod(new Method("inRange", [
+    $scope->defineMethod(new Method("inRange", [
       $this,
       "inRangeFunc"
     ]));
-    $this->scope->defineMethod(new Method("reduce", [
+    $scope->defineMethod(new Method("reduce", [
       $this,
       "reduceFunc"
     ]));
-    $this->scope->defineMethod(new Method("firstOrNull", [
+    $scope->defineMethod(new Method("firstOrNull", [
       $this,
       "firstOrNullFunc"
     ]));
-    $this->scope->defineMethod(new Method("sum", [
+    $scope->defineMethod(new Method("sum", [
       $this,
       "sumFunc"
     ]));
+    return $scope;
 
     // $this->setMethod("min", [$this, "minFunc"]);
     // $this->setMethod("max", [$this, "maxFunc"]);

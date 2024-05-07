@@ -1,64 +1,58 @@
 <?php
 namespace TimoLehnertz\formula\statement;
 
-use TimoLehnertz\formula\FormulaSettings;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\procedure\StatementReturnInfo;
-use TimoLehnertz\formula\src\statement\Statement;
-use TimoLehnertz\formula\type\Locator;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\VoidType;
 
 /**
- * 
- * @author Timo Lehnertz
  *
+ * @author Timo Lehnertz
+ *        
  */
-class ReturnStatement extends Statement {
-  
-  private ?Expression $returnExpression;
-  
-  public function __construct(?Expression $returnStatement) {
-    $this->returnExpression = $returnStatement;
+class ReturnStatement implements Statement {
+
+  private ?Expression $expression;
+
+  public function __construct(?Expression $expression) {
+    $this->expression = $expression;
   }
-  
-  public function registerDefines() {
-    // do nothing
+
+  public function defineReferences(): void {
+    // expressions dont define anything
   }
-  
-  public function run(Scope $scope): StatementReturnInfo {
-    if($this->returnExpression === null) {
-      $locator = new Locator(new VoidType());
-    } else {
-      $locator = $this->returnExpression->run($scope);
-    }
-    return StatementReturnInfo::buildReturn($locator);
+
+  public function run(): StatementValue {
+    $value = $this->expression->run();
+    return new StatementValue($value, null, false, false, true);
   }
-  
+
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
-    if($this->returnExpression === null) {
+    if($this->expression === null) {
       return 'return;';
-    } else {
-      return 'return '.$this->returnExpression->toString($prettyPrintOptions).';';
+    }
+    return 'return '.$this->expression->toString($prettyPrintOptions).';';
+  }
+
+  public function setScope(Scope $scope) {
+    if($this->expression !== null) {
+      $this->expression->setScope($scope);
     }
   }
-  
+
   public function getSubParts(): array {
-    if($this->returnExpression === null) {
-      return [];
-    } else {
-      return $this->returnExpression->getSubExpressions();
+    if($this->expression !== null) {
+      return $this->expression->getSubParts();
     }
+    return [];
   }
-  
-  public function validate(FormulaSettings $formulaSettings): Type {
-    if($this->returnStatement === null) {
-      return new VoidType();
-    } else {
-      return $this->returnStatement->validate($formulaSettings);
+
+  public function validate(): Type {
+    if($this->expression !== null) {
+      return $this->expression->validate();
     }
+    return new VoidType();
   }
 }
-

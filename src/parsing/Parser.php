@@ -1,9 +1,9 @@
 <?php
 namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\ExpressionNotFoundException;
-use TimoLehnertz\formula\FormulaPart;
-use TimoLehnertz\formula\expression\Expression;
+use TimoLehnertz\formula\ParsingException;
+use TimoLehnertz\formula\UnexpectedEndOfInputException;
+use TimoLehnertz\formula\tokens\Token;
 
 /**
  * Superclass for all parsers
@@ -13,33 +13,27 @@ use TimoLehnertz\formula\expression\Expression;
  */
 abstract class Parser {
 
-  /**
-   * Parses the expression
-   *
-   * @param int $index The starting index. Index will be reset to its initial value if returning null
-   *        otherwise $index will indicate the index of the next token after this parsed part
-   * @return FormulaPart|null FormulaPart in case of succsess, null in case of failure
-   */
-  public static function parse(array &$tokens, int &$index): ?FormulaPart {
-    if(sizeof($tokens) <= $index) {
-      throw new ExpressionNotFoundException('Index out of bounds');
+  public static function parseRequired(Token &$token): mixed {
+    $parsed = self::parse($token);
+    if($parsed === null) {
+      throw new ParsingException('Failed parsing required part', $token);
     }
-    $indexBefore = $index;
-    $formulaPart = self::parsePart($tokens, $index);
-    if($formulaPart === null) {
-      $index = $indexBefore;
-    }
-    return $formulaPart;
+    return $parsed;
   }
 
-  /**
-   *
-   * @param array $tokens array of tokens to beparsed
-   * @param int $index starting index in $tokens
-   *        SHOULD NOT throw any exceptions
-   *        If parsing was succsessfull index MUST be pointing to the next token after this parsed expression
-   * @return Expression|NULL Expression if parsing was sucsessfull or null if parsing was not succsessfull
-   */
-  protected static abstract function parsePart(array &$tokens, int &$index): ?FormulaPart;
+  public static function parse(Token &$token): ?mixed {
+    $startToken = $token;
+    try {
+      $parsed = self::parsePart($token);
+    } catch(UnexpectedEndOfInputException $e) {
+      $parsed = null;
+    }
+    if($parsed === null) {
+      $token = $startToken;
+    }
+    return $parsed;
+  }
+  
+  protected static abstract function parsePart(Token &$token): ?mixed;
 }
 

@@ -10,6 +10,6 @@ use TimoLehnertz\formula\tokens\Token;
  */
 class ParsingException extends \Exception {
   public function __construct(string $message, Token $token) {
-    parent::__construct("unexpected symbol \"$token->value\" at: $token->position. Message: $message");
+    parent::__construct("unexpected symbol \"$token->value\" at: $token->line:$token->position. Message: $message");
   }
 }

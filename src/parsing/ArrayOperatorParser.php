@@ -3,6 +3,7 @@ namespace TimoLehnertz\formula\parsing;
 
 use TimoLehnertz\formula\expression\ArrayExpression;
 use TimoLehnertz\formula\operator\ArrayOperator;
+use TimoLehnertz\formula\tokens\Token;
 
 /**
  * Array operator Syntax
@@ -12,15 +13,19 @@ use TimoLehnertz\formula\operator\ArrayOperator;
  */
 class ArrayOperatorParser extends Parser {
   
-  protected static function parsePart(array &$tokens, int &$index): ?ArrayExpression {
-    if($tokens[$index]->value != "[") return null;
-    if(sizeof($tokens) < $index + 3) return null;
-    $index++;
-    $indexExpression = ExpressionParser::parse($tokens, $index);
-    if($indexExpression === null) return null;
-    if(sizeof($tokens) <= $index) return null;
-    if($tokens[$index]->value != "]") return null;
-    $index++;
+  protected static function parsePart(Token &$token): ?ArrayExpression {
+    if($token->id != Token::SQUARE_BRACKETS_OPEN) {
+      return null;
+    }
+    $token = $token->requireNext();
+    $indexExpression = ExpressionParser::parse($token);
+    if($indexExpression === null) {
+      return null;
+    }
+    if($token->id != Token::SQUARE_BRACKETS_CLOSED) {
+      return null;
+    }
+    $token = $token->next();
     return new ArrayOperator($indexExpression);
   }
 }

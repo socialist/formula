@@ -1,6 +1,8 @@
 <?php
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\procedure\Scope;
+
 /**
  * Type metadata
  * Must be immutable
@@ -28,5 +30,10 @@ interface Type {
    * @return array<int, ImplementedOperator> OperatorID => ImplementedOperator
    */
   public function getImplementedOperators(): array;
+
+  /**
+   * Validates this type and returns either this type or create a new one
+   */
+  public function validate(Scope $scope): Type;
 }
 

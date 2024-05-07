@@ -1,6 +1,8 @@
 <?php
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\procedure\Scope;
+
 /**
  *
  * @author Timo Lehnertz
@@ -28,6 +30,10 @@ class ReferenceType implements Type {
 
   public function getIdentifier(bool $nested = false): string {
     return $this->referenceIdentifier;
+  }
+
+  public function validate(Scope $scope): Type {
+    return $scope->getType($this->referenceIdentifier);
   }
 }
 

@@ -85,10 +85,6 @@ abstract class Operator implements FormulaPart {
     $this->identifier = $identifier;
   }
 
-  public function defineReferences(): void {
-    //Operators dont define References 
-  }
-
   public function getPrecedence(): int {
     return $this->precedence;
   }

@@ -1,6 +1,8 @@
 <?php
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\procedure\Scope;
+
 /**
  *
  * @author Timo Lehnertz
@@ -26,6 +28,10 @@ class IntegerType implements Type {
    */
   public function getSubProperties(): array {
     return [];
+  }
+
+  public function validate(Scope $scope): Type {
+    return $this;
   }
 }
 

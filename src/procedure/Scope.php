@@ -1,13 +1,13 @@
 <?php
 namespace TimoLehnertz\formula\procedure;
 
-use TimoLehnertz\formula\type\Locator;
-use TimoLehnertz\formula\type\Type;
-use TimoLehnertz\formula\type\BooleanType;
-use TimoLehnertz\formula\type\IntegerType;
-use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\FormulaRuntimeException;
 use TimoLehnertz\formula\FormulaSettings;
+use TimoLehnertz\formula\FormulaValidationException;
+use TimoLehnertz\formula\type\BooleanType;
+use TimoLehnertz\formula\type\IntegerType;
+use TimoLehnertz\formula\type\Type;
+use TimoLehnertz\formula\type\Value;
 
 /**
  *
@@ -105,12 +105,12 @@ class Scope {
     $this->variables[$identifier] = $variable;
   }
 
-  public function initializeVariable(string $identifier, Locator $locator): void {
+  public function initializeVariable(string $identifier, Value $value): void {
     if(isset($this->variables[$identifier])) {
       $this->variables[$identifier]->getLocator()
-        ->assign($locator);
+        ->assign($value);
     } else if($this->parent !== null) {
-      $this->parent->initializeVariable($identifier, $locator);
+      $this->parent->initializeVariable($identifier, $value);
     } else {
       throw new FormulaRuntimeException('Variable "'.$identifier.'" is not defined');
     }
@@ -136,14 +136,14 @@ class Scope {
     return null;
   }
 
-  public function getTypeByName(string $typeName): Type {
-    if(isset($this->types[$typeName])) {
-      return $this->types[$typeName];
+  public function getType(string $identifier): Type {
+    if(isset($this->types[$identifier])) {
+      return $this->types[$identifier];
     } else {
       if($this->parent === null) {
-        throw new FormulaValidationException('Type "'.$typeName.'" is not defined');
+        throw new FormulaValidationException('Type "'.$identifier.'" is not defined');
       } else {
-        return $this->parent->getTypeByName($typeName);
+        return $this->parent->getType($identifier);
       }
     }
   }

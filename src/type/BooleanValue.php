@@ -20,5 +20,9 @@ class BooleanValue implements Value {
   public function getType(): Type {
     return new BooleanType();
   }
+
+  public function isTruthy(): bool {
+    return $this->value;
+  }
 }
 

@@ -4,7 +4,7 @@ namespace TimoLehnertz\formula\operator;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\procedure\StatementReturnInfo;
+use TimoLehnertz\formula\statement\StatementValue;
 use TimoLehnertz\formula\type\Type;
 use src\operator\OperatorType;
 
@@ -29,7 +29,7 @@ class AndOperator extends Operator {
     return $this->leftExpression->toString($prettyPrintOptions).'&&'.$this->rightExpression->toString($prettyPrintOptions);
   }
 
-  public function run(): StatementReturnInfo {}
+  public function run(): StatementValue {}
 
   public function setScope(Scope $scope) {}
 

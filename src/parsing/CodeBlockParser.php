@@ -5,14 +5,14 @@ use TimoLehnertz\formula\UnexpectedEndOfInputException;
 use TimoLehnertz\formula\procedure\CodeBlock;
 
 /**
- * CodeBlock ::= <Statement> | '{' ...<Statement> '}'
+ * CodeBlock ::= '{' ...<Statement> '}' | ...<Statement>
  *
  * @author Timo Lehnertz
  *        
  */
-class CodeBlockParser {
+class CodeBlockParser extends Parser {
 
-  protected static function parsePart(array &$tokens, int &$index, bool $forceBrackets = false): CodeBlock|int {
+  protected static function parsePart(array &$tokens, int &$index, bool $forceBrackets = false): CodeBlock {
     $token = $tokens[$index];
     $insideBrackets = $token->value === '{';
     if($insideBrackets) {

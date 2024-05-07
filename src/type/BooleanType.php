@@ -1,6 +1,8 @@
 <?php
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\procedure\Scope;
+
 /**
  *
  * @author Timo Lehnertz
@@ -21,5 +23,9 @@ class BooleanType implements Type {
   }
 
   public function getImplementedOperators(): array {}
+
+  public function validate(Scope $scope): Type {
+    return $this;
+  }
 }
 

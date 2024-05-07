@@ -1,6 +1,8 @@
 <?php
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\procedure\Scope;
+
 class ArrayType implements Type {
 
   private Type $keyType;
@@ -35,10 +37,15 @@ class ArrayType implements Type {
     }
   }
 
-  public function getImplementedOperators(): array {}
+  public function getImplementedOperators(): array {
+    return [];
+  }
 
   public function getType(): Type {
     return new ArrayType($this->keyType, $this->elementsType);
   }
-}
 
+  public function validate(Scope $scope): Type {
+    return new ArrayType($this->keyType->validate($scope), $this->elementsType->validate($scope));
+  }
+}

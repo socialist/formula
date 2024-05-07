@@ -5,8 +5,9 @@ use TimoLehnertz\formula\operator\overloads\Addition;
 use TimoLehnertz\formula\operator\overloads\Subtraction;
 use TimoLehnertz\formula\operator\overloads\UnaryMinus;
 use TimoLehnertz\formula\operator\overloads\UnaryPlus;
+use TimoLehnertz\formula\operator\overloads\TypeCast;
 
-class IntegerValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinus {
+class IntegerValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinus, TypeCast {
 
   private int $value;
 
@@ -24,6 +25,18 @@ class IntegerValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinu
 
   public function getType(): Type {
     return new IntegerType();
+  }
+
+  public function canCastTo(Type $type): bool {
+    return $type instanceof FloatType;
+  }
+
+  public function castTo(Type $type): Value {
+    if($type instanceof FloatType) {
+      return new FloatType($this->value);
+    } else {
+      throw new \BadFunctionCallException('Invalid cast');
+    }
   }
 
   public function getAdditionResultType(Type $type): ?Type {
@@ -76,6 +89,10 @@ class IntegerValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinu
 
   public function operatorUnaryMinus(): Value {
     return new IntegerValue(-$this->value);
+  }
+
+  public function isTruthy(): bool {
+    return $this->value !== 0;
   }
 }
 

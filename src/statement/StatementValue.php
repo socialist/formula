@@ -23,17 +23,20 @@ class StatementValue implements Value {
    * Null if no continue statement was called
    * int the number of continued cycles otherwise
    */
-  private readonly ?int $continueCount;
+  public readonly ?int $continueCount;
 
   /**
    * Indicates wether a break statement was executd
    */
-  private readonly bool $breakFlag;
+  public readonly bool $breakFlag;
 
-  private function __construct(Value $returnValue, ?int $continueCount = null, bool $breakFlag = false) {
+  public readonly bool $returnFlag;
+
+  private function __construct(Value $returnValue, ?int $continueCount = null, bool $breakFlag = false, bool $returnFlag = false) {
     $this->returnValue = $returnValue;
     $this->continueCount = $continueCount;
     $this->breakFlag = $breakFlag;
+    $this->returnFlag = $returnFlag;
   }
 
   public function getType(): Type {

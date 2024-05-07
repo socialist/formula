@@ -15,5 +15,7 @@ interface Value {
   public function assign(self $value): void;
 
   public function getType(): Type;
+
+  public function isTruthy(): bool;
 }
 

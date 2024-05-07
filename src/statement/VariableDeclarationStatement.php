@@ -1,72 +1,65 @@
 <?php
 namespace TimoLehnertz\formula\statement;
 
-use TimoLehnertz\formula\FormulaSettings;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
-use TimoLehnertz\formula\src\statement\Statement;
-use TimoLehnertz\formula\type\Locator;
-use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\procedure\StatementReturnInfo;
+use TimoLehnertz\formula\type\Type;
 
 /**
- * 
- * @author Timo Lehnertz
  *
+ * @author Timo Lehnertz
+ *        
  */
-class VariableDeclarationStatement extends Statement {
+class VariableDeclarationStatement implements Statement {
 
-  private string $typeName;
-  private ?Type $type = null;
-  private string $identifier;
-  private ?Expression $initilizer;
-  
-  public function __construct(string $typeName, string $identifier, ?Expression $initilizer) {
-    $this->typeName = $typeName;
+  private Type $type;
+
+  private readonly string $identifier;
+
+  private readonly ?Expression $initilizer;
+
+  private Scope $scope;
+
+  public function __construct(Type $type, string $identifier, ?Expression $initilizer) {
+    $this->type = $type;
     $this->identifier = $identifier;
     $this->initilizer = $initilizer;
   }
-  
-  public function registerDefines(): void {
-    // do nothing only register on run
-  }
-  
-  public function validate(Scope $scope, FormulaSettings $formulaSettings): Type {
-    // obtain actual type
-    $this->type = $this->scope->getTypeByName($this->typeName);
-    if($this->initilizer !== null) {
-      $type = $this->initilizer->validate($scope, $formulaSettings);
-      if(!$this->type->isAssignableWith($type)) {
-        throw new \Exception("Can't initialize variable ${$this->identifier} of type ${$this->type->toString()} with type ${$type->toString()}");
-      }
-    }
-    $scope->defineVariable($this->type, $this->identifier);
-    return $this->type;
+
+  public function defineReferences(): void {
+    // nothing to define
   }
 
-  public function run(Scope $scope): StatementReturnInfo {
-    $scope->defineVariable($this->type, $this->identifier);
-    if($this->initilizer !== null) {
-      $scope->initializeVariable($this->identifier, $this->initilizer->run());
+  public function run(): StatementValue {}
+
+  public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
+    if($this->initilizer === null) {
+      return $this->type->getIdentifier().' '.$this->identifier.';';
+    } else {
+      return $this->type->getIdentifier().' '.$this->identifier.' = '.$this->initilizer->toString($prettyPrintOptions).';';
     }
-    return StatementReturnInfo::buildBoring();
+  }
+
+  public function setScope(Scope $scope) {
+    $this->scope = $scope;
+    $this->initilizer->setScope($scope);
   }
 
   public function getSubParts(): array {
-    if($this->initilizer === null) {      
-      return [];
-    } else {
-      return [$this->initilizer];
-    }
-  }
-  
-  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    $declarationStr = $this->type->toString().' '.$this->identifier;
-    $initilizationStr = '';
     if($this->initilizer !== null) {
-      return $initilizationStr = '='.$this->initilizer->toString($prettyPrintOptions).';';
+      return $this->initilizer->getSubParts();
     }
-    return $declarationStr.$initilizationStr.';';
+    return [];
+  }
+
+  public function validate(): Type {
+    $this->type = $this->type->validate($this->scope);
+    if($this->initilizer !== null) {
+      $initilizerType = $this->initilizer->validate();
+      if(!$initilizerType->canCastTo($this->type)) {
+        throw new \BadFunctionCallException('cant initialize variable \"'.$this->identifier.'\" of type '.$this->type->getIdentifier().' with type '.$initilizerType->getIdentifier());
+      }
+    }
   }
 }

@@ -2,13 +2,15 @@
 namespace TimoLehnertz\formula;
 
 /**
- * 
- * @author Timo Lehnertz
  *
+ * @author Timo Lehnertz
+ *        
  */
 class FormulaSettings {
-  
-  public function __construct() {
-    
+
+  public function __construct() {}
+
+  public static function buildDefaultSettings(): FormulaSettings {
+    return new FormulaSettings();
   }
 }

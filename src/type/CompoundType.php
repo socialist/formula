@@ -1,6 +1,8 @@
 <?php
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\procedure\Scope;
+
 class CompoundType implements Type {
 
   /**
@@ -148,5 +150,18 @@ class CompoundType implements Type {
       }
     }
     return [];
+  }
+
+  public function validate(Scope $scope): Type {
+    $simplified = $this->simplify();
+    if($simplified instanceof CompoundType) {
+      $validated = [];
+      foreach($simplified->subTypes as $subType) {
+        $validated[] = $subType->validate($scope);
+      }
+      return new CompoundType($validated);
+    } else {
+      return $simplified->validate($scope);
+    }
   }
 }

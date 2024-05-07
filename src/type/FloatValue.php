@@ -5,6 +5,7 @@ use TimoLehnertz\formula\operator\overloads\Addition;
 use TimoLehnertz\formula\operator\overloads\Subtraction;
 use TimoLehnertz\formula\operator\overloads\UnaryPlus;
 use TimoLehnertz\formula\operator\overloads\UnaryMinus;
+use TimoLehnertz\formula\operator\overloads\TypeCast;
 
 class FloatValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinus {
 
@@ -24,6 +25,10 @@ class FloatValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinus 
 
   public function getType(): Type {
     return new FloatType();
+  }
+
+  public function isTruthy(): bool {
+    return $this->value !== 0;
   }
 
   public function getAdditionResultType(Type $type): ?Type {
@@ -78,4 +83,3 @@ class FloatValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinus 
     return new FloatValue(-$this->value);
   }
 }
-
