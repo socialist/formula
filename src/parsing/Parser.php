@@ -1,6 +1,7 @@
 <?php
 namespace TimoLehnertz\formula\parsing;
 
+use TimoLehnertz\formula\FormulaPart;
 use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\UnexpectedEndOfInputException;
 use TimoLehnertz\formula\tokens\Token;
@@ -9,31 +10,33 @@ use TimoLehnertz\formula\tokens\Token;
  * Superclass for all parsers
  *
  * @author Timo Lehnertz
- *        
+ *
  */
 abstract class Parser {
 
-  public static function parseRequired(Token &$token): mixed {
-    $parsed = self::parse($token);
-    if($parsed === null) {
-      throw new ParsingException('Failed parsing required part', $token);
+  public function parseRequired(?Token $firstToken): ParserReturn {
+    $parsed = $this->parse($firstToken);
+    if(is_int($parsed)) {
+      throw new ParsingException($parsed, $firstToken);
     }
     return $parsed;
   }
 
-  public static function parse(Token &$token): ?mixed {
-    $startToken = $token;
+  public function parse(?Token $firstToken): FormulaPart|int {
+    if($firstToken === null) {
+      ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
+    }
     try {
-      $parsed = self::parsePart($token);
+      return $this->parsePart($firstToken);
     } catch(UnexpectedEndOfInputException $e) {
-      $parsed = null;
+      return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
     }
-    if($parsed === null) {
-      $token = $startToken;
-    }
-    return $parsed;
   }
-  
-  protected static abstract function parsePart(Token &$token): ?mixed;
+
+  /**
+   * @return ParserReturn|ParsingException::PARSING_ERROR_*
+   * @throws UnexpectedEndOfInputException
+   */
+  protected abstract function parsePart(Token $firstToken): ParserReturn|int;
 }
 

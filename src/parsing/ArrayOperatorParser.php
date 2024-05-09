@@ -1,7 +1,7 @@
 <?php
 namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\expression\ArrayExpression;
+use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\operator\ArrayOperator;
 use TimoLehnertz\formula\tokens\Token;
 
@@ -12,21 +12,21 @@ use TimoLehnertz\formula\tokens\Token;
  * @author Timo Lehnertz
  */
 class ArrayOperatorParser extends Parser {
-  
-  protected static function parsePart(Token &$token): ?ArrayExpression {
-    if($token->id != Token::SQUARE_BRACKETS_OPEN) {
-      return null;
+
+  protected function parsePart(Token $firstToken): ParserReturn|int {
+    if($firstToken->id != Token::SQUARE_BRACKETS_OPEN) {
+      return ParsingException::PARSING_ERROR_GENERIC;
     }
-    $token = $token->requireNext();
-    $indexExpression = ExpressionParser::parse($token);
-    if($indexExpression === null) {
-      return null;
+    $token = $firstToken->requireNext();
+    $parsedIndexExpression = (new ExpressionParser())->parseRequired($token);
+    $token = $parsedIndexExpression->nextToken;
+    if($token === null) {
+      return ParsingException::PARSING_ERROR_GENERIC;
     }
-    if($token->id != Token::SQUARE_BRACKETS_CLOSED) {
-      return null;
+    if($token->id !== Token::SQUARE_BRACKETS_CLOSED) {
+      return ParsingException::PARSING_ERROR_GENERIC;
     }
-    $token = $token->next();
-    return new ArrayOperator($indexExpression);
+    return new ParserReturn(new ArrayOperator($parsedIndexExpression->parsed, $token->next()));
   }
 }
 

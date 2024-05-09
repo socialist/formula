@@ -1,12 +1,11 @@
 <?php
-namespace src\parsing;
+namespace TimoLehnertz\formula\parsing;
 
 use TimoLehnertz\formula\FormulaPart;
 
 /**
- *
  * @author Timo Lehnertz
- *        
+ *
  */
 class ParsedPart {
 

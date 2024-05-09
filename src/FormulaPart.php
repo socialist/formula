@@ -8,7 +8,7 @@ use TimoLehnertz\formula\type\Type;
  * Superclass for all parsed components of a formula program
  *
  * @author Timo Lehnertz
- *        
+ *
  */
 interface FormulaPart {
 
@@ -24,15 +24,13 @@ interface FormulaPart {
   public function validate(Scope $scope): Type;
 
   /**
-   *
    * @return FormulaPart[] that holds all Parts that make up this one
    */
   public function getSubParts(): array;
 
   /**
-   *
    * @return string Converts this expression back to code using PrettyPrintOptions
    */
-  public function toString(?PrettyPrintOptions $prettyPrintOptions): string;
+  public function toString(PrettyPrintOptions $prettyPrintOptions): string;
 }
 

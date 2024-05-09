@@ -1,10 +1,9 @@
 <?php
-namespace src\operator;
+namespace TimoLehnertz\formula\operator;
 
 /**
- *
  * @author Timo Lehnertz
- *        
+ *
  */
 enum OperatorType {
 

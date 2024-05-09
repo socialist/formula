@@ -1,46 +1,73 @@
 <?php
-namespace src\parsing;
+namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\parsing\Parser;
+use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\tokens\Token;
-use TimoLehnertz\formula\FormulaPart;
 
 class EnumeratedParser extends Parser {
 
   private readonly Parser $elementParser;
 
+  private readonly int $firstToken;
+
   private readonly int $delimiterToken;
 
-  private readonly int $endToken;
-  
-  public function __construct(Parser $elementParser, int $delimiterToken, int $endToken) {
-    parent::__construct();
+  private readonly int $lastToken;
+
+  private readonly bool $allowEmpty;
+
+  private readonly bool $allowLastDelimiter;
+
+  public function __construct(Parser $elementParser, int $firstToken, int $delimiterToken, int $lastToken, bool $allowEmpty, bool $allowLastDelimiter) {
     $this->elementParser = $elementParser;
+    $this->firstToken = $firstToken;
     $this->delimiterToken = $delimiterToken;
-    $this->endToken = $endToken;
+    $this->lastToken = $lastToken;
+    $this->allowEmpty = $allowEmpty;
+    $this->allowLastDelimiter = $allowLastDelimiter;
   }
-  
-  protected function parsePart(Token &$token): ?array {
-    $first = true;
+
+  protected function parsePart(Token $firstToken): ParserReturn|int {
+    if($firstToken->id !== $this->firstToken) {
+      return ParsingException::PARSING_ERROR_GENERIC;
+    }
+    $token = $firstToken->requireNext();
+    $allowedDelimiters = $this->allowEmpty ? PHP_INT_MAX : 0;
+    $requireDelimiter = false;
+    $lastWasDelimiter = false;
     $parsed = [];
-    while(true) {
-      $element = $this->elementParser->parse($token);
-      if($element === null) {
-        return null;
+    while($token !== null) {
+      if($token->id === $this->lastToken) {
+        if($lastWasDelimiter && !$this->allowLastDelimiter) {
+          return ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS;
+        }
+        return new ParserReturn($parsed, $token->next());
       }
-      $parsed[] = $element;
-      if($token === null) {
-        return null;
+      if($token->id === $this->delimiterToken) {
+        if($allowedDelimiters > 0) {
+          $allowedDelimiters--;
+          $requireDelimiter = false;
+          $lastWasDelimiter = true;
+          continue;
+        } else {
+          return ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS;
+        }
       }
-      if($token->id === $this->endToken) {
-        break;
-      }
-      if($token->id !== $this->delimiterToken) {
-        return null;
+      if($requireDelimiter) {
+        return ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS;
       }
 
+      $element = $this->elementParser->parse($token);
+      if(is_int($element)) {
+        return $element;
+      }
+      $parsed[] = $element;
+      $requireDelimiter = true;
+      $allowedDelimiters = $this->allowEmpty ? PHP_INT_MAX : 1;
+      $lastWasDelimiter = false;
+      $token = $token->next();
     }
-    return $parsed;
+    return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
   }
 }
 

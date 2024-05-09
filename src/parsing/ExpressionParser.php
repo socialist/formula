@@ -10,15 +10,14 @@ use TimoLehnertz\formula\expression\StringLiteral;
 use TimoLehnertz\formula\expression\TernaryExpression;
 use TimoLehnertz\formula\expression\VariableExpression;
 use TimoLehnertz\formula\operator\Operator;
+use TimoLehnertz\formula\tokens\Token;
 
 /**
- *
  * @author Timo Lehnertz
- *        
  */
 class ExpressionParser extends Parser {
 
-  protected static function parsePart(array &$tokens, int &$index): ?FormulaPart {
+  protected function parsePart(Token $firstToken): ParserReturn|int {
     $insideBrackets = false;
     if($tokens[$index]->name === '(') {
       $insideBrackets = true;
@@ -50,15 +49,17 @@ class ExpressionParser extends Parser {
           $condition = ExpressionParser::buildExpression($parts, false);
           self::addIndex($tokens, $index);
           $leftExpression = self::parse($tokens, $index);
-          if(!$leftExpression) throw new ExpressionNotFoundException("Invalid left ternary expression", $tokens, $index);
-          if(sizeof($tokens) <= $index) throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
-          if($tokens[$index]->name != ":") throw new ExpressionNotFoundException("Expected \":\" (Ternary)", $tokens, $index);
+          if(!$leftExpression)
+            throw new ExpressionNotFoundException("Invalid left ternary expression", $tokens, $index);
+          if(sizeof($tokens) <= $index)
+            throw new ExpressionNotFoundException("Unexpected end of input", $tokens, $index);
+          if($tokens[$index]->name != ":")
+            throw new ExpressionNotFoundException("Expected \":\" (Ternary)", $tokens, $index);
           self::addIndex($tokens, $index);
           $rightExpression = self::parse($tokens, $index);
-          if(!$rightExpression) throw new ExpressionNotFoundException("Invalid ternary expression", $tokens, $index);
-          $parts = [
-            new TernaryExpression($condition, $leftExpression, $rightExpression)
-          ];
+          if(!$rightExpression)
+            throw new ExpressionNotFoundException("Invalid ternary expression", $tokens, $index);
+          $parts = [new TernaryExpression($condition, $leftExpression, $rightExpression)];
           $index--; // prevent $index++
           break;
         case 'B': // Boolean
@@ -92,9 +93,7 @@ class ExpressionParser extends Parser {
             $parts[] = $method;
             $index--;
           } else {
-            $parts[] = [
-              new VariableExpression($token->value)
-            ];
+            $parts[] = [new VariableExpression($token->value)];
           }
           break;
       }

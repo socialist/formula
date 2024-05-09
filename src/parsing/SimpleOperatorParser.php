@@ -10,9 +10,7 @@ use TimoLehnertz\formula\tokens\Token;
  *
  * @author Timo Lehnertz
  */
-class ArrayParser extends EnumeratedParser {
+class SimpleOperatorParser extends Parser {
 
-  public function __construct() {
-    parent::__construct(new ExpressionParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, true);
-  }
+  protected function parsePart(Token $firstToken): ParserReturn|int {}
 }
