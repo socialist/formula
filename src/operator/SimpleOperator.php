@@ -6,6 +6,7 @@ use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 
 /**
+ *
  * @author Timo Lehnertz
  */
 class SimpleOperator extends Operator {
@@ -41,6 +42,7 @@ class SimpleOperator extends Operator {
   public const TYPE_FUNCTION_CALL = 27;
   public const TYPE_TYPEOF = 28;
   public const TYPE_SCOPE_RESOLUTION = 29;
+  public const TYPE_LOGICAL_NOT = 30;
 
   private static array $setups = [
     SimpleOperator::TYPE_ADDITION       => ["+",OperatorType::Infix,6,true],
@@ -51,6 +53,7 @@ class SimpleOperator extends Operator {
   private readonly int $id;
 
   /**
+   *
    * @param SimpleOperator::TYPE_* $id
    * @throws \BadFunctionCallException
    */

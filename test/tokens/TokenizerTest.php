@@ -31,7 +31,7 @@ class TokenizerTest extends TestCase {
       [Token::LOGICAL_AND, '&&', '&&'],
       [Token::LOGICAL_OR, '||', '||'],
       [Token::LOGICAL_XOR, '^', '^'],
-      [Token::LOGICAL_NOT, '!', '!'],
+      [Token::EXCLAMATION_MARK, '!', '!'],
       [Token::COMPARISON_EQUALS, '==', '=='],
       [Token::COMPARISON_NOT_EQUALS, '!=', '!='],
       [Token::COMPARISON_SMALLER, '<', '<'],
@@ -71,6 +71,7 @@ class TokenizerTest extends TestCase {
       [Token::DOT, '.', '.'],
       [Token::STRING_CONSTANT, '"ABC123!"', 'ABC123!'],
       [Token::IDENTIFIER, 'abc ', 'abc'],
+      [Token::MODULO, '% ', '%'],
     ];
   }
 

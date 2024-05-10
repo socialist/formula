@@ -269,6 +269,7 @@ class Tokenizer {
     "^=" => Token::ASSIGNMENT_XOR,
     "++" => Token::INCREMENT,
     "--" => Token::DECREMENT,
+    "%" => Token::MODULO,
 
     "{" => Token::CURLY_BRACKETS_OPEN,
     "}" => Token::CURLY_BRACKETS_CLOSED,
@@ -311,12 +312,11 @@ class Tokenizer {
     "|" => Token::INTL_BACKSLASH,
     "?" => Token::QUESTIONMARK,
     "." => Token::DOT,
-    "!" => Token::LOGICAL_AND,
     "=" => Token::ASSIGNMENT,
     ":" => Token::COlON,
     "^" => Token::LOGICAL_XOR,
-    "!" => Token::LOGICAL_NOT,
     "<" => Token::COMPARISON_SMALLER,
     ">" => Token::COMPARISON_GREATER,
+    "!" => Token::EXCLAMATION_MARK,
   ];
 }

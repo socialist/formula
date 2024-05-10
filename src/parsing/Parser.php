@@ -10,18 +10,17 @@ use TimoLehnertz\formula\tokens\Token;
  * Superclass for all parsers
  *
  * @author Timo Lehnertz
- *
+ *        
  */
 abstract class Parser {
 
-  public function parseRequired(?Token $firstToken): ParserReturn {
-    $parsed = $this->parse($firstToken);
-    if(is_int($parsed)) {
-      throw new ParsingException($parsed, $firstToken);
-    }
-    return $parsed;
-  }
-
+  //   public function parseRequired(?Token $firstToken): ParserReturn {
+  //     $parsed = $this->parse($firstToken);
+  //     if(is_int($parsed)) {
+  //       throw new ParsingException($parsed, $firstToken);
+  //     }
+  //     return $parsed;
+  //   }
   public function parse(?Token $firstToken): FormulaPart|int {
     if($firstToken === null) {
       ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
@@ -34,6 +33,7 @@ abstract class Parser {
   }
 
   /**
+   *
    * @return ParserReturn|ParsingException::PARSING_ERROR_*
    * @throws UnexpectedEndOfInputException
    */

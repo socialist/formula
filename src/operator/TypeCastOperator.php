@@ -1,13 +1,14 @@
 <?php
-namespace src\expression;
+namespace TimoLehnertz\formula\operator;
 
-use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\expression\Expression;
+use TimoLehnertz\formula\operator\Operator;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\Value;
 use TimoLehnertz\formula\type\Type;
+use TimoLehnertz\formula\type\Value;
 
-class TypeCastExpression implements Expression {
+class TypeCastOperator implements Operator {
 
   private readonly bool $explicit;
 
