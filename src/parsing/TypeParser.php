@@ -1,14 +1,17 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
+use TimoLehnertz\formula\ParsingException;
+use TimoLehnertz\formula\tokens\Token;
 use TimoLehnertz\formula\type\ArrayType;
 use TimoLehnertz\formula\type\BooleanType;
 use TimoLehnertz\formula\type\CompoundType;
+use TimoLehnertz\formula\type\FloatType;
 use TimoLehnertz\formula\type\IntegerType;
 use TimoLehnertz\formula\type\ReferenceType;
+use TimoLehnertz\formula\type\StringType;
 use TimoLehnertz\formula\type\Type;
-use TimoLehnertz\formula\tokens\Token;
-use TimoLehnertz\formula\type\FloatType;
 
 /**
  * ArrayDimension ::= [](<ArrayDimension>|<>)
@@ -17,150 +20,118 @@ use TimoLehnertz\formula\type\FloatType;
  * Type ::= <SingleType> | <CompoundType> | (<CompoundType> | <Type>)<ArrayDimension|<>>
  *
  * @author Timo Lehnertz
- *        
+ *
  */
-class TypeParser {
+class TypeParser extends Parser {
 
-  /**
-   *
-   * @param Token[] $tokens
-   */
-  private static function parseArrayDimension(array &$tokens, int &$index, Type $type): ?Type {
-    $startIndex = $index;
+  private function parseArrayDimension(Token $firstToken, Type $type): ParserReturn|int {
     $arrayDimension = 0;
-    do {
-      if($index >= sizeof($tokens)) {
-        break;
-      }
-      $token = $tokens[$index];
-      if($token->name === '[') {
-        $index++;
-        if($index >= sizeof($tokens)) {
-          $index = $startIndex;
-          return null;
+    $token = $firstToken;
+    while($token !== null) {
+      if($token->id === Token::SQUARE_BRACKETS_OPEN) {
+        if(!$token->hasNext()) {
+          return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
         }
-        $token = $tokens[$index];
-        if($token->name !== ']') {
-          return null;
+        $token = $token->next();
+        if($token->id !== Token::SQUARE_BRACKETS_CLOSED) {
+          return ParsingException::PARSING_ERROR_GENERIC;
         }
-        $index++;
         $arrayDimension++;
       } else {
         break;
       }
-    } while(true);
-    if($arrayDimension !== 0) {
-      $type = new ArrayType(new IntegerType(), $type);
-      for($i = 0;$i < $arrayDimension - 1;$i++) {
-        $type = new ArrayType(new IntegerType(), $type);
-      }
+      $token = $token->next();
     }
-    return $type;
+    while($arrayDimension > 0) {
+      $type = new ArrayType(new IntegerType(), $type);
+      $arrayDimension--;
+    }
+    return new ParserReturn($type, $token);
   }
 
-  /**
-   *
-   * @param Token[] $tokens
-   */
-  private static function parseSingleType(array &$tokens, int &$index): ?Type {
-    $token = $tokens[$index];
+  private function parseSingleType(Token $firstToken): ParserReturn|int {
     $type = null;
-    $startIndex = $index;
-    if($token->name === 'I') {
-      $type = new ReferenceType($token->value);
-    } else if($token->name === 'bool') {
+    if($firstToken->id === Token::IDENTIFIER) {
+      $type = new ReferenceType($firstToken->value);
+    } else if($firstToken->id === Token::KEYWORD_BOOL) {
       $type = new BooleanType();
-    } else if($token->name === 'int') {
+    } else if($firstToken->id === Token::KEYWORD_INT) {
       $type = new IntegerType();
-    } else if($token->name === 'float') {
+    } else if($firstToken->id === Token::KEYWORD_FLOAT) {
       $type = new FloatType();
+    } else if($firstToken->id === Token::KEYWORD_STRING) {
+      $type = new StringType();
     } else {
-      return null;
+      return ParsingException::PARSING_ERROR_GENERIC;
     }
-    $index++;
-    if($index >= sizeof($tokens)) {
+    if(!$firstToken->hasNext()) {
+      return new ParserReturn($type, $firstToken->next());
+    }
+    $type = static::parseArrayDimension($firstToken->next(), $type);
+    if(is_int($type)) {
       return $type;
     }
-    $type = static::parseArrayDimension($tokens, $index, $type);
-    if($type === null) {
-      $index = $startIndex;
-      return null;
-    }
     return $type;
   }
 
-  /**
-   *
-   * @param Token[] $tokens
-   */
-  public static function parseType(array &$tokens, int &$index): ?Type {
+  protected function parsePart(Token $firstToken): ParserReturn|int {
     $inBrackets = false;
-    $startIndex = $index;
-    $token = $tokens[$index];
-    if($token->name === '(') {
+    $token = $firstToken;
+    if($token->id === Token::BRACKETS_OPEN) {
       $inBrackets = true;
-      $index++;
-      if($index >= sizeof($tokens)) {
-        $index = $startIndex;
-        return null;
+      $token = $token->next();
+      if($token === null) {
+        return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
       }
     }
     $types = [];
-    do {
-      $token = $tokens[$index];
-      if($token->name === '(') {
-        $type = static::parseType($tokens, $index);
+    while($token !== null) {
+      if($token->id === Token::BRACKETS_OPEN) {
+        $parsed = $this->parsePart($token);
       } else {
-        $type = static::parseSingleType($tokens, $index);
+        $parsed = $this->parseSingleType($token);
       }
-      if($type === null) {
+      if(is_int($parsed)) {
         break;
       }
-      $type = static::parseArrayDimension($tokens, $index, $type);
-      if($type === null) {
-        $index = $startIndex;
-        return null;
-      }
-      $types[] = $type;
-      if($index >= sizeof($tokens)) {
+      $token = $parsed->nextToken;
+      if($token === null) {
+        $types[] = $parsed->parsed;
         break;
       }
-      $token = $tokens[$index];
-      if($token->name !== '|') {
+      $parsed = $this->parseArrayDimension($token, $parsed->parsed);
+      if(is_int($parsed)) {
+        return $parsed;
+      }
+      $types[] = $parsed->parsed;
+      $token = $parsed->nextToken;
+      if($token === null) {
+        break;
+      }
+      if($token->id !== Token::INTL_BACKSLASH) {
         break;
       } else {
-        $index++;
+        $token = $token->next();
       }
-      if($index >= sizeof($tokens)) {
-        $index = $startIndex;
-        return null;
-      }
-    } while(true);
+    }
     $type = CompoundType::concatManyTypes($types);
     if($type === null) {
-      $index = $startIndex;
-      return $type;
+      return ParsingException::PARSING_ERROR_INVALID_TYPE;
     }
-    if($index >= sizeof($tokens)) {
-      return $type;
-    }
-    $token = $tokens[$index];
     if($inBrackets) {
-      if($token->name !== ')') {
-        $index = $startIndex;
-        return null;
+      if($token === null || $token->id !== Token::BRACKETS_CLOSED) {
+        return ParsingException::PARSING_ERROR_GENERIC;
       }
-      $index++;
-      if($index > sizeof($tokens)) {
-        $index = $startIndex;
-        return null;
-      }
-      $type = static::parseArrayDimension($tokens, $index, $type);
-      if($type === null) {
-        $index = $startIndex;
-        return null;
+      $token = $token->next();
+      if($token->hasNext()) {
+        $parsed = $this->parseArrayDimension($token, $type);
+        if(is_int($parsed)) {
+          return $parsed;
+        }
+        $token = $parsed->nextToken;
+        $type = $parsed->parsed;
       }
     }
-    return $type;
+    return new ParserReturn($type, $token);
   }
 }

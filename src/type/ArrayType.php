@@ -1,8 +1,12 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\procedure\Scope;
 
+/**
+ * @author Timo Lehnertz
+ */
 class ArrayType implements Type {
 
   private Type $keyType;
@@ -22,7 +26,6 @@ class ArrayType implements Type {
   }
 
   /**
-   *
    * @return SubProperty[]
    */
   public function getSubProperties(): array {
@@ -39,10 +42,6 @@ class ArrayType implements Type {
 
   public function getImplementedOperators(): array {
     return [];
-  }
-
-  public function getType(): Type {
-    return new ArrayType($this->keyType, $this->elementsType);
   }
 
   public function validate(Scope $scope): Type {

@@ -4,9 +4,8 @@ namespace TimoLehnertz\formula\tokens;
 use TimoLehnertz\formula\UnexpectedEndOfInputException;
 
 /**
- *
  * @author Timo Lehnertz
- *        
+ *
  */
 class Token {
 
@@ -34,11 +33,7 @@ class Token {
   }
 
   public function hasPrev(bool $includeComments = false): bool {
-    if($this->prev($includeComments) === null) {
-      return false;
-    }
-
-    return $this->prev !== null;
+    return $this->prev($includeComments) !== null;
   }
 
   public function prev(bool $includeComments = false): ?Token {
@@ -47,6 +42,8 @@ class Token {
     } else if($this->prev !== null) {
       if($this->prev->id === static::LINE_COMMENT || $this->prev->id === static::MULTI_LINE_COMMENT) {
         return $this->prev->prev($includeComments);
+      } else {
+        return $this->prev;
       }
     }
     return null;
@@ -67,9 +64,11 @@ class Token {
   public function next(bool $includeComments = false): ?Token {
     if($includeComments) {
       return $this->next;
-    } else if($this->prev !== null) {
+    } else if($this->next !== null) {
       if($this->next->id === static::LINE_COMMENT || $this->next->id === static::MULTI_LINE_COMMENT) {
         return $this->next->next($includeComments);
+      } else {
+        return $this->next;
       }
     }
     return null;
@@ -139,5 +138,6 @@ class Token {
   public const STRING_CONSTANT = 61;
   public const IDENTIFIER = 62;
   public const MODULO = 63;
+  public const KEYWORD_INSTANCEOF = 64;
   // @formatter:on
 }

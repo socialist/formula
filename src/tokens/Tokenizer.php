@@ -6,9 +6,8 @@ use TimoLehnertz\formula\UnexpectedEndOfInputException;
 use src\tokens\TokenisationException;
 
 /**
- *
  * @author Timo Lehnertz
- *        
+ *
  */
 class Tokenizer {
 
@@ -37,29 +36,6 @@ class Tokenizer {
   }
 
   /**
-   *
-   * @param string $char the char to be parsed
-   * @param int $position the global position inside the formula. Only used for Exeption messages
-   * @return bool true when parsing was succsessful
-   */
-  public function parse(string $char): ?string {
-    //     if(!$this->allowWhiteSpaces && ctype_space($char)) return false;
-    $matches = [];
-    $this->buffer .= $char;
-    $this->isSure = $this->startRegex !== null && preg_match($this->startRegex, $this->buffer);
-    preg_match($this->regex, $this->buffer, $matches);
-    if($matches && $matches[0] == $this->buffer) {
-      $this->valid = true;
-      $this->value = $this->buffer;
-    } else {
-      if($this->valid) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
    * Has to get called once the end of text has been reached.
    * Behaves identical to parse
    *
@@ -82,7 +58,7 @@ class Tokenizer {
   private static function isValidForIdentifier(string $char): bool {
     return ctype_alpha($char) || ctype_digit($char) || $char === '_';
   }
-  
+
   /**
    * Converts a string into Tokens
    *
@@ -150,7 +126,7 @@ class Tokenizer {
             }
           } else {
             if(!static::isValidForIdentifier($char)) {
-              $lastToken = new Token($keyword, substr($buffer, 0, strlen($buffer) - 1), $line, $position, $lastToken);
+              $lastToken = new Token($keyword, substr($buffer, 0, strlen($buffer) - strlen($char)), $line, $position, $lastToken);
               $addedToken();
               $i--;
               break;
@@ -182,7 +158,7 @@ class Tokenizer {
           // check identifier
           if(ctype_alpha($buffer[0]) && strlen($buffer) > 1) {
             if(!static::isValidForIdentifier($char)) {
-              $lastToken = new Token(Token::IDENTIFIER, substr($buffer, 0, strlen($buffer) - 1), $line, $position, $lastToken);
+              $lastToken = new Token(Token::IDENTIFIER, substr($buffer, 0, strlen($buffer) - strlen($char)), $line, $position, $lastToken);
               $addedToken();
               $i--;
               break;
@@ -249,6 +225,7 @@ class Tokenizer {
 
   private const MULTI_LINE_COMMENT_END = "*/";
 
+  // @formatter:off
   private const INSTANT_TOKENS = [
     "??" => Token::NULLISH,
     "&&" => Token::LOGICAL_AND,
@@ -301,7 +278,8 @@ class Tokenizer {
     "if" => Token::KEYWORD_IF,
     "while" => Token::KEYWORD_WHILE,
     "do" => Token::KEYWORD_DO,
-    "for" => Token::KEYWORD_FOR
+    "for" => Token::KEYWORD_FOR,
+    "instanceof" => Token::KEYWORD_INSTANCEOF
   ];
 
   private const SINGLE_TOKENS = [
@@ -319,4 +297,5 @@ class Tokenizer {
     ">" => Token::COMPARISON_GREATER,
     "!" => Token::EXCLAMATION_MARK,
   ];
+  // @formatter:on
 }

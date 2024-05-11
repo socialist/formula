@@ -18,7 +18,10 @@ class ArrayOperatorParser extends Parser {
       return ParsingException::PARSING_ERROR_GENERIC;
     }
     $token = $firstToken->requireNext();
-    $parsedIndexExpression = (new ExpressionParser())->parseRequired($token);
+    $parsedIndexExpression = (new ExpressionParser())->parse($token);
+    if(is_int($parsedIndexExpression)) {
+      return $parsedIndexExpression;
+    }
     $token = $parsedIndexExpression->nextToken;
     if($token === null) {
       return ParsingException::PARSING_ERROR_GENERIC;
@@ -29,4 +32,3 @@ class ArrayOperatorParser extends Parser {
     return new ParserReturn(new ArrayOperator($parsedIndexExpression->parsed, $token->next()));
   }
 }
-

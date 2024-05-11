@@ -1,16 +1,16 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula;
 
+/**
+ * @author Timo Lehnertz
+ */
 class PrettyPrintOptions {
-  
-  private string $statementSeperator;
-  
-  public function __construct() {
-    $this->statementSeperator = PHP_EOL;
-  }
-  
-  public function getStatementSeperator(): string {
-    return $this->statementSeperator;
+
+  public function __construct() {}
+
+  public static function buildDefault(): PrettyPrintOptions {
+    return new PrettyPrintOptions();
   }
 }
 

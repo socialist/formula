@@ -1,9 +1,13 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
 use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\tokens\Token;
 
+/**
+ * @author Timo Lehnertz
+ */
 class EnumeratedParser extends Parser {
 
   private readonly Parser $elementParser;
@@ -48,13 +52,14 @@ class EnumeratedParser extends Parser {
           $allowedDelimiters--;
           $requireDelimiter = false;
           $lastWasDelimiter = true;
+          $token = $token->next();
           continue;
         } else {
           return ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS;
         }
       }
       if($requireDelimiter) {
-        return ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS;
+        return ParsingException::PARSING_ERROR_MISSING_DELIMITERS;
       }
 
       $element = $this->elementParser->parse($token);
@@ -65,9 +70,8 @@ class EnumeratedParser extends Parser {
       $requireDelimiter = true;
       $allowedDelimiters = $this->allowEmpty ? PHP_INT_MAX : 1;
       $lastWasDelimiter = false;
-      $token = $token->next();
+      $token = $element->nextToken;
     }
     return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
   }
 }
-

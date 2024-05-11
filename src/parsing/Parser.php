@@ -1,16 +1,15 @@
 <?php
 namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\FormulaPart;
 use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\UnexpectedEndOfInputException;
 use TimoLehnertz\formula\tokens\Token;
 
 /**
- * Superclass for all parsers
- *
  * @author Timo Lehnertz
- *        
+ *
+ *         Superclass for all parsers
+ *
  */
 abstract class Parser {
 
@@ -21,9 +20,9 @@ abstract class Parser {
   //     }
   //     return $parsed;
   //   }
-  public function parse(?Token $firstToken): FormulaPart|int {
+  public function parse(?Token $firstToken): ParserReturn|int {
     if($firstToken === null) {
-      ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
+      return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
     }
     try {
       return $this->parsePart($firstToken);
@@ -33,7 +32,6 @@ abstract class Parser {
   }
 
   /**
-   *
    * @return ParserReturn|ParsingException::PARSING_ERROR_*
    * @throws UnexpectedEndOfInputException
    */

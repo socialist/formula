@@ -7,18 +7,23 @@ use TimoLehnertz\formula\procedure\Scope;
 /**
  * @author Timo Lehnertz
  */
-class VoidType implements Type {
+class NullType implements Type {
 
-  public function getIdentifier(bool $nested = false): string {
-    return 'void';
-  }
+  public function __construct() {}
 
   public function canCastTo(Type $type): bool {
-    return $type instanceof VoidType;
+    return false;
   }
 
+  /**
+   * @return SubProperty[]
+   */
   public function getSubProperties(): array {
     return [];
+  }
+
+  public function getIdentifier(bool $isNested = false): string {
+    return 'null';
   }
 
   public function getImplementedOperators(): array {

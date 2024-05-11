@@ -9,7 +9,6 @@ use TimoLehnertz\formula\expression\Expression;
 
 /**
  * @author Timo Lehnertz
- *
  */
 class CallOperator extends Operator {
 
@@ -22,6 +21,7 @@ class CallOperator extends Operator {
    * @param array<Expression> $args
    */
   public function __construct(array $args) {
+    parent::__construct(OperatorType::Postfix, 2, true);
     $this->args = $args;
   }
 

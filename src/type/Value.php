@@ -1,12 +1,9 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\type\Type;
-
 /**
- *
  * @author Timo Lehnertz
- *        
  */
 interface Value {
 
@@ -17,5 +14,7 @@ interface Value {
   public function getType(): Type;
 
   public function isTruthy(): bool;
+
+  public function copy(): Value;
 }
 

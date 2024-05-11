@@ -1,61 +1,44 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\operator;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
-use TimoLehnertz\formula\expression\Expression;
-use TimoLehnertz\formula\operator\Operator;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
-use TimoLehnertz\formula\type\Value;
 
-class TypeCastOperator implements Operator {
+/**
+ * @author Timo Lehnertz
+ */
+class TypeCastOperator extends Operator {
 
   private readonly bool $explicit;
 
   private Type $type;
 
-  private readonly Expression $expression;
-
-  private Scope $scope;
-
-  public function __construct(bool $explicit, Type $type, Expression $expression) {
+  public function __construct(bool $explicit, Type $type) {
+    parent::__construct(OperatorType::Prefix, 3, false);
     $this->explicit = $explicit;
     $this->type = $type;
-    $this->expression = $expression;
   }
 
   public function defineReferences(): void {
     // nothing to define
   }
 
-  public function run(): Value {
-    $value = $this->expression->run();
-    return $value->getType()
-      ->castTo($this->type, $value);
-  }
-
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     if($this->explicit) {
-      return '('.$this->type->getIdentifier().') '.$this->expression->toString($prettyPrintOptions);
+      return '('.$this->type->getIdentifier().')';
     } else {
-      return $this->expression->toString($prettyPrintOptions);
+      return '';
     }
-  }
-
-  public function setScope(Scope $scope): void {
-    $this->scope = $scope;
-    $this->expression->setScope($scope);
   }
 
   public function getSubParts(): array {
-    return $this->expression->getSubParts();
+    return [];
   }
 
-  public function validate(): Type {
-    $this->type = $this->type->validate($this->scope);
-    $expressionType = $this->expression->validate();
-    if(!$expressionType->canCastTo($this->type)) {
-      throw new \BadFunctionCallException('Can\'t cast from '.$expressionType->getIdentifier().' to '.$this->type->getIdentifier());
-    }
+  public function validate(Scope $scope): Type {
+    $this->type = $this->type->validate($scope);
+    return $this->type;
   }
 }

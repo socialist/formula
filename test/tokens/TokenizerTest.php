@@ -7,6 +7,7 @@ use TimoLehnertz\formula\tokens\Token;
 
 class TokenizerTest extends TestCase {
 
+  // @formatter:off
   public static function getTokens(): array {
     return [
       [Token::KEYWORD_INT, 'int ', 'int'],
@@ -26,6 +27,7 @@ class TokenizerTest extends TestCase {
       [Token::KEYWORD_WHILE, 'while ', 'while'],
       [Token::KEYWORD_DO, 'do ', 'do'],
       [Token::KEYWORD_FOR, 'for ', 'for'],
+      [Token::KEYWORD_INSTANCEOF, 'instanceof', 'instanceof'],
       [Token::COlON, ':', ':'],
       [Token::QUESTIONMARK, '?', '?'],
       [Token::LOGICAL_AND, '&&', '&&'],
@@ -70,14 +72,14 @@ class TokenizerTest extends TestCase {
       [Token::SPREAD, '...', '...'],
       [Token::DOT, '.', '.'],
       [Token::STRING_CONSTANT, '"ABC123!"', 'ABC123!'],
-      [Token::IDENTIFIER, 'abc ', 'abc'],
+      [Token::IDENTIFIER, 'abc', 'abc'],
       [Token::MODULO, '% ', '%'],
     ];
   }
-
+  // @formatter:on
   public function testTokens(): void {
     $tokens = static::getTokens();
-    foreach ($tokens as $token) {
+    foreach($tokens as $token) {
       $tokenized = Tokenizer::tokenize($token[1]);
       $this->assertEquals($token[0], $tokenized->id);
       $this->assertEquals($token[2], $tokenized->value);

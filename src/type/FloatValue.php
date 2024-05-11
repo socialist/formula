@@ -1,12 +1,15 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\operator\overloads\Addition;
 use TimoLehnertz\formula\operator\overloads\Subtraction;
-use TimoLehnertz\formula\operator\overloads\UnaryPlus;
 use TimoLehnertz\formula\operator\overloads\UnaryMinus;
-use TimoLehnertz\formula\operator\overloads\TypeCast;
+use TimoLehnertz\formula\operator\overloads\UnaryPlus;
 
+/**
+ * @author Timo Lehnertz
+ */
 class FloatValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinus {
 
   private float $value;
@@ -19,8 +22,11 @@ class FloatValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinus 
     return ''.$this->value;
   }
 
-  public function assign(FloatValue $value): void {
-    $this->value = $value->value;
+  public function assign(Value $value): void {
+    if($value instanceof BooleanValue) {
+      $this->value = $value->value;
+    }
+    throw new \BadFunctionCallException('Incompatible type');
   }
 
   public function getType(): Type {
@@ -67,6 +73,10 @@ class FloatValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinus 
     }
   }
 
+  public function copy(): FloatValue {
+    return new FloatValue($this->value);
+  }
+
   public function getUnaryPlusResultType(Type $type): ?Type {
     return new FloatType();
   }
@@ -81,5 +91,10 @@ class FloatValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinus 
 
   public function operatorUnaryMinus(): Value {
     return new FloatValue(-$this->value);
+  }
+
+  // used for testing
+  public function getValue(): float {
+    return $this->value;
   }
 }

@@ -13,8 +13,11 @@ class BooleanValue implements Value {
     return $this->value ? 'true' : 'false';
   }
 
-  public function assign(BooleanValue $value): void {
-    $this->value = $value->value;
+  public function assign(Value $value): void {
+    if($value instanceof BooleanValue) {
+      $this->value = $value->value;
+    }
+    throw new \BadFunctionCallException('Incompatible type');
   }
 
   public function getType(): Type {
@@ -22,6 +25,15 @@ class BooleanValue implements Value {
   }
 
   public function isTruthy(): bool {
+    return $this->value;
+  }
+
+  public function copy(): BooleanValue {
+    return new BooleanValue($this->value);
+  }
+
+  // used for testing
+  public function getValue(): bool {
     return $this->value;
   }
 }

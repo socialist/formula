@@ -17,6 +17,8 @@ class ParsingException extends \Exception {
 
   public const PARSING_ERROR_MISSING_DELIMITERS = 4;
 
+  public const PARSING_ERROR_INVALID_TYPE = 5;
+
   public function __construct(int $code, Token $token) {
     parent::__construct('Unexpected token "'.$token->value.'" at: '.$token->line.':'.$token->position.' Message: '.static::codeToMessage($code));
   }
@@ -31,6 +33,8 @@ class ParsingException extends \Exception {
         return 'too many delimiters';
       case static::PARSING_ERROR_MISSING_DELIMITERS:
         return 'missing delimiter';
+      case static::PARSING_ERROR_INVALID_TYPE:
+        return 'invalid type';
       default:
         throw new \UnexpectedValueException($code.' is no valid ParsingExceptionCode');
     }

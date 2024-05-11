@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\operator\overloads\Addition;
@@ -7,6 +8,9 @@ use TimoLehnertz\formula\operator\overloads\UnaryMinus;
 use TimoLehnertz\formula\operator\overloads\UnaryPlus;
 use TimoLehnertz\formula\operator\overloads\TypeCast;
 
+/**
+ * @author Timo Lehnertz
+ */
 class IntegerValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinus, TypeCast {
 
   private int $value;
@@ -19,8 +23,11 @@ class IntegerValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinu
     return ''.$this->value;
   }
 
-  public function assign(IntegerValue $value): void {
-    $this->value = $value->value;
+  public function assign(Value $value): void {
+    if($value instanceof IntegerValue) {
+      $this->value = $value->value;
+    }
+    throw new \BadFunctionCallException('Incompatible type');
   }
 
   public function getType(): Type {
@@ -75,6 +82,10 @@ class IntegerValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinu
     }
   }
 
+  public function copy(): IntegerValue {
+    return new IntegerValue($this->value);
+  }
+
   public function getUnaryPlusResultType(Type $type): ?Type {
     return new IntegerType();
   }
@@ -93,6 +104,11 @@ class IntegerValue implements Value, Addition, Subtraction, UnaryPlus, UnaryMinu
 
   public function isTruthy(): bool {
     return $this->value !== 0;
+  }
+
+  // used for testing
+  public function getValue(): int {
+    return $this->value;
   }
 }
 
