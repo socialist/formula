@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\operator\OperatableOperator;
 use TimoLehnertz\formula\procedure\Scope;
 
 /**
@@ -18,18 +19,11 @@ class ArrayType implements Type {
     $this->elementsType = $elementsType;
   }
 
-  public function canCastTo(Type $type): bool {
+  public function assignableBy(Type $type): bool {
     if(!($type instanceof ArrayType)) {
       return false;
     }
-    return $this->keyType->canCastTo($type->keyType) && $this->elementsType->canCastTo($type->elementsType);
-  }
-
-  /**
-   * @return SubProperty[]
-   */
-  public function getSubProperties(): array {
-    return [];
+    return $type->keyType->assignableBy($this->keyType) && $this->elementsType->assignableBy($type->elementsType);
   }
 
   public function getIdentifier(bool $isNested = false): string {
@@ -40,11 +34,12 @@ class ArrayType implements Type {
     }
   }
 
-  public function getImplementedOperators(): array {
-    return [];
-  }
-
   public function validate(Scope $scope): Type {
     return new ArrayType($this->keyType->validate($scope), $this->elementsType->validate($scope));
+  }
+
+  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
+    $arrayValue = new ArrayValue([], $this);
+    return $arrayValue->getOperatorResultType($operator, $otherType);
   }
 }

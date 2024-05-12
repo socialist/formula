@@ -5,17 +5,16 @@ namespace TimoLehnertz\formula\parsing;
 use TimoLehnertz\formula\tokens\Token;
 use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\expression\IdentifierExpression;
+use TimoLehnertz\formula\operator\Operator;
+use TimoLehnertz\formula\expression\OperatorExpression;
+use TimoLehnertz\formula\operator\OperatorType;
+use TimoLehnertz\formula\expression\Expression;
+use TimoLehnertz\formula\expression\BracketExpression;
 
 /**
  * @author Timo Lehnertz
  */
 class ExpressionParser extends Parser {
-
-  private function transform(array $expressionsAndOperators, Token $nextToken): ParserReturn|int {
-    if(count($expressionsAndOperators) === 0) {
-      return ParsingException::PARSING_ERROR_GENERIC;
-    }
-  }
 
   // @formatter:off
   private static array $expressionEndingTokens = [
@@ -28,17 +27,29 @@ class ExpressionParser extends Parser {
   ];
 
   // @formatter:on
-  protected function parsePart(Token $firstToken): ParserReturn|int {
+  protected function parsePart(Token $firstToken, bool $topLevel = true): ParserReturn|int {
     $token = $firstToken;
-    $inBrackets = $token->id === Token::BRACKETS_OPEN;
+    $inBrackets = false;
+    if(!$topLevel) {
+      $inBrackets = $token->id === Token::BRACKETS_OPEN;
+    }
     if($inBrackets) {
       $token = $token->next();
     }
     $expressionsAndOperators = [];
-    $parsers = [new OperatorParser(),new ConstantExpressionParser()];
+    $parsers = [new OperatorParser(),new ConstantExpressionParser(),new ArrayParser()];
     while($token !== null) {
       if(isset(ExpressionParser::$expressionEndingTokens[$token->id])) {
         break;
+      }
+      if($token->id === Token::BRACKETS_OPEN) {
+        $result = $this->parsePart($token, false);
+        if(is_int($result)) {
+          return $result;
+        }
+        $token = $result->nextToken;
+        $expressionsAndOperators[] = $result->parsed;
+        continue;
       }
       if($token->id === Token::IDENTIFIER) {
         $expressionsAndOperators[] = new IdentifierExpression($token->value);
@@ -46,12 +57,13 @@ class ExpressionParser extends Parser {
       }
       $found = false;
       foreach($parsers as $parser) {
-        $parsed = $parser->parse($token);
-        if(is_int($parsed)) {
+        $result = $parser->parse($token);
+        if(is_int($result)) {
           continue;
         }
-        $expressionsAndOperators[] = $parsed->parsed;
-        $token = $parsed->nextToken;
+        $expressionsAndOperators[] = $result->parsed;
+        $token = $result->nextToken;
+        $found = true;
         break;
       }
       if(!$found) {
@@ -64,6 +76,70 @@ class ExpressionParser extends Parser {
       }
       $token = $token->next();
     }
-    return $this->transform($expressionsAndOperators, $token);
+    $result = $this->transform($expressionsAndOperators, $token);
+    if($inBrackets && !is_int($result)) {
+      $result = new ParserReturn(new BracketExpression($result->parsed), $result->nextToken);
+    }
+    return $result;
+  }
+
+  private function transform(array $expressionsAndOperators, ?Token $nextToken): ParserReturn|int {
+    while(true) {
+      // find lowest precedence operator
+      $operator = null;
+      $index = -1;
+      foreach($expressionsAndOperators as $i => $expressionsOrOperator) {
+        if($expressionsOrOperator instanceof Operator) {
+          if($operator === null || $expressionsOrOperator->getPrecedence() < $operator->getPrecedence()) {
+            $operator = $expressionsOrOperator;
+            $index = $i;
+          }
+        }
+      }
+      if($operator === null) {
+        break; // no operators left
+      }
+      // find left and right operand
+      $leftExpression = null;
+      $rightExpression = null;
+      if($index > 0 && $expressionsAndOperators[$index - 1] instanceof Expression) {
+        $leftExpression = $expressionsAndOperators[$index - 1];
+      }
+      if($index + 1 < count($expressionsAndOperators) && $expressionsAndOperators[$index + 1] instanceof Expression) {
+        $rightExpression = $expressionsAndOperators[$index + 1];
+      }
+      // check if set correctly
+      switch($operator->getOperatorType()) {
+        case OperatorType::Prefix:
+          if($rightExpression === null) {
+            return ParsingException::PARSING_ERROR_INVALID_OPERATOR_USE;
+          }
+          $startingIndex = $index;
+          $size = 2;
+          break;
+        case OperatorType::Infix:
+          if($leftExpression === null || $rightExpression === null) {
+            return ParsingException::PARSING_ERROR_INVALID_OPERATOR_USE;
+          }
+          $startingIndex = $index - 1;
+          $size = 3;
+          break;
+        case OperatorType::Postfix:
+          if($leftExpression === null) {
+            return ParsingException::PARSING_ERROR_INVALID_OPERATOR_USE;
+          }
+          $startingIndex = $index - 1;
+          $size = 2;
+          break;
+      }
+      // combine operator and operands into OperatorExpression
+      $operatorExpression = new OperatorExpression($leftExpression, $operator, $rightExpression);
+      // insert OperatorExpression replacing original content
+      array_splice($expressionsAndOperators, $startingIndex, $size, [$operatorExpression]);
+    }
+    if(count($expressionsAndOperators) !== 1) {
+      return ParsingException::PARSING_ERROR_GENERIC;
+    }
+    return new ParserReturn($expressionsAndOperators[0], $nextToken);
   }
 }

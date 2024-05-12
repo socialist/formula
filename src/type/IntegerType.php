@@ -1,16 +1,16 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\operator\OperatableOperator;
 use TimoLehnertz\formula\procedure\Scope;
 
 /**
- *
  * @author Timo Lehnertz
- *        
  */
 class IntegerType implements Type {
 
-  public function canCastTo(Type $type): bool {
+  public function assignableBy(Type $type): bool {
     return $type instanceof IntegerType;
   }
 
@@ -22,16 +22,11 @@ class IntegerType implements Type {
     return [];
   }
 
-  /**
-   *
-   * @return SubProperty[]
-   */
-  public function getSubProperties(): array {
-    return [];
-  }
-
   public function validate(Scope $scope): Type {
     return $this;
   }
-}
 
+  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
+    return (new IntegerValue(0))->getOperatorResultType($operator, $otherType);
+  }
+}

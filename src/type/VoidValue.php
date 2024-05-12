@@ -1,13 +1,17 @@
 <?php
-namespace src\type;
+declare(strict_types = 1);
+namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\type\Type;
-use TimoLehnertz\formula\type\Value;
 use SebastianBergmann\Type\VoidType;
+use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\operator\OperatableOperator;
 
+/**
+ * @author Timo Lehnertz
+ */
 class VoidValue implements Value {
 
-  public function toString(): string {
+  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return 'void';
   }
 
@@ -20,5 +24,20 @@ class VoidValue implements Value {
   public function isTruthy(): bool {
     return false;
   }
-}
 
+  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
+    return null;
+  }
+
+  public function operate(OperatableOperator $operator, ?Value $other): Value {
+    throw new \BadFunctionCallException('Invalid operation');
+  }
+
+  public function copy(): Value {
+    return $this;
+  }
+
+  public function valueEquals(Value $other): bool {
+    return $other instanceof VoidValue;
+  }
+}

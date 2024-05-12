@@ -6,35 +6,31 @@ use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
-use SebastianBergmann\Type\VoidType;
 
 /**
  * @author Timo Lehnertz
  */
-class IdentifierExpression implements Expression {
+class BracketExpression implements Expression {
 
-  private readonly string $identifier;
+  public readonly Expression $expression;
 
-  private Scope $scope;
-
-  public function __construct(string $identifier) {
-    $this->identifier = $identifier;
+  public function __construct(Expression $expression) {
+    $this->expression = $expression;
   }
 
   public function run(): Value {
-    return $this->identifier;
+    return $this->expression->run();
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    return $this->identifier;
+    return '('.$this->expression->toString($prettyPrintOptions).')';
   }
 
   public function getSubParts(): array {
-    return [];
+    return $this->expression->getSubParts();
   }
 
   public function validate(Scope $scope): Type {
-    $this->scope = $scope;
-    return new VoidType();
+    return $this->expression->validate($scope);
   }
 }

@@ -1,9 +1,15 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\operator\overloads\Addition;
+use PHPUnit\Framework\Constraint\Operator;
+use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\operator\OperatableOperator;
 
-class StringValue implements Value, Addition {
+/**
+ * @author Timo Lehnertz
+ */
+class StringValue implements Value {
 
   private string $value;
 
@@ -11,34 +17,12 @@ class StringValue implements Value, Addition {
     $this->value = $value;
   }
 
-  public function toString(): string {
+  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return "'".$this->value."'";
-  }
-
-  public function assign(Value $value): void {
-    if($value instanceof StringValue) {
-      $this->value = $value->value;
-    }
-    throw new \BadFunctionCallException('Incompatible type');
   }
 
   public function getType(): Type {
     return new StringType();
-  }
-
-  public function canCastTo(Type $type): bool {
-    return false;
-  }
-
-  public function castTo(Type $type): Value {
-    throw new \BadFunctionCallException('Invalid cast');
-  }
-
-  public function getAdditionResultType(Type $type): ?Type {
-    if($type instanceof StringType) {
-      return new StringType();
-    }
-    return null;
   }
 
   public function copy(): Value {
@@ -49,17 +33,28 @@ class StringValue implements Value, Addition {
     return false;
   }
 
-  // used for testing
   public function getValue(): string {
     return $this->value;
   }
 
-  public function operatorAddition(Value $b): Value {
-    if($b instanceof StringValue) {
-      return new StringValue($this->value + $b->value);
-    } else {
-      throw new \BadFunctionCallException('Invlid value type');
+  public function valueEquals(Value $other): bool {
+    if($other instanceof StringValue) {
+      return $other->value === $this->value;
     }
+    return false;
+  }
+
+  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
+    if($operator->id === OperatableOperator::TYPE_ADDITION && $otherType instanceof StringType) {
+      return new StringType();
+    }
+    return null;
+  }
+
+  public function operate(OperatableOperator $operator, ?Value $other): Value {
+    if($other === null || !($other instanceof StringValue) || $operator->id !== OperatableOperator::TYPE_ADDITION) {
+      throw new \BadFunctionCallException('Invalid operation!');
+    }
+    return new StringType($this->value + $other->value);
   }
 }
-

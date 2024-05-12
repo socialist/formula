@@ -23,7 +23,7 @@ class ConstantExpression implements Expression {
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    return $this->value->toString();
+    return $this->value->toString($prettyPrintOptions);
   }
 
   public function getSubParts(): array {

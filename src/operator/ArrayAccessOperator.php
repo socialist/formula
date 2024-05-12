@@ -1,19 +1,25 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\operator;
 
 use TimoLehnertz\formula\FormulaPart;
 use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
-use src\operator\OperatorType;
 
-class ArrayOperator extends Operator {
+/**
+ * @author Timo Lehnertz
+ */
+class ArrayAccessOperator extends Operator {
 
-  private FormulaPart $indexExpression;
+  private readonly FormulaPart $indexExpression;
+
+  private ?Type $indexType = null;
 
   public function __construct(FormulaPart $indexExpression) {
-    parent::__construct('[]', 2, OperatorType::Postfix);
+    parent::__construct(Operator::TYPE_ARRAY_ACCESS, '[]', 2, OperatorType::Postfix);
     $this->indexExpression = $indexExpression;
   }
 
@@ -29,7 +35,15 @@ class ArrayOperator extends Operator {
     return $this->indexExpression->getSubParts();
   }
 
-  public function validate(): Type {
-    $this->indexExpression->validate();
+  public function validate(Scope $scope): Type {
+    $this->indexType = $this->indexExpression->validate($scope);
+    return $this->indexType;
+  }
+
+  public function getIndexType(): Type {
+    if($this->indexType === null) {
+      throw new \BadFunctionCallException('Validate first');
+    }
+    return $this->indexType;
   }
 }

@@ -70,7 +70,7 @@ class OperatorParserTest extends TestCase {
     }
     $this->assertInstanceOf(Operator::class, $parsed->parsed);
     $this->assertEquals($expectedOperator, $parsed->parsed->toString(PrettyPrintOptions::buildDefault()));
-    $this->assertEquals($operatorType, $parsed->parsed->getType());
+    $this->assertEquals($operatorType, $parsed->parsed->getOperatorType());
   }
 }
 

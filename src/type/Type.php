@@ -1,6 +1,8 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\operator\OperatableOperator;
 use TimoLehnertz\formula\procedure\Scope;
 
 /**
@@ -12,28 +14,16 @@ use TimoLehnertz\formula\procedure\Scope;
 interface Type {
 
   /**
-   *
    * @return string a unique identifier for this type. Equal identifier => equal type
    */
   public function getIdentifier(bool $nested = false): string;
 
-  public function canCastTo(Type $type): bool;
+  public function assignableBy(Type $type): bool;
 
-  /**
-   *
-   * @return array<string, SubProperty>
-   */
-  public function getSubProperties(): array;
-
-  /**
-   *
-   * @return array<int, ImplementedOperator> OperatorID => ImplementedOperator
-   */
-  public function getImplementedOperators(): array;
+  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type;
 
   /**
    * Validates this type and returns either this type or create a new one
    */
   public function validate(Scope $scope): Type;
 }
-

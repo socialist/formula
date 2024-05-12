@@ -53,14 +53,13 @@ class Token {
     return $this->next($includeComments) !== null;
   }
 
-  public function requireNext(bool $includeComments = false): Token {
-    $next = $this->next($includeComments);
-    if($next === null) {
-      throw new UnexpectedEndOfInputException();
-    }
-    return $next;
-  }
-
+  //   public function requireNext(bool $includeComments = false): Token {
+  //     $next = $this->next($includeComments);
+  //     if($next === null) {
+  //       throw new UnexpectedEndOfInputException();
+  //     }
+  //     return $next;
+  //   }
   public function next(bool $includeComments = false): ?Token {
     if($includeComments) {
       return $this->next;

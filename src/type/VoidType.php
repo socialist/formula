@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\operator\OperatableOperator;
 use TimoLehnertz\formula\procedure\Scope;
 
 /**
@@ -13,7 +14,7 @@ class VoidType implements Type {
     return 'void';
   }
 
-  public function canCastTo(Type $type): bool {
+  public function assignableBy(Type $type): bool {
     return $type instanceof VoidType;
   }
 
@@ -27,5 +28,9 @@ class VoidType implements Type {
 
   public function validate(Scope $scope): Type {
     return $this;
+  }
+
+  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
+    return (new VoidValue())->getOperatorResultType($operator, $otherType);
   }
 }

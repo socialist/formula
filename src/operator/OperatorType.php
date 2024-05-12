@@ -11,8 +11,5 @@ enum OperatorType {
 
   case Infix;
 
-  case InfixCommutative;
-
   case Postfix;
 }
-

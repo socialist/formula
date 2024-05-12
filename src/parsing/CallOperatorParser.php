@@ -14,10 +14,10 @@ class CallOperatorParser extends EnumeratedParser {
   }
 
   protected function parsePart(Token $firstToken): ParserReturn|int {
-    $args = parent::parsePart($firstToken);
-    if(is_int($args)) {
-      return $args;
+    $result = parent::parsePart($firstToken);
+    if(is_int($result)) {
+      return $result;
     }
-    return new CallOperator($args);
+    return new ParserReturn(new CallOperator($result->parsed), $result->nextToken);
   }
 }

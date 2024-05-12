@@ -35,7 +35,7 @@ class EnumeratedParser extends Parser {
     if($firstToken->id !== $this->firstToken) {
       return ParsingException::PARSING_ERROR_GENERIC;
     }
-    $token = $firstToken->requireNext();
+    $token = $firstToken->next();
     $allowedDelimiters = $this->allowEmpty ? PHP_INT_MAX : 0;
     $requireDelimiter = false;
     $lastWasDelimiter = false;
@@ -62,15 +62,15 @@ class EnumeratedParser extends Parser {
         return ParsingException::PARSING_ERROR_MISSING_DELIMITERS;
       }
 
-      $element = $this->elementParser->parse($token);
-      if(is_int($element)) {
-        return $element;
+      $result = $this->elementParser->parse($token);
+      if(is_int($result)) {
+        return $result;
       }
-      $parsed[] = $element;
+      $parsed[] = $result->parsed;
       $requireDelimiter = true;
       $allowedDelimiters = $this->allowEmpty ? PHP_INT_MAX : 1;
       $lastWasDelimiter = false;
-      $token = $element->nextToken;
+      $token = $result->nextToken;
     }
     return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
   }

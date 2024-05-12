@@ -1,12 +1,16 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\operator\OperatableOperator;
 use TimoLehnertz\formula\procedure\Scope;
 
+/**
+ * @author Timo Lehnertz
+ */
 class CompoundType implements Type {
 
   /**
-   *
    * @var Type[]
    */
   private array $subTypes;
@@ -19,7 +23,6 @@ class CompoundType implements Type {
   }
 
   /**
-   *
    * @param Type $types
    */
   public static function concatManyTypes(array $types): ?Type {
@@ -53,16 +56,12 @@ class CompoundType implements Type {
     if($a instanceof CompoundType) {
       $types = array_merge($types, $a->subTypes);
     } else {
-      $types = array_merge($types, [
-        $a
-      ]);
+      $types = array_merge($types, [$a]);
     }
     if($b instanceof CompoundType) {
       $types = array_merge($types, $b->subTypes);
     } else {
-      $types = array_merge($types, [
-        $b
-      ]);
+      $types = array_merge($types, [$b]);
     }
     $unique = static::removeDoublicates($types);
     if(sizeof($unique) === 1) {
@@ -73,7 +72,6 @@ class CompoundType implements Type {
   }
 
   /**
-   *
    * @param Type[] $types
    * @return Type[]
    */
@@ -91,30 +89,13 @@ class CompoundType implements Type {
     return $uniqueTypes;
   }
 
-  public function canCastTo(Type $type): bool {
+  public function assignableBy(Type $type): bool {
     foreach($this->subTypes as $subType) {
-      if(!$subType->canCastTo($type)) {
-        return false;
+      if($subType->assignableBy($type)) {
+        return true;
       }
     }
-    return true;
-  }
-
-  /**
-   *
-   * @todo
-   */
-  public function getImplementedOperators(): array {
-    //     $implementedOperators = [];
-    //     foreach($this->subTypes as $subType) {
-    //       $subTypeIdentifier = $subType->getIdentifier();
-    //       $subImplementedOperators = $subType->getImplementedOperators();
-    //       foreach($subImplementedOperators as $subImplementedOperator) {
-    //         $implementedOperators[$subTypeIdentifier][$subImplementedOperator->operator] = $subImplementedOperator;
-    //       }
-    //     }
-    //     return $implementedOperators;
-    return [];
+    return false;
   }
 
   public function getIdentifier(bool $nested = false): string {
@@ -138,20 +119,6 @@ class CompoundType implements Type {
     return $typeName;
   }
 
-  /**
-   *
-   * @return SubProperty[]
-   */
-  public function getSubProperties(): array {
-    $subProperties = [];
-    foreach($this->subTypes as $subType) {
-      foreach($subType->getSubProperties() as $subProperty) {
-        if(!array_key_exists($subProperty->getIdentifier(), $subProperties[])) {}
-      }
-    }
-    return [];
-  }
-
   public function validate(Scope $scope): Type {
     $simplified = $this->simplify();
     if($simplified instanceof CompoundType) {
@@ -163,5 +130,17 @@ class CompoundType implements Type {
     } else {
       return $simplified->validate($scope);
     }
+  }
+
+  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
+    $resultTypes = [];
+    foreach($this->subTypes as $subType) {
+      $resultTypes[] = $subType->getOperatorResultType($operator, $otherType);
+    }
+    $type = CompoundType::concatManyTypes($resultTypes);
+    if($type instanceof CompoundType) {
+      return $type->simplify();
+    }
+    return $type;
   }
 }

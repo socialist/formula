@@ -19,9 +19,9 @@ class EnumeratedParserTest extends TestCase {
     $parsed = $parser->parse($firstToken);
     $this->assertIsArray($parsed->parsed);
     $this->assertCount(3, $parsed->parsed);
-    $this->assertInstanceOf(FloatType::class, $parsed->parsed[0]->parsed);
-    $this->assertInstanceOf(StringType::class, $parsed->parsed[1]->parsed);
-    $this->assertInstanceOf(IntegerType::class, $parsed->parsed[2]->parsed);
+    $this->assertInstanceOf(FloatType::class, $parsed->parsed[0]);
+    $this->assertInstanceOf(StringType::class, $parsed->parsed[1]);
+    $this->assertInstanceOf(IntegerType::class, $parsed->parsed[2]);
   }
 
   public function testInvalidStart(): void {
@@ -44,7 +44,7 @@ class EnumeratedParserTest extends TestCase {
     $parsed = $parser->parse($firstToken);
     $this->assertIsArray($parsed->parsed);
     $this->assertCount(1, $parsed->parsed);
-    $this->assertInstanceOf(IntegerType::class, $parsed->parsed[0]->parsed);
+    $this->assertInstanceOf(IntegerType::class, $parsed->parsed[0]);
   }
 
   public function testBadInBetweenDelimiter(): void {

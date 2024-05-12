@@ -2,7 +2,7 @@
 namespace TimoLehnertz\formula\parsing;
 
 use TimoLehnertz\formula\ParsingException;
-use TimoLehnertz\formula\operator\ArrayOperator;
+use TimoLehnertz\formula\operator\ArrayAccessOperator;
 use TimoLehnertz\formula\tokens\Token;
 
 /**
@@ -29,6 +29,6 @@ class ArrayOperatorParser extends Parser {
     if($token->id !== Token::SQUARE_BRACKETS_CLOSED) {
       return ParsingException::PARSING_ERROR_GENERIC;
     }
-    return new ParserReturn(new ArrayOperator($parsedIndexExpression->parsed, $token->next()));
+    return new ParserReturn(new ArrayAccessOperator($parsedIndexExpression->parsed, $token->next()));
   }
 }

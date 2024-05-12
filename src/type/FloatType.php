@@ -1,16 +1,16 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\operator\OperatableOperator;
 use TimoLehnertz\formula\procedure\Scope;
 
 /**
- *
  * @author Timo Lehnertz
- *        
  */
 class FloatType implements Type {
 
-  public function canCastTo(Type $type): bool {
+  public function assignableBy(Type $type): bool {
     return $type instanceof FloatType;
   }
 
@@ -22,22 +22,11 @@ class FloatType implements Type {
     return [];
   }
 
-  /**
-   *
-   * @return SubProperty[]
-   */
-  public function getSubProperties(): array {
-    return [];
-  }
-
   public function validate(Scope $scope): Type {
     return $this;
   }
 
-  public function castTo(Type $type, Value $value): Value {
-    if($type instanceof IntegerType) {
-      return new FloatValue($value);
-    }
+  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
+    return (new FloatValue(0))->getOperatorResultType($operator, $otherType);
   }
 }
-

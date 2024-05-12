@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\operator\OperatableOperator;
 use TimoLehnertz\formula\procedure\Scope;
 
 /**
@@ -9,7 +10,7 @@ use TimoLehnertz\formula\procedure\Scope;
  */
 class StringType implements Type {
 
-  public function canCastTo(Type $type): bool {
+  public function assignableBy(Type $type): bool {
     return $type instanceof StringType;
   }
 
@@ -21,17 +22,13 @@ class StringType implements Type {
     return [];
   }
 
-  /**
-   * @return SubProperty[]
-   */
-  public function getSubProperties(): array {
-    return [];
-  }
-
   public function validate(Scope $scope): Type {
     return $this;
   }
 
   public function castTo(Type $type, Value $value): Value {}
-}
 
+  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
+    return (new StringValue(''))->getOperatorResultType($operator, $otherType);
+  }
+}

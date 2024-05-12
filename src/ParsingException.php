@@ -19,6 +19,8 @@ class ParsingException extends \Exception {
 
   public const PARSING_ERROR_INVALID_TYPE = 5;
 
+  public const PARSING_ERROR_INVALID_OPERATOR_USE = 6;
+
   public function __construct(int $code, Token $token) {
     parent::__construct('Unexpected token "'.$token->value.'" at: '.$token->line.':'.$token->position.' Message: '.static::codeToMessage($code));
   }
@@ -35,6 +37,8 @@ class ParsingException extends \Exception {
         return 'missing delimiter';
       case static::PARSING_ERROR_INVALID_TYPE:
         return 'invalid type';
+      case static::PARSING_ERROR_INVALID_OPERATOR_USE:
+        return 'invalid use of operator';
       default:
         throw new \UnexpectedValueException($code.' is no valid ParsingExceptionCode');
     }

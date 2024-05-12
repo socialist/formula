@@ -3,9 +3,8 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
 use TimoLehnertz\formula\ParsingException;
-use TimoLehnertz\formula\operator\ArrayOperator;
-use TimoLehnertz\formula\tokens\Token;
 use TimoLehnertz\formula\operator\TypeCastOperator;
+use TimoLehnertz\formula\tokens\Token;
 
 /**
  * @author Timo Lehnertz
@@ -16,7 +15,10 @@ class TypeCastOperatorParser extends Parser {
     if($firstToken->id != Token::BRACKETS_OPEN) {
       return ParsingException::PARSING_ERROR_GENERIC;
     }
-    $token = $firstToken->requireNext();
+    if(!$firstToken->hasNext()) {
+      return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
+    }
+    $token = $firstToken->next();
     $parsedType = (new TypeParser())->parse($token);
     if(is_int($parsedType)) {
       return $parsedType;

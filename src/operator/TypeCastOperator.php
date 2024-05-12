@@ -3,8 +3,10 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\operator;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
+use TimoLehnertz\formula\type\Value;
 
 /**
  * @author Timo Lehnertz
@@ -16,7 +18,7 @@ class TypeCastOperator extends Operator {
   private Type $type;
 
   public function __construct(bool $explicit, Type $type) {
-    parent::__construct(OperatorType::Prefix, 3, false);
+    parent::__construct(Operator::TYPE_TYPE_CAST, OperatorType::Prefix, 3, false);
     $this->explicit = $explicit;
     $this->type = $type;
   }
@@ -40,5 +42,12 @@ class TypeCastOperator extends Operator {
   public function validate(Scope $scope): Type {
     $this->type = $this->type->validate($scope);
     return $this->type;
+  }
+
+  public function operate(?Expression $leftExpression, ?Expression $rightExpression): Value {
+    if($rightExpression === null) {
+      throw new \BadFunctionCallException('Invalid operation');
+    }
+    return $rightExpression->run()->operate($this, null);
   }
 }

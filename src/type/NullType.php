@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\operator\OperatableOperator;
 use TimoLehnertz\formula\procedure\Scope;
 
 /**
@@ -11,26 +12,19 @@ class NullType implements Type {
 
   public function __construct() {}
 
-  public function canCastTo(Type $type): bool {
-    return false;
-  }
-
-  /**
-   * @return SubProperty[]
-   */
-  public function getSubProperties(): array {
-    return [];
+  public function assignableBy(Type $type): bool {
+    return $type instanceof NullType;
   }
 
   public function getIdentifier(bool $isNested = false): string {
     return 'null';
   }
 
-  public function getImplementedOperators(): array {
-    return [];
-  }
-
   public function validate(Scope $scope): Type {
     return $this;
+  }
+
+  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
+    return (new NullValue())->getOperatorResultType($operator, $otherType);
   }
 }

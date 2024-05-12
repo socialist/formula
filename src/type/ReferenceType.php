@@ -1,12 +1,12 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\operator\OperatableOperator;
 use TimoLehnertz\formula\procedure\Scope;
 
 /**
- *
  * @author Timo Lehnertz
- *        
  */
 class ReferenceType implements Type {
 
@@ -16,7 +16,7 @@ class ReferenceType implements Type {
     $this->referenceIdentifier = $referenceIdentifier;
   }
 
-  public function canCastTo(Type $type): bool {
+  public function assignableBy(Type $type): bool {
     throw new \BadMethodCallException('ReferenceType must be validated first');
   }
 
@@ -35,5 +35,8 @@ class ReferenceType implements Type {
   public function validate(Scope $scope): Type {
     return $scope->getType($this->referenceIdentifier);
   }
-}
 
+  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
+    throw new \BadFunctionCallException('Must validate first');
+  }
+}
