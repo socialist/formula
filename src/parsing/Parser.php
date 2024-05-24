@@ -24,11 +24,7 @@ abstract class Parser {
     if($firstToken === null) {
       return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
     }
-    try {
-      return $this->parsePart($firstToken);
-    } catch(UnexpectedEndOfInputException $e) {
-      return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
-    }
+    return $this->parsePart($firstToken);
   }
 
   /**

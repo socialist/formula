@@ -2,9 +2,10 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\operator\SimpleOperator;
-use TimoLehnertz\formula\tokens\Token;
 use TimoLehnertz\formula\ParsingException;
+use TimoLehnertz\formula\operator\Operator;
+use TimoLehnertz\formula\operator\OperatorBuilder;
+use TimoLehnertz\formula\tokens\Token;
 
 /**
  * @author Timo Lehnertz
@@ -38,7 +39,7 @@ class OperatorParser extends Parser {
   protected function parsePart(Token $firstToken): ParserReturn|int {
     switch($firstToken->id) {
       case Token::SCOPE_RESOLUTION:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_SCOPE_RESOLUTION), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_SCOPE_RESOLUTION), $firstToken->next());
       case Token::BRACKETS_OPEN:
         $tokenBefore = $firstToken->prev();
         if($tokenBefore === null || isset(static::$inFrontOfUnary[$tokenBefore->id])) {
@@ -49,7 +50,7 @@ class OperatorParser extends Parser {
       case Token::SQUARE_BRACKETS_OPEN:
         return (new ArrayOperatorParser())->parse($firstToken);
       case Token::DOT:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_MEMBER_ACCSESS), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_MEMBER_ACCESS), $firstToken->next());
       case Token::INCREMENT:
       case Token::DECREMENT:
         /**
@@ -58,65 +59,65 @@ class OperatorParser extends Parser {
          */
         $isPrefix = $firstToken->hasNext() && $firstToken->next()->id === Token::IDENTIFIER;
         if($firstToken->id === Token::INCREMENT) {
-          $operatorID = $isPrefix ? SimpleOperator::TYPE_INCREMENT_PREFIX : SimpleOperator::TYPE_INCREMENT_POSTFIX;
+          $operatorID = $isPrefix ? Operator::PARSABLE_INCREMENT_PREFIX : Operator::PARSABLE_INCREMENT_POSTFIX;
         } else {
-          $operatorID = $isPrefix ? SimpleOperator::TYPE_DECREMENT_PREFIX : SimpleOperator::TYPE_DECREMENT_POSTFIX;
+          $operatorID = $isPrefix ? Operator::PARSABLE_DECREMENT_PREFIX : Operator::PARSABLE_DECREMENT_POSTFIX;
         }
-        return new ParserReturn(new SimpleOperator($operatorID), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator($operatorID), $firstToken->next());
       case Token::PLUS:
       case Token::MINUS:
         $tokenBefore = $firstToken->prev();
         if($tokenBefore === null) {
-          return new ParserReturn(new SimpleOperator($firstToken->id === Token::PLUS ? SimpleOperator::TYPE_UNARY_PLUS : SimpleOperator::TYPE_UNARY_MINUS), $firstToken->next());
+          return new ParserReturn(OperatorBuilder::buildOperator($firstToken->id === Token::PLUS ? Operator::IMPLEMENTABLE_UNARY_PLUS : Operator::IMPLEMENTABLE_UNARY_MINUS), $firstToken->next());
         } else if(isset(static::$inFrontOfUnary[$tokenBefore->id])) {
-          return new ParserReturn(new SimpleOperator($firstToken->id === Token::PLUS ? SimpleOperator::TYPE_UNARY_PLUS : SimpleOperator::TYPE_UNARY_MINUS), $firstToken->next());
+          return new ParserReturn(OperatorBuilder::buildOperator($firstToken->id === Token::PLUS ? Operator::IMPLEMENTABLE_UNARY_PLUS : Operator::IMPLEMENTABLE_UNARY_MINUS), $firstToken->next());
         }
         // normal plus
-        return new ParserReturn(new SimpleOperator($firstToken->id === Token::PLUS ? SimpleOperator::TYPE_ADDITION : SimpleOperator::TYPE_SUBTRACION), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator($firstToken->id === Token::PLUS ? Operator::IMPLEMENTABLE_ADDITION : Operator::IMPLEMENTABLE_SUBTRACTION), $firstToken->next());
       case Token::EXCLAMATION_MARK:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_LOGICAL_NOT), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_LOGICAL_NOT), $firstToken->next());
       case Token::MULTIPLY:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_MULTIPLICATION), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_MULTIPLICATION), $firstToken->next());
       case Token::DIVIDE:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_DIVISION), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_DIVISION), $firstToken->next());
       case Token::MODULO:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_MODULO), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_MODULO), $firstToken->next());
       case Token::COMPARISON_SMALLER:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_LESS), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_LESS), $firstToken->next());
       case Token::COMPARISON_GREATER:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_GREATER), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_GREATER), $firstToken->next());
       case Token::COMPARISON_SMALLER_EQUALS:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_LESS_EQUALS), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::PARSABLE_LESS_EQUALS), $firstToken->next());
       case Token::COMPARISON_GREATER_EQUALS:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_GREATER_EQUALS), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::PARSABLE_GREATER_EQUALS), $firstToken->next());
       case Token::COMPARISON_EQUALS:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_EQUALS), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_EQUALS), $firstToken->next());
       case Token::COMPARISON_NOT_EQUALS:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_NOT_EQUAL), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::PARSABLE_NOT_EQUAL), $firstToken->next());
       case Token::LOGICAL_AND:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_LOGICAL_AND), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_LOGICAL_AND), $firstToken->next());
       case Token::LOGICAL_OR:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_LOGICAL_OR), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_LOGICAL_OR), $firstToken->next());
       case Token::LOGICAL_XOR:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_LOGICAL_XOR), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_LOGICAL_XOR), $firstToken->next());
       case Token::ASSIGNMENT:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_DIRECT_ASIGNMENT), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT), $firstToken->next());
       case Token::ASSIGNMENT_AND:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_AND_ASIGNMENT), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::PARSABLE_AND_ASSIGNMENT), $firstToken->next());
       case Token::ASSIGNMENT_DIVIDE:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_DIVISION_ASIGNMENT), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::PARSABLE_DIVISION_ASSIGNMENT), $firstToken->next());
       case Token::ASSIGNMENT_MINUS:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_SUBTRACTION_ASIGNMENT), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::PARSABLE_SUBTRACTION_ASSIGNMENT), $firstToken->next());
       case Token::ASSIGNMENT_MULTIPLY:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_MULTIPLICATION_ASIGNMENT), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::PARSABLE_MULTIPLICATION_ASSIGNMENT), $firstToken->next());
       case Token::ASSIGNMENT_OR:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_OR_ASIGNMENT), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::PARSABLE_OR_ASSIGNMENT), $firstToken->next());
       case Token::ASSIGNMENT_PLUS:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_ADDITION_ASIGNMENT), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::PARSABLE_ADDITION_ASSIGNMENT), $firstToken->next());
       case Token::ASSIGNMENT_XOR:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_XOR_ASIGNMENT), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::PARSABLE_XOR_ASSIGNMENT), $firstToken->next());
       case Token::KEYWORD_INSTANCEOF:
-        return new ParserReturn(new SimpleOperator(SimpleOperator::TYPE_INSTANCEOF), $firstToken->next());
+        return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_INSTANCEOF), $firstToken->next());
       default:
         return ParsingException::PARSING_ERROR_GENERIC;
     }

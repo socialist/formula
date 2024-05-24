@@ -2,7 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\operator\OperatableOperator;
+use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\procedure\Scope;
 
 /**
@@ -16,7 +16,7 @@ class ReferenceType implements Type {
     $this->referenceIdentifier = $referenceIdentifier;
   }
 
-  public function assignableBy(Type $type): bool {
+  public function equals(Type $type): bool {
     throw new \BadMethodCallException('ReferenceType must be validated first');
   }
 
@@ -36,7 +36,7 @@ class ReferenceType implements Type {
     return $scope->getType($this->referenceIdentifier);
   }
 
-  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
+  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     throw new \BadFunctionCallException('Must validate first');
   }
 }

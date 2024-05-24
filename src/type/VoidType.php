@@ -2,7 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\operator\OperatableOperator;
+use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\procedure\Scope;
 
 /**
@@ -14,7 +14,7 @@ class VoidType implements Type {
     return 'void';
   }
 
-  public function assignableBy(Type $type): bool {
+  public function equals(Type $type): bool {
     return $type instanceof VoidType;
   }
 
@@ -30,7 +30,7 @@ class VoidType implements Type {
     return $this;
   }
 
-  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
+  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     return (new VoidValue())->getOperatorResultType($operator, $otherType);
   }
 }

@@ -9,13 +9,11 @@ use TimoLehnertz\formula\type\Value;
 /**
  * @author Timo Lehnertz
  */
-abstract class PostfixOperator extends Operator {
+abstract class PostfixOperator implements Operator {
+  use OperatorHelper;
 
-  public function operate(?Value $leftValue, ?Value $rightValue): Value {
-    if($leftValue === null) {
-      throw new FormulaValidationException('Missing left operand!');
-    }
-    return $this->operatePostfix($leftValue);
+  public function getOperatorType(): OperatorType {
+    return OperatorType::PostfixOperator;
   }
 
   public function validateOperation(?Type $leftType, ?Type $rightType): Type {
@@ -26,6 +24,13 @@ abstract class PostfixOperator extends Operator {
       throw new FormulaValidationException('Missing left operand!');
     }
     return $this->validatePostfixOperation($leftType);
+  }
+
+  public function operate(?Value $leftValue, ?Value $rightValue): Value {
+    if($leftValue === null) {
+      throw new FormulaValidationException('Missing left operand!');
+    }
+    return $this->operatePostfix($leftValue);
   }
 
   protected abstract function validatePostfixOperation(Type $leftType): Type;

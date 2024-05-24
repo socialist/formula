@@ -3,12 +3,12 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
-use TimoLehnertz\formula\operator\OperatableOperator;
+use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
  * @author Timo Lehnertz
  */
-class FloatValue implements Value {
+class FloatValue extends Value {
 
   private float $value;
 
@@ -16,16 +16,12 @@ class FloatValue implements Value {
     $this->value = $value;
   }
 
-  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    return ''.$this->value;
-  }
-
   public function getType(): Type {
     return new FloatType();
   }
 
   public function isTruthy(): bool {
-    return $this->value !== 0;
+    return true;
   }
 
   public function copy(): FloatValue {
@@ -40,11 +36,23 @@ class FloatValue implements Value {
     return IntegerValue::numberValueEquals($this, $other);
   }
 
-  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
-    return IntegerValue::getNumberOperatorResultType($this, $operator, $otherType);
+  protected function getValueExpectedOperands(ImplementableOperator $operator): array {
+    return NumberValueHelper::getValueExpectedOperands($this, $operator);
   }
 
-  public function operate(OperatableOperator $operator, ?Value $other): Value {
-    return IntegerValue::numberOperate($this, $operator, $other);
+  protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+    return NumberValueHelper::getNumberOperatorResultType($this, $operator, $otherType);
+  }
+
+  protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
+    return NumberValueHelper::numberOperate($this, $operator, $other);
+  }
+
+  public function assign(Value $value): void {
+    $this->value = $value->value;
+  }
+
+  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
+    return ''.$this->value;
   }
 }

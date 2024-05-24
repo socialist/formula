@@ -28,6 +28,7 @@ class TokenizerTest extends TestCase {
       [Token::KEYWORD_DO, 'do ', 'do'],
       [Token::KEYWORD_FOR, 'for ', 'for'],
       [Token::KEYWORD_INSTANCEOF, 'instanceof', 'instanceof'],
+      [Token::KEYWORD_TYPE, 'Type', 'Type'],
       [Token::COlON, ':', ':'],
       [Token::QUESTIONMARK, '?', '?'],
       [Token::LOGICAL_AND, '&&', '&&'],

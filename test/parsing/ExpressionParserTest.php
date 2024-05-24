@@ -2,17 +2,15 @@
 namespace test\parsing;
 
 use PHPUnit\Framework\TestCase;
-use TimoLehnertz\formula\parsing\ExpressionParser;
-use TimoLehnertz\formula\tokens\Tokenizer;
-use TimoLehnertz\formula\ParsingException;
-use TimoLehnertz\formula\expression\OperatorExpression;
-use TimoLehnertz\formula\expression\ConstantExpression;
-use TimoLehnertz\formula\operator\SimpleOperator;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\BracketExpression;
-use TimoLehnertz\formula\operator\Operator;
+use TimoLehnertz\formula\expression\ConstantExpression;
 use TimoLehnertz\formula\expression\IdentifierExpression;
+use TimoLehnertz\formula\expression\OperatorExpression;
 use TimoLehnertz\formula\operator\CallOperator;
+use TimoLehnertz\formula\operator\Operator;
+use TimoLehnertz\formula\parsing\ExpressionParser;
+use TimoLehnertz\formula\tokens\Tokenizer;
 
 class ExpressionParserTest extends TestCase {
 
@@ -23,7 +21,7 @@ class ExpressionParserTest extends TestCase {
     $this->assertInstanceOf(OperatorExpression::class, $result->parsed);
     $this->assertInstanceOf(ConstantExpression::class, $result->parsed->leftExpression);
     $this->assertInstanceOf(ConstantExpression::class, $result->parsed->rightExpression);
-    $this->assertInstanceOf(SimpleOperator::class, $result->parsed->operator);
+    $this->assertInstanceOf(Operator::class, $result->parsed->operator);
     $this->assertEquals('1+2', $result->parsed->toString(PrettyPrintOptions::buildDefault()));
   }
 
@@ -33,12 +31,12 @@ class ExpressionParserTest extends TestCase {
     $this->assertNull($result->nextToken);
     $this->assertInstanceOf(OperatorExpression::class, $result->parsed);
     $this->assertInstanceOf(ConstantExpression::class, $result->parsed->leftExpression);
-    $this->assertInstanceOf(SimpleOperator::class, $result->parsed->operator);
+    $this->assertInstanceOf(Operator::class, $result->parsed->operator);
     $this->assertEquals('+', $result->parsed->operator->toString(PrettyPrintOptions::buildDefault()));
 
     $this->assertInstanceOf(ConstantExpression::class, $result->parsed->rightExpression->leftExpression);
     $this->assertInstanceOf(ConstantExpression::class, $result->parsed->rightExpression->rightExpression);
-    $this->assertInstanceOf(SimpleOperator::class, $result->parsed->rightExpression->operator);
+    $this->assertInstanceOf(Operator::class, $result->parsed->rightExpression->operator);
     $this->assertEquals('*', $result->parsed->rightExpression->operator->toString(PrettyPrintOptions::buildDefault()));
     $this->assertEquals('1+2*3', $result->parsed->toString(PrettyPrintOptions::buildDefault()));
   }
@@ -49,7 +47,7 @@ class ExpressionParserTest extends TestCase {
     $this->assertNull($result->nextToken);
     $this->assertInstanceOf(OperatorExpression::class, $result->parsed);
     $this->assertInstanceOf(BracketExpression::class, $result->parsed->leftExpression);
-    $this->assertInstanceOf(SimpleOperator::class, $result->parsed->operator);
+    $this->assertInstanceOf(Operator::class, $result->parsed->operator);
     $this->assertEquals('*', $result->parsed->operator->toString(PrettyPrintOptions::buildDefault()));
     $this->assertInstanceOf(ConstantExpression::class, $result->parsed->rightExpression);
     $this->assertEquals('(1+2)*3', $result->parsed->toString(PrettyPrintOptions::buildDefault()));
@@ -61,11 +59,11 @@ class ExpressionParserTest extends TestCase {
     $this->assertNull($result->nextToken);
     $this->assertInstanceOf(OperatorExpression::class, $result->parsed);
     $this->assertInstanceOf(ConstantExpression::class, $result->parsed->leftExpression);
-    $this->assertInstanceOf(SimpleOperator::class, $result->parsed->operator);
+    $this->assertInstanceOf(Operator::class, $result->parsed->operator);
     $this->assertEquals('+', $result->parsed->operator->toString(PrettyPrintOptions::buildDefault()));
 
     $this->assertInstanceOf(OperatorExpression::class, $result->parsed->rightExpression);
-    $this->assertEquals(Operator::TYPE_UNARY_MINUS, $result->parsed->rightExpression->operator->id);
+    $this->assertEquals(Operator::IMPLEMENTABLE_UNARY_MINUS, $result->parsed->rightExpression->operator->id);
     $this->assertNull($result->parsed->rightExpression->leftExpression);
     $this->assertInstanceOf(ConstantExpression::class, $result->parsed->rightExpression->rightExpression);
     $this->assertEquals('1+-1', $result->parsed->toString(PrettyPrintOptions::buildDefault()));

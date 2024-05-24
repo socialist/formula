@@ -138,5 +138,6 @@ class Token {
   public const IDENTIFIER = 62;
   public const MODULO = 63;
   public const KEYWORD_INSTANCEOF = 64;
+  public const KEYWORD_TYPE = 65;
   // @formatter:on
 }

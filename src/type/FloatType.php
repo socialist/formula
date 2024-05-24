@@ -2,7 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\operator\OperatableOperator;
+use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\procedure\Scope;
 
 /**
@@ -10,7 +10,7 @@ use TimoLehnertz\formula\procedure\Scope;
  */
 class FloatType implements Type {
 
-  public function assignableBy(Type $type): bool {
+  public function equals(Type $type): bool {
     return $type instanceof FloatType;
   }
 
@@ -26,7 +26,11 @@ class FloatType implements Type {
     return $this;
   }
 
-  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
+  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     return (new FloatValue(0))->getOperatorResultType($operator, $otherType);
+  }
+
+  public function getCompatibleOperands(ImplementableOperator $operator): array {
+    return (new FloatValue(0))->getExpectedOperands($operator);
   }
 }

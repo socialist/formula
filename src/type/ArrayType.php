@@ -2,8 +2,9 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\operator\OperatableOperator;
+use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\operator\Operator;
 
 /**
  * @author Timo Lehnertz
@@ -19,11 +20,11 @@ class ArrayType implements Type {
     $this->elementsType = $elementsType;
   }
 
-  public function assignableBy(Type $type): bool {
+  public function equals(Type $type): bool {
     if(!($type instanceof ArrayType)) {
       return false;
     }
-    return $type->keyType->assignableBy($this->keyType) && $this->elementsType->assignableBy($type->elementsType);
+    return $type->keyType->equals($this->keyType) && $this->elementsType->equals($type->elementsType);
   }
 
   public function getIdentifier(bool $isNested = false): string {
@@ -38,8 +39,15 @@ class ArrayType implements Type {
     return new ArrayType($this->keyType->validate($scope), $this->elementsType->validate($scope));
   }
 
-  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
+  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     $arrayValue = new ArrayValue([], $this);
     return $arrayValue->getOperatorResultType($operator, $otherType);
+  }
+
+  public function getCompatibleOperands(ImplementableOperator $operator): array {
+    if($operator->id === Operator::IMPLEMENTABLE_ARRAY_ACCESS) {
+      return [$this->keyType];
+    }
+    return [];
   }
 }

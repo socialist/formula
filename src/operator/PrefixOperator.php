@@ -9,7 +9,12 @@ use TimoLehnertz\formula\type\Value;
 /**
  * @author Timo Lehnertz
  */
-abstract class PrefixOperator extends Operator {
+abstract class PrefixOperator implements Operator {
+  use OperatorHelper;
+
+  public function getOperatorType(): OperatorType {
+    return OperatorType::PrefixOperator;
+  }
 
   public function operate(?Value $leftValue, ?Value $rightValue): Value {
     if($rightValue === null) {

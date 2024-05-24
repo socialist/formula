@@ -1,15 +1,15 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\operator;
 
 /**
  * @author Timo Lehnertz
- *
  */
 enum OperatorType {
 
-  case Prefix;
+  case PrefixOperator;
 
-  case Infix;
+  case InfixOperator;
 
-  case Postfix;
+  case PostfixOperator;
 }

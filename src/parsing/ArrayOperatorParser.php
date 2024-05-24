@@ -17,7 +17,10 @@ class ArrayOperatorParser extends Parser {
     if($firstToken->id != Token::SQUARE_BRACKETS_OPEN) {
       return ParsingException::PARSING_ERROR_GENERIC;
     }
-    $token = $firstToken->requireNext();
+    if(!$firstToken->hasNext()) {
+      return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
+    }
+    $token = $firstToken->next();
     $parsedIndexExpression = (new ExpressionParser())->parse($token);
     if(is_int($parsedIndexExpression)) {
       return $parsedIndexExpression;

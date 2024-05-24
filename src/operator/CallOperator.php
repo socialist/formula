@@ -11,7 +11,7 @@ use TimoLehnertz\formula\type\Value;
 /**
  * @author Timo Lehnertz
  */
-class CallOperator extends Operator {
+class CallOperator extends PostfixOperator {
 
   /**
    * @var array<Expression>
@@ -24,8 +24,24 @@ class CallOperator extends Operator {
    * @param array<Expression> $args
    */
   public function __construct(array $args) {
-    parent::__construct(Operator::TYPE_CALL, OperatorType::Postfix, 2, true);
+    parent::__construct(2);
     $this->args = $args;
+  }
+
+  public function validate(Scope $scope): void {
+    $this->argTypes = [];
+    /** @var Expression $arg */
+    foreach($this->args as $arg) {
+      $this->argTypes[] = $arg->validate($scope);
+    }
+  }
+
+  protected function validatePostfixOperation(Type $leftType): Type {
+    return $leftType->getOperatorResultType($this, null);
+  }
+
+  protected function operatePostfix(Value $leftValue): Value {
+    return $leftValue->operate($this, null);
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
@@ -39,22 +55,10 @@ class CallOperator extends Operator {
     return '('.$argsStr.')';
   }
 
-  public function getSubParts(): array {
-    return $this->args;
-  }
-
-  public function validate(Scope $scope): Type {
-    $this->argTypes = [];
-    /** @var Expression $arg */
-    foreach($this->args as $arg) {
-      $this->argTypes[] = $arg->validate($scope);
+  public function getArgTypes(): array {
+    if($this->argTypes === null) {
+      throw new \BadMethodCallException('Must call validate() first!');
     }
-  }
-
-  public function operate(?Expression $leftExpression, ?Expression $rightExpression): Value {
-    if($leftExpression === null) {
-      throw new \BadFunctionCallException('Invalid operation');
-    }
-    return $leftExpression->run()->operate($this, null);
+    return $this->argTypes;
   }
 }

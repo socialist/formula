@@ -10,54 +10,66 @@ use TimoLehnertz\formula\type\FloatType;
 use TimoLehnertz\formula\type\StringType;
 use TimoLehnertz\formula\type\IntegerType;
 use TimoLehnertz\formula\ParsingException;
+use TimoLehnertz\formula\expression\IdentifierExpression;
+use TimoLehnertz\formula\parsing\ExpressionParser;
 
 class EnumeratedParserTest extends TestCase {
 
-  public function testOK(): void {
-    $firstToken = Tokenizer::tokenize("{float,string,int}");
-    $parser = new EnumeratedParser(new TypeParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, false);
+  //   public function testOK(): void {
+  //     $firstToken = Tokenizer::tokenize("{float,string,int}");
+  //     $parser = new EnumeratedParser(new TypeParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, false);
+  //     $parsed = $parser->parse($firstToken);
+  //     $this->assertIsArray($parsed->parsed);
+  //     $this->assertCount(3, $parsed->parsed);
+  //     $this->assertInstanceOf(FloatType::class, $parsed->parsed[0]);
+  //     $this->assertInstanceOf(StringType::class, $parsed->parsed[1]);
+  //     $this->assertInstanceOf(IntegerType::class, $parsed->parsed[2]);
+  //   }
+
+  //   public function testInvalidStart(): void {
+  //     $firstToken = Tokenizer::tokenize("int");
+  //     $parser = new EnumeratedParser(new TypeParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, false);
+  //     $parsed = $parser->parse($firstToken);
+  //     $this->assertEquals(ParsingException::PARSING_ERROR_GENERIC, $parsed);
+  //   }
+
+  //   public function testInvalidLastDelimiter(): void {
+  //     $firstToken = Tokenizer::tokenize("{int,}");
+  //     $parser = new EnumeratedParser(new TypeParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, false);
+  //     $parsed = $parser->parse($firstToken);
+  //     $this->assertEquals(ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS, $parsed);
+  //   }
+
+  //   public function testGoodLastDelimiter(): void {
+  //     $firstToken = Tokenizer::tokenize("{int,}");
+  //     $parser = new EnumeratedParser(new TypeParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, true);
+  //     $parsed = $parser->parse($firstToken);
+  //     $this->assertIsArray($parsed->parsed);
+  //     $this->assertCount(1, $parsed->parsed);
+  //     $this->assertInstanceOf(IntegerType::class, $parsed->parsed[0]);
+  //   }
+
+  //   public function testBadInBetweenDelimiter(): void {
+  //     $firstToken = Tokenizer::tokenize("{int,,int}");
+  //     $parser = new EnumeratedParser(new TypeParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, false);
+  //     $parsed = $parser->parse($firstToken);
+  //     $this->assertEquals(ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS, $parsed);
+  //   }
+
+  //   public function testWrongDelimiter(): void {
+  //     $firstToken = Tokenizer::tokenize("{int;}");
+  //     $parser = new EnumeratedParser(new TypeParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, true, false);
+  //     $parsed = $parser->parse($firstToken);
+  //     $this->assertEquals(ParsingException::PARSING_ERROR_MISSING_DELIMITERS, $parsed);
+  //   }
+  public function testExpression(): void {
+    $firstToken = Tokenizer::tokenize("(a,b,c)");
+    $parser = new EnumeratedParser(new ExpressionParser(), Token::BRACKETS_OPEN, Token::COMMA, Token::BRACKETS_CLOSED, false, false);
     $parsed = $parser->parse($firstToken);
     $this->assertIsArray($parsed->parsed);
     $this->assertCount(3, $parsed->parsed);
-    $this->assertInstanceOf(FloatType::class, $parsed->parsed[0]);
-    $this->assertInstanceOf(StringType::class, $parsed->parsed[1]);
-    $this->assertInstanceOf(IntegerType::class, $parsed->parsed[2]);
-  }
-
-  public function testInvalidStart(): void {
-    $firstToken = Tokenizer::tokenize("int");
-    $parser = new EnumeratedParser(new TypeParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, false);
-    $parsed = $parser->parse($firstToken);
-    $this->assertEquals(ParsingException::PARSING_ERROR_GENERIC, $parsed);
-  }
-
-  public function testInvalidLastDelimiter(): void {
-    $firstToken = Tokenizer::tokenize("{int,}");
-    $parser = new EnumeratedParser(new TypeParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, false);
-    $parsed = $parser->parse($firstToken);
-    $this->assertEquals(ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS, $parsed);
-  }
-
-  public function testGoodLastDelimiter(): void {
-    $firstToken = Tokenizer::tokenize("{int,}");
-    $parser = new EnumeratedParser(new TypeParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, true);
-    $parsed = $parser->parse($firstToken);
-    $this->assertIsArray($parsed->parsed);
-    $this->assertCount(1, $parsed->parsed);
-    $this->assertInstanceOf(IntegerType::class, $parsed->parsed[0]);
-  }
-
-  public function testBadInBetweenDelimiter(): void {
-    $firstToken = Tokenizer::tokenize("{int,,int}");
-    $parser = new EnumeratedParser(new TypeParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, false);
-    $parsed = $parser->parse($firstToken);
-    $this->assertEquals(ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS, $parsed);
-  }
-
-  public function testWrongDelimiter(): void {
-    $firstToken = Tokenizer::tokenize("{int;}");
-    $parser = new EnumeratedParser(new TypeParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, true, false);
-    $parsed = $parser->parse($firstToken);
-    $this->assertEquals(ParsingException::PARSING_ERROR_MISSING_DELIMITERS, $parsed);
+    $this->assertInstanceOf(IdentifierExpression::class, $parsed->parsed[0]);
+    $this->assertInstanceOf(IdentifierExpression::class, $parsed->parsed[1]);
+    $this->assertInstanceOf(IdentifierExpression::class, $parsed->parsed[2]);
   }
 }

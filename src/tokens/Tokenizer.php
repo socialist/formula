@@ -279,7 +279,8 @@ class Tokenizer {
     "while" => Token::KEYWORD_WHILE,
     "do" => Token::KEYWORD_DO,
     "for" => Token::KEYWORD_FOR,
-    "instanceof" => Token::KEYWORD_INSTANCEOF
+    "instanceof" => Token::KEYWORD_INSTANCEOF,
+    "Type" => Token::KEYWORD_INSTANCEOF
   ];
 
   private const SINGLE_TOKENS = [

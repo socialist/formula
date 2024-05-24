@@ -3,17 +3,14 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use SebastianBergmann\Type\VoidType;
+use TimoLehnertz\formula\InternalFormulaException;
 use TimoLehnertz\formula\PrettyPrintOptions;
-use TimoLehnertz\formula\operator\OperatableOperator;
+use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
  * @author Timo Lehnertz
  */
-class VoidValue implements Value {
-
-  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    return 'void';
-  }
+class VoidValue extends Value {
 
   public function assign(VoidValue $value): void {}
 
@@ -25,19 +22,23 @@ class VoidValue implements Value {
     return false;
   }
 
-  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
-    return null;
-  }
-
-  public function operate(OperatableOperator $operator, ?Value $other): Value {
-    throw new \BadFunctionCallException('Invalid operation');
-  }
-
   public function copy(): Value {
     return $this;
   }
 
   public function valueEquals(Value $other): bool {
     return $other instanceof VoidValue;
+  }
+
+  protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+    return null;
+  }
+
+  protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
+    throw new InternalFormulaException('Invalid operation on void');
+  }
+
+  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
+    return 'void';
   }
 }

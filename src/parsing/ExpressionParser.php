@@ -37,36 +37,23 @@ class ExpressionParser extends Parser {
       $token = $token->next();
     }
     $expressionsAndOperators = [];
-    $parsers = [new OperatorParser(),new ConstantExpressionParser(),new ArrayParser()];
+    $variantParser = new VariantParser([new OperatorParser(),new ConstantExpressionParser(),new ArrayParser(),new IdentifierParser()]);
     while($token !== null) {
       if(isset(ExpressionParser::$expressionEndingTokens[$token->id])) {
         break;
       }
-      if($token->id === Token::BRACKETS_OPEN) {
+      $result = $variantParser->parse($token);
+      if(!is_int($result)) {
+        $expressionsAndOperators[] = $result->parsed;
+        $token = $result->nextToken;
+      } else if($token->id === Token::BRACKETS_OPEN) {
         $result = $this->parsePart($token, false);
         if(is_int($result)) {
           return $result;
         }
         $token = $result->nextToken;
         $expressionsAndOperators[] = $result->parsed;
-        continue;
-      }
-      if($token->id === Token::IDENTIFIER) {
-        $expressionsAndOperators[] = new IdentifierExpression($token->value);
-        $token = $token->next();
-      }
-      $found = false;
-      foreach($parsers as $parser) {
-        $result = $parser->parse($token);
-        if(is_int($result)) {
-          continue;
-        }
-        $expressionsAndOperators[] = $result->parsed;
-        $token = $result->nextToken;
-        $found = true;
-        break;
-      }
-      if(!$found) {
+      } else {
         return ParsingException::PARSING_ERROR_GENERIC;
       }
     }
@@ -110,21 +97,21 @@ class ExpressionParser extends Parser {
       }
       // check if set correctly
       switch($operator->getOperatorType()) {
-        case OperatorType::Prefix:
+        case OperatorType::PrefixOperator:
           if($rightExpression === null) {
             return ParsingException::PARSING_ERROR_INVALID_OPERATOR_USE;
           }
           $startingIndex = $index;
           $size = 2;
           break;
-        case OperatorType::Infix:
+        case OperatorType::InfixOperator:
           if($leftExpression === null || $rightExpression === null) {
             return ParsingException::PARSING_ERROR_INVALID_OPERATOR_USE;
           }
           $startingIndex = $index - 1;
           $size = 3;
           break;
-        case OperatorType::Postfix:
+        case OperatorType::PostfixOperator:
           if($leftExpression === null) {
             return ParsingException::PARSING_ERROR_INVALID_OPERATOR_USE;
           }

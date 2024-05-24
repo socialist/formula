@@ -5,12 +5,12 @@ namespace TimoLehnertz\formula\type;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\operator\ArrayAccessOperator;
-use TimoLehnertz\formula\operator\OperatableOperator;
+use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
  * @author Timo Lehnertz
  */
-class ArrayValue implements Value {
+class ArrayValue extends Value {
 
   /**
    * @var array<array-key, Value>
@@ -26,35 +26,41 @@ class ArrayValue implements Value {
     $this->value = $value;
   }
 
-  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    $string = '';
-    $del = '';
-    /** @var Expression $value */
-    foreach($this->value as $value) {
-      $string .= $del.$value->toString($prettyPrintOptions);
-      $del = ',';
-    }
-    return '{'.$string.'}';
-  }
-
   public function getType(): Type {
     return $this->type;
   }
 
   public function isTruthy(): bool {
-    return $this->value;
+    return true;
   }
 
   public function copy(): ArrayValue {
     return new ArrayValue($this->value);
   }
 
-  // used for testing
-  public function getValue(): bool {
+  public function &getValue(): bool {
     return $this->value;
   }
 
-  public function operate(OperatableOperator $operator, ?Value $other): Value {
+  public function valueEquals(Value $other): bool {
+    return $other === $this;
+  }
+
+  protected function getValueExpectedOperands(ImplementableOperator $operator): array {}
+
+  protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+    if($operator instanceof ArrayAccessOperator) {
+      if(!$operator->getIndexType()->canCastTo($this->keyType)) {
+        return null;
+      }
+      return $this->elementsType;
+    } else if($operator->id === ImplementableOperator::TYPE_EQUALS && $otherType instanceof ArrayType) {
+      return new BooleanType();
+    }
+    return null;
+  }
+
+  protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
     if($operator instanceof ArrayAccessOperator) {
       if($other instanceof IntegerValue) {
         $key = $other->getValue();
@@ -70,27 +76,26 @@ class ArrayValue implements Value {
       } else {
         throw new \BadFunctionCallException('Array key does not exist!');
       }
-    } else if($operator->id === OperatableOperator::TYPE_EQUALS) {
+    } else if($operator->id === ImplementableOperator::TYPE_EQUALS) {
       return new BooleanValue($this === $other);
     } else {
       throw new \BadFunctionCallException('Invalid operator!');
     }
   }
 
-  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
-    if($operator instanceof ArrayAccessOperator) {
-      if(!$operator->getIndexType()->canCastTo($this->keyType)) {
-        return null;
-      }
-      return $this->elementsType;
-    } else if($operator->id === OperatableOperator::TYPE_EQUALS && $otherType instanceof ArrayType) {
-      return new BooleanType();
-    }
-    return null;
+  public function assign(Value $value): void {
+    $this->value = &$value->getValue();
   }
 
-  public function valueEquals(Value $other): bool {
-    return $other === $this;
+  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
+    $string = '';
+    $del = '';
+    /** @var Expression $value */
+    foreach($this->value as $value) {
+      $string .= $del.$value->toString($prettyPrintOptions);
+      $del = ',';
+    }
+    return '{'.$string.'}';
   }
 }
 

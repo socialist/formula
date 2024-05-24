@@ -8,14 +8,24 @@ use TimoLehnertz\formula\procedure\Scope;
 /**
  * @author Timo Lehnertz
  */
-class StringType implements Type {
+class TypeType implements Type {
+
+  private readonly Type $type;
+
+  public function __construct(Type $type) {
+    $this->type = $type;
+  }
+
+  public function getType(): Type {
+    return $this->type;
+  }
 
   public function equals(Type $type): bool {
     return $type instanceof StringType;
   }
 
   public function getIdentifier(bool $nested = false): string {
-    return 'string';
+    return 'Type';
   }
 
   public function getImplementedOperators(): array {
@@ -26,9 +36,11 @@ class StringType implements Type {
     return $this;
   }
 
-  public function castTo(Type $type, Value $value): Value {}
-
   public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    return (new StringValue(''))->getOperatorResultType($operator, $otherType);
+    return null;
+  }
+
+  public function getCompatibleOperands(ImplementableOperator $operator): array {
+    return [];
   }
 }

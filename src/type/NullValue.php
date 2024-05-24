@@ -3,16 +3,13 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
-use TimoLehnertz\formula\operator\OperatableOperator;
+use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\InternalFormulaException;
 
 /**
  * @author Timo Lehnertz
  */
-class NullValue implements Value {
-
-  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    return 'null';
-  }
+class NullValue extends Value {
 
   public function assign(Value $value): void {
     throw new \BadFunctionCallException('invalid assignment');
@@ -38,17 +35,15 @@ class NullValue implements Value {
     return $other instanceof NullValue;
   }
 
-  public function getOperatorResultType(OperatableOperator $operator, ?Type $otherType): ?Type {
-    if($operator->id === OperatableOperator::TYPE_EQUALS && (new NullType())->can) {
-      return new BooleanType();
-    }
+  protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     return null;
   }
 
-  public function operate(OperatableOperator $operator, ?Value $other): Value {
-    if($operator->id === OperatableOperator::TYPE_EQUALS) {
-      return new BooleanValue($other instanceof NullValue);
-    }
-    throw new \BadFunctionCallException('Invalid operation!');
+  protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
+    throw new InternalFormulaException('Invalid operation on null!');
+  }
+
+  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
+    return 'null';
   }
 }
