@@ -36,12 +36,12 @@ abstract class Value implements OperatorHandler {
     // default operators
     switch($operator->id) {
       case Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT:
-        if($otherType === null || !$this->getType()->assignableBy($otherType)) {
+        if($otherType === null || !$this->getType()->equals($otherType)) {
           return null;
         }
         return $this->getType();
       case Operator::IMPLEMENTABLE_EQUALS:
-        if($otherType === null || !$this->getType()->assignableBy($otherType)) {
+        if($otherType === null || !$this->getType()->equals($otherType)) {
           return null;
         }
         return new BooleanType();
@@ -62,13 +62,13 @@ abstract class Value implements OperatorHandler {
     // default operators
     switch($operator->id) {
       case Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT:
-        if($this->getType()->assignableBy($other->getType())) {
+        if($this->getType()->equals($other->getType())) {
           $this->assign($other);
           return $this->copy();
         }
         break;
       case Operator::IMPLEMENTABLE_EQUALS:
-        if($this->getType()->assignableBy($other->getType())) {
+        if($this->getType()->equals($other->getType())) {
           return new BooleanValue($this->valueEquals($other));
         }
         break;

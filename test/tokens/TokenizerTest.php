@@ -83,6 +83,8 @@ class TokenizerTest extends TestCase {
     foreach($tokens as $token) {
       $tokenized = Tokenizer::tokenize($token[1]);
       $this->assertEquals($token[0], $tokenized->id);
+      $this->assertEquals(0, $tokenized->line);
+      $this->assertEquals(0, $tokenized->position);
       $this->assertEquals($token[2], $tokenized->value);
       $this->assertFalse($tokenized->hasNext());
     }

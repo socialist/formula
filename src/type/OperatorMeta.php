@@ -13,7 +13,7 @@ interface OperatorMeta {
    * Returns a list of compatible operand types for the given Operator
    * @return array<Type>
    */
-  public abstract function getCompatibleOperands(ImplementableOperator $operator): array;
+  public function getCompatibleOperands(ImplementableOperator $operator): array;
 
   public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type;
 }

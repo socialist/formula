@@ -2,7 +2,6 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\tokens\Token;
 
 /**
@@ -31,9 +30,9 @@ class EnumeratedParser extends Parser {
     $this->allowLastDelimiter = $allowLastDelimiter;
   }
 
-  protected function parsePart(Token $firstToken): ParserReturn|int {
+  protected function parsePart(Token $firstToken): ParserReturn {
     if($firstToken->id !== $this->firstToken) {
-      return ParsingException::PARSING_ERROR_GENERIC;
+      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
     }
     $token = $firstToken->next();
     $allowedDelimiters = $this->allowEmpty ? PHP_INT_MAX : 0;
@@ -43,7 +42,7 @@ class EnumeratedParser extends Parser {
     while($token !== null) {
       if($token->id === $this->lastToken) {
         if($lastWasDelimiter && !$this->allowLastDelimiter) {
-          return ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS;
+          throw new ParsingException(ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS, $token);
         }
         return new ParserReturn($parsed, $token->next());
       }
@@ -55,23 +54,20 @@ class EnumeratedParser extends Parser {
           $token = $token->next();
           continue;
         } else {
-          return ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS;
+          throw new ParsingException(ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS, $token);
         }
       }
       if($requireDelimiter) {
-        return ParsingException::PARSING_ERROR_MISSING_DELIMITERS;
+        throw new ParsingException(ParsingException::PARSING_ERROR_MISSING_DELIMITERS, $token);
       }
 
       $result = $this->elementParser->parse($token);
-      if(is_int($result)) {
-        return $result;
-      }
       $parsed[] = $result->parsed;
       $requireDelimiter = true;
       $allowedDelimiters = $this->allowEmpty ? PHP_INT_MAX : 1;
       $lastWasDelimiter = false;
       $token = $result->nextToken;
     }
-    return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
+    throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, $token);
   }
 }

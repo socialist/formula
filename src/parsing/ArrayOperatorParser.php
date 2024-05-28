@@ -1,7 +1,6 @@
 <?php
 namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\operator\ArrayAccessOperator;
 use TimoLehnertz\formula\tokens\Token;
 
@@ -13,24 +12,21 @@ use TimoLehnertz\formula\tokens\Token;
  */
 class ArrayOperatorParser extends Parser {
 
-  protected function parsePart(Token $firstToken): ParserReturn|int {
+  protected function parsePart(Token $firstToken): ParserReturn {
     if($firstToken->id != Token::SQUARE_BRACKETS_OPEN) {
-      return ParsingException::PARSING_ERROR_GENERIC;
+      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
     }
     if(!$firstToken->hasNext()) {
-      return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
     }
     $token = $firstToken->next();
     $parsedIndexExpression = (new ExpressionParser())->parse($token);
-    if(is_int($parsedIndexExpression)) {
-      return $parsedIndexExpression;
-    }
     $token = $parsedIndexExpression->nextToken;
     if($token === null) {
-      return ParsingException::PARSING_ERROR_GENERIC;
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
     }
     if($token->id !== Token::SQUARE_BRACKETS_CLOSED) {
-      return ParsingException::PARSING_ERROR_GENERIC;
+      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $token);
     }
     return new ParserReturn(new ArrayAccessOperator($parsedIndexExpression->parsed, $token->next()));
   }

@@ -8,7 +8,7 @@ use TimoLehnertz\formula\operator\ImplementableOperator;
 /**
  * @author Timo Lehnertz
  */
-abstract class NumberValueHelper extends Value {
+abstract class NumberValueHelper {
 
   public static function getMostPreciseNumberType(Type $a, Type $b): Type {
     if($b instanceof FloatType) {

@@ -2,7 +2,6 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\expression\IdentifierExpression;
 use TimoLehnertz\formula\tokens\Token;
 
@@ -11,11 +10,11 @@ use TimoLehnertz\formula\tokens\Token;
  */
 class IdentifierParser extends Parser {
 
-  protected function parsePart(Token $firstToken, bool $topLevel = true): ParserReturn|int {
+  protected function parsePart(Token $firstToken, bool $topLevel = true): ParserReturn {
     if($firstToken->id === Token::IDENTIFIER) {
       return new ParserReturn(new IdentifierExpression($firstToken->value), $firstToken->next());
     } else {
-      return ParsingException::PARSING_ERROR_GENERIC;
+      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
     }
   }
 }

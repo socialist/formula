@@ -4,6 +4,7 @@ namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\operator\Operator;
 
 /**
  * @author Timo Lehnertz
@@ -36,9 +37,21 @@ class BooleanValue extends Value {
     return $other->value === $this->value;
   }
 
+  protected function getValueExpectedOperands(ImplementableOperator $operator): array {
+    switch($operator->id) {
+      case Operator::IMPLEMENTABLE_LOGICAL_AND:
+        return [new BooleanType()];
+      case Operator::IMPLEMENTABLE_LOGICAL_OR:
+        return [new BooleanType()];
+      case Operator::IMPLEMENTABLE_LOGICAL_XOR:
+        return [new BooleanType()];
+    }
+    return [];
+  }
+
   protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     if($operator->id === ImplementableOperator::TYPE_LOGICAL_NOT) {
-      return new BooleanValue(!$this->value);
+      return new BooleanType();
     }
     if($otherType === null || !($otherType instanceof BooleanType)) {
       return null;
@@ -47,7 +60,6 @@ class BooleanValue extends Value {
       case ImplementableOperator::TYPE_LOGICAL_AND:
       case ImplementableOperator::TYPE_LOGICAL_OR:
       case ImplementableOperator::TYPE_LOGICAL_XOR:
-      case ImplementableOperator::TYPE_EQUALS:
         return new BooleanType();
       default:
         return null;

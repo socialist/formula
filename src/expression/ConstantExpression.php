@@ -18,19 +18,15 @@ class ConstantExpression implements Expression {
     $this->value = $value;
   }
 
-  public function run(): Value {
+  public function validate(Scope $scope): Type {
+    return $this->value->getType();
+  }
+
+  public function run(Scope $scope): Value {
     return $this->value->copy();
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return $this->value->toString($prettyPrintOptions);
-  }
-
-  public function getSubParts(): array {
-    return [];
-  }
-
-  public function validate(Scope $scope): Type {
-    return $this->value->getType();
   }
 }

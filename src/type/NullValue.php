@@ -46,4 +46,8 @@ class NullValue extends Value {
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return 'null';
   }
+
+  protected function getValueExpectedOperands(ImplementableOperator $operator): array {
+    return [];
+  }
 }

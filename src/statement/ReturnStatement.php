@@ -1,16 +1,15 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\statement;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\VoidType;
+use TimoLehnertz\formula\type\VoidValue;
 
 /**
- *
  * @author Timo Lehnertz
- *        
  */
 class ReturnStatement implements Statement {
 
@@ -20,13 +19,19 @@ class ReturnStatement implements Statement {
     $this->expression = $expression;
   }
 
-  public function defineReferences(): void {
-    // expressions dont define anything
+  public function validate(Scope $scope): StatementReturnType {
+    if($this->expression !== null) {
+      return new StatementReturnType($this->expression->validate($scope), true, false, 0);
+    }
+    return new StatementReturnType(new VoidType(), true, true);
   }
 
-  public function run(): StatementValue {
-    $value = $this->expression->run();
-    return new StatementValue($value, null, false, false, true);
+  public function run(Scope $scope): StatementReturn {
+    if($this->expression !== null) {
+      return new StatementReturn($this->expression->run($scope), true, false, 0);
+    } else {
+      return new StatementReturn(new VoidValue(), true, false, 0);
+    }
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
@@ -34,25 +39,5 @@ class ReturnStatement implements Statement {
       return 'return;';
     }
     return 'return '.$this->expression->toString($prettyPrintOptions).';';
-  }
-
-  public function setScope(Scope $scope) {
-    if($this->expression !== null) {
-      $this->expression->setScope($scope);
-    }
-  }
-
-  public function getSubParts(): array {
-    if($this->expression !== null) {
-      return $this->expression->getSubParts();
-    }
-    return [];
-  }
-
-  public function validate(): Type {
-    if($this->expression !== null) {
-      return $this->expression->validate();
-    }
-    return new VoidType();
   }
 }

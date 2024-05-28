@@ -1,11 +1,10 @@
 <?php
-namespace TimoLehnertz\formula;
+namespace TimoLehnertz\formula\parsing;
 
 use TimoLehnertz\formula\tokens\Token;
 
 /**
  * @author Timo Lehnertz
- *
  */
 class ParsingException extends \Exception {
 
@@ -21,8 +20,17 @@ class ParsingException extends \Exception {
 
   public const PARSING_ERROR_INVALID_OPERATOR_USE = 6;
 
-  public function __construct(int $code, Token $token) {
-    parent::__construct('Unexpected token "'.$token->value.'" at: '.$token->line.':'.$token->position.' Message: '.static::codeToMessage($code));
+  public const PARSING_ERROR_EXPECTED_SEMICOLON = 7;
+
+  /**
+   * @param ParsingException::PARSING_ERROR_* $code
+   */
+  public function __construct(int $code, ?Token $token) {
+    if($token !== null) {
+      parent::__construct('Parsing failed at "'.$token->value.'" at: '.$token->line.':'.$token->position.' Message: '.static::codeToMessage($code));
+    } else {
+      parent::__construct('Parsing failed. Message: '.static::codeToMessage($code));
+    }
   }
 
   private static function codeToMessage(int $code): string {
@@ -39,6 +47,8 @@ class ParsingException extends \Exception {
         return 'invalid type';
       case static::PARSING_ERROR_INVALID_OPERATOR_USE:
         return 'invalid use of operator';
+      case static::PARSING_ERROR_EXPECTED_SEMICOLON:
+        return 'expected ;';
       default:
         throw new \UnexpectedValueException($code.' is no valid ParsingExceptionCode');
     }

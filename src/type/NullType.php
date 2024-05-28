@@ -27,4 +27,8 @@ class NullType implements Type {
   public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     return (new NullValue())->getOperatorResultType($operator, $otherType);
   }
+
+  public function getCompatibleOperands(ImplementableOperator $operator): array {
+    return (new NullValue())->getCompatibleOperands($operator);
+  }
 }

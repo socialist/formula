@@ -1,29 +1,29 @@
 <?php
-namespace src\parsing;
+declare(strict_types = 1);
+namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\parsing\ExpressionParser;
-use TimoLehnertz\formula\parsing\Parser;
 use TimoLehnertz\formula\statement\ExpressionStatement;
 use TimoLehnertz\formula\tokens\Token;
 
+/**
+ * @author Timo Lehnertz
+ */
 class ExpressionStatementParser extends Parser {
 
   /**
-   *
    * @param Token[] $tokens
    */
-  protected static function parsePart(array &$tokens, int &$index): ?ExpressionStatement {
-    $expression = ExpressionParser::parse($tokens, $index);
-    if($expression === null) return null;
-    if($index >= sizeof($tokens)) {
-      return null;
+  protected function parsePart(Token $firstToken): ParserReturn {
+    $parsedExpression = (new ExpressionParser())->parse($firstToken);
+    if(is_int($parsedExpression)) {
+      return $parsedExpression;
     }
-    $token = $tokens[$index];
-    if($token->name === ';') {
-      return new ExpressionStatement($expression);
-    } else {
-      return null;
+    if($parsedExpression->nextToken === null) {
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
     }
+    if($parsedExpression->nextToken->id !== Token::SEMICOLON) {
+      throw new ParsingException(ParsingException::PARSING_ERROR_EXPECTED_SEMICOLON, $parsedExpression->nextToken);
+    }
+    return new ParserReturn(new ExpressionStatement($parsedExpression->parsed), $parsedExpression->nextToken->next());
   }
 }
-

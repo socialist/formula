@@ -1,9 +1,12 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\tokens\Token;
 
+/**
+ * @author Timo Lehnertz
+ */
 class VariantParser extends Parser {
 
   /**
@@ -18,15 +21,13 @@ class VariantParser extends Parser {
     $this->parsers = $parsers;
   }
 
-  protected function parsePart(Token $firstToken): ParserReturn|int {
+  protected function parsePart(Token $firstToken): ParserReturn {
     /** @var Parser $parser */
     foreach($this->parsers as $parser) {
-      $result = $parser->parse($firstToken);
-      if(!is_int($result)) {
-        return $result;
-      }
+      try {
+        return $parser->parse($firstToken);
+      } catch(ParsingException $e) {} // try the next one
     }
-    return ParsingException::PARSING_ERROR_GENERIC;
+    throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
   }
 }
-

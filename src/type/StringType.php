@@ -31,4 +31,8 @@ class StringType implements Type {
   public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     return (new StringValue(''))->getOperatorResultType($operator, $otherType);
   }
+
+  public function getCompatibleOperands(ImplementableOperator $operator): array {
+    return (new StringValue(''))->getCompatibleOperands($operator);
+  }
 }

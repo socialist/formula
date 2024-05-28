@@ -2,21 +2,20 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\tokens\Token;
-use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\expression\ConstantExpression;
+use TimoLehnertz\formula\tokens\Token;
+use TimoLehnertz\formula\type\BooleanValue;
 use TimoLehnertz\formula\type\FloatValue;
 use TimoLehnertz\formula\type\IntegerValue;
-use TimoLehnertz\formula\type\BooleanValue;
-use TimoLehnertz\formula\type\StringValue;
 use TimoLehnertz\formula\type\NullValue;
+use TimoLehnertz\formula\type\StringValue;
 
 /**
  * @author Timo Lehnertz
  */
 class ConstantExpressionParser extends Parser {
 
-  protected function parsePart(Token $firstToken): ParserReturn|int {
+  protected function parsePart(Token $firstToken): ParserReturn {
     switch($firstToken->id) {
       case Token::FLOAT_CONSTANT:
         return new ParserReturn(new ConstantExpression(new FloatValue(floatval($firstToken->value))), $firstToken->next());
@@ -31,6 +30,6 @@ class ConstantExpressionParser extends Parser {
       case Token::KEYWORD_NULL:
         return new ParserReturn(new ConstantExpression(new NullValue()), $firstToken->next());
     }
-    return ParsingException::PARSING_ERROR_GENERIC;
+    throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
   }
 }

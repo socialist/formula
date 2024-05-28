@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
 use TimoLehnertz\formula\operator\CallOperator;
@@ -13,11 +14,8 @@ class CallOperatorParser extends EnumeratedParser {
     parent::__construct(new ExpressionParser(), Token::BRACKETS_OPEN, Token::COMMA, Token::BRACKETS_CLOSED, false, true);
   }
 
-  protected function parsePart(Token $firstToken): ParserReturn|int {
+  protected function parsePart(Token $firstToken): ParserReturn {
     $result = parent::parsePart($firstToken);
-    if(is_int($result)) {
-      return $result;
-    }
     return new ParserReturn(new CallOperator($result->parsed), $result->nextToken);
   }
 }

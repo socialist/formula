@@ -1,52 +1,42 @@
 <?php
-namespace src\parsing;
+declare(strict_types = 1);
+namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\parsing\Parser;
 use TimoLehnertz\formula\statement\VariableDeclarationStatement;
-use TimoLehnertz\formula\parsing\TypeParser;
-use TimoLehnertz\formula\parsing\ExpressionParser;
+use TimoLehnertz\formula\tokens\Token;
 
+/**
+ * @author Timo Lehnertz
+ */
 class VariableDeclarationStatementParser extends Parser {
 
-  protected static function parsePart(array &$tokens, int &$index): ?VariableDeclarationStatement {
-    $type = TypeParser::parseType($tokens, $index);
-    if($type === null) {
-      return null;
+  protected function parsePart(Token $firstToken): ParserReturn {
+    $parsedType = (new TypeParser())->parse($firstToken);
+    if(is_int($parsedType)) {
+      return $parsedType;
     }
-    if($index >= sizeof($tokens)) {
-      return null;
+    $token = $parsedType->nextToken;
+    if($token === null) {
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
     }
-    $token = $tokens[$index];
-    if($token->name !== 'I') {
-      return null; // identifier
+    if($token->id !== Token::IDENTIFIER) {
+      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $token);
     }
-    $identifier = $tokens[$index]->value;
-    $index++;
-    if($index >= sizeof($tokens)) {
-      return null;
+    if(!$token->hasNext()) {
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
     }
-    $token = $tokens[$index];
-    $expression = null;
-    if($token->name === '=') {
-      $index++;
-      if($index >= sizeof($tokens)) {
-        return null;
-      }
-      $expression = ExpressionParser::parse($tokens, $index);
-      if($expression === null) {
-        return null;
-      }
+    $token = $token->next();
+    if($token->id !== Token::ASSIGNMENT) {
+      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $token);
     }
-    if($index >= sizeof($tokens)) {
-      return null;
+    $parsedInitilizer = (new ExpressionParser())->parse($token->next());
+    if($parsedInitilizer->nextToken === null || !$parsedInitilizer->nextToken->hasNext()) {
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
     }
-    $token = $tokens[$index];
-    if($token->name === ';') {
-      $index++;
-      return new VariableDeclarationStatement($type, $identifier, $expression);
-    } else {
-      return null;
+    $token = $parsedInitilizer->nextToken->next();
+    if($token->id !== Token::SEMICOLON) {
+      throw new ParsingException(ParsingException::PARSING_ERROR_EXPECTED_SEMICOLON, $token);
     }
+    return new ParserReturn(new VariableDeclarationStatement($parsedInitilizer->parsed), $token->next());
   }
 }
-

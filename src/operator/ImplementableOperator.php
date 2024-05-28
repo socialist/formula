@@ -6,6 +6,7 @@ use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
+use TimoLehnertz\formula\FormulaValidationException;
 
 /**
  * @author Timo Lehnertz
@@ -82,6 +83,7 @@ class ImplementableOperator implements Operator {
       case self::TYPE_NEW:
       case self::TYPE_UNARY_PLUS:
       case self::TYPE_UNARY_MINUS:
+      case self::TYPE_TYPE_CAST:
         return OperatorType::PrefixOperator;
       default:
         throw new \UnexpectedValueException('invalid ImplementableOperator ID '.$id);
@@ -99,6 +101,7 @@ class ImplementableOperator implements Operator {
       case self::TYPE_LOGICAL_NOT:
       case self::TYPE_NEW:
       case self::TYPE_INSTANCEOF:
+      case self::TYPE_TYPE_CAST:
         return 3;
       case self::TYPE_MULTIPLICATION:
       case self::TYPE_DIVISION:
@@ -164,6 +167,8 @@ class ImplementableOperator implements Operator {
         return '^';
       case self::TYPE_DIRECT_ASSIGNMENT:
         return '=';
+      case self::TYPE_TYPE_CAST:
+        return 'typecast';
       default:
         throw new \UnexpectedValueException('invalid ImplementableOperator ID '.$id);
     }
@@ -175,17 +180,29 @@ class ImplementableOperator implements Operator {
         if($leftType !== null || $rigthType === null) {
           throw new \UnexpectedValueException('Invalid operands for operator #'.$this->id);
         }
-        return $rigthType->getOperatorResultType($this, null);
+        $resultType = $leftType->getOperatorResultType($this, null);
+        if($resultType === null) {
+          throw new FormulaValidationException('Invalid operation');
+        }
+        return $resultType;
       case OperatorType::InfixOperator:
         if($leftType === null || $rigthType === null) {
           throw new \UnexpectedValueException('Invalid operands for operator #'.$this->id);
         }
-        return $leftType->getOperatorResultType($this, $rigthType);
+        $resultType = $leftType->getOperatorResultType($this, $rigthType);
+        if($resultType === null) {
+          throw new FormulaValidationException('Invalid operation');
+        }
+        return $resultType;
       case OperatorType::PostOperator:
         if($leftType === null || $rigthType !== null) {
           throw new \UnexpectedValueException('Invalid operands for operator #'.$this->id);
         }
-        return $leftType->getOperatorResultType($this, null);
+        $resultType = $leftType->getOperatorResultType($this, null);
+        if($resultType === null) {
+          throw new FormulaValidationException('Invalid operation');
+        }
+        return $resultType;
       default:
         throw new \UnexpectedValueException('Invalid operatorType');
     }

@@ -38,6 +38,13 @@ class StringValue extends Value {
     return $other->value === $this->getValue();
   }
 
+  protected function getValueExpectedOperands(ImplementableOperator $operator): array {
+    if($operator->id === ImplementableOperator::TYPE_ADDITION) {
+      return [new StringType()];
+    }
+    return [];
+  }
+
   protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     if($operator->id === ImplementableOperator::TYPE_ADDITION && $otherType instanceof StringType) {
       return new StringType();

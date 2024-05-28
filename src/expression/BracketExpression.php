@@ -18,19 +18,15 @@ class BracketExpression implements Expression {
     $this->expression = $expression;
   }
 
-  public function run(): Value {
-    return $this->expression->run();
+  public function validate(Scope $scope): Type {
+    return $this->expression->validate($scope);
+  }
+
+  public function run(Scope $scope): Value {
+    return $this->expression->run($scope);
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return '('.$this->expression->toString($prettyPrintOptions).')';
-  }
-
-  public function getSubParts(): array {
-    return $this->expression->getSubParts();
-  }
-
-  public function validate(Scope $scope): Type {
-    return $this->expression->validate($scope);
   }
 }

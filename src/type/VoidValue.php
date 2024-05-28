@@ -30,6 +30,10 @@ class VoidValue extends Value {
     return $other instanceof VoidValue;
   }
 
+  protected function getValueExpectedOperands(ImplementableOperator $operator): array {
+    return [];
+  }
+
   protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     return null;
   }

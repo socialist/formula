@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
 use TimoLehnertz\formula\tokens\Token;
@@ -17,11 +18,8 @@ class ArrayParser extends EnumeratedParser {
     parent::__construct(new ExpressionParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, true);
   }
 
-  protected function parsePart(Token $firstToken): ParserReturn|int {
-    $elements = parent::parsePart($firstToken);
-    if(is_int($elements)) {
-      return $elements;
-    }
-    return new ArrayExpression($elements);
+  protected function parsePart(Token $firstToken): ParserReturn {
+    $parsed = parent::parsePart($firstToken);
+    return new ParserReturn(new ArrayExpression($parsed->parsed), $parsed->nextToken);
   }
 }

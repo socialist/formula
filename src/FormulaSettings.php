@@ -2,9 +2,7 @@
 namespace TimoLehnertz\formula;
 
 /**
- *
  * @author Timo Lehnertz
- *        
  */
 class FormulaSettings {
 

@@ -33,4 +33,8 @@ class VoidType implements Type {
   public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     return (new VoidValue())->getOperatorResultType($operator, $otherType);
   }
+
+  public function getCompatibleOperands(ImplementableOperator $operator): array {
+    return (new VoidValue())->getCompatibleOperands($operator);
+  }
 }

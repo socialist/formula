@@ -2,7 +2,6 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\operator\Operator;
 use TimoLehnertz\formula\operator\OperatorBuilder;
 use TimoLehnertz\formula\tokens\Token;
@@ -36,7 +35,7 @@ class OperatorParser extends Parser {
   ];
 
   // @formatter:on
-  protected function parsePart(Token $firstToken): ParserReturn|int {
+  protected function parsePart(Token $firstToken): ParserReturn {
     switch($firstToken->id) {
       case Token::SCOPE_RESOLUTION:
         return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_SCOPE_RESOLUTION), $firstToken->next());
@@ -119,7 +118,7 @@ class OperatorParser extends Parser {
       case Token::KEYWORD_INSTANCEOF:
         return new ParserReturn(OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_INSTANCEOF), $firstToken->next());
       default:
-        return ParsingException::PARSING_ERROR_GENERIC;
+        throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
     }
   }
 }

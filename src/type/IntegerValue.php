@@ -49,7 +49,7 @@ class IntegerValue extends Value {
   }
 
   protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    return NumberValueHelper::getNumberOperatorResultType($this, $operator, $otherType);
+    return NumberValueHelper::getNumberOperatorResultType($this->getType(), $operator, $otherType);
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {

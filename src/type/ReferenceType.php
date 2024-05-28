@@ -17,7 +17,7 @@ class ReferenceType implements Type {
   }
 
   public function equals(Type $type): bool {
-    throw new \BadMethodCallException('ReferenceType must be validated first');
+    return $type->getIdentifier() === $this->referenceIdentifier;
   }
 
   public function getImplementedOperators(): array {
@@ -37,6 +37,10 @@ class ReferenceType implements Type {
   }
 
   public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+    throw new \BadFunctionCallException('Must validate first');
+  }
+
+  public function getCompatibleOperands(ImplementableOperator $operator): array {
     throw new \BadFunctionCallException('Must validate first');
   }
 }

@@ -24,5 +24,5 @@ interface Expression extends FormulaPart {
    */
   public function validate(Scope $scope): Type;
 
-  public function run(): Value;
+  public function run(Scope $scope): Value;
 }

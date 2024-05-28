@@ -1,163 +1,92 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\procedure;
 
 use TimoLehnertz\formula\FormulaRuntimeException;
-use TimoLehnertz\formula\FormulaSettings;
-use TimoLehnertz\formula\FormulaValidationException;
-use TimoLehnertz\formula\type\BooleanType;
-use TimoLehnertz\formula\type\IntegerType;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 
 /**
- *
  * @author Timo Lehnertz
- *        
  */
 class Scope {
 
   /**
-   * Variables will be defined in validation stage in the same order code will be executed
-   * after validation stage variables will get undefined to get defined again at runtime
-   *
-   * @var Variable[]
+   * @var array<string, DefinedValue>
    */
-  private array $variables = [];
-
-  /**
-   *
-   * @var Method[]
-   */
-  private array $methods = [];
+  private array $defined = [];
 
   private ?Scope $parent = null;
 
-  /**
-   *
-   * @var Scope[]
-   */
-  private array $children = [];
+  public function __construct() {}
 
-  /**
-   * Array containing all types defined in this scope.
-   * Key beeing the type name
-   * Doesn't hold parent scopes types
-   *
-   * @var array<string, Type>
-   */
-  private array $types;
-
-  private bool $topLevel;
-
-  /**
-   * Passed down from scope to scope
-   */
-  private FormulaSettings $settings;
-
-  public function __construct(bool $topLevel, FormulaSettings $settings) {
-    $this->topLevel = $topLevel;
-    $this->settings = $settings;
-    if($topLevel) {
-      $this->initDefaultTypes();
-    }
-  }
-
-  /**
-   * Will initiate the inbuild types.
-   * SHOULD only be called for the top level scope
-   */
-  public function initDefaultTypes(): void {
-    $this->types['bool'] = new BooleanType(false);
-    $this->types['int'] = new IntegerType(false);
-  /**
-   *
-   * @todo
-   */
-  }
-
-  /**
-   * Will be called after validation stage to prepare for runtime
-   * Will also be called after each run in a code block
-   */
-  public function undefineVariables(): void {
-    $this->variables = [];
-  }
-
-  public function getChild(): Scope {
-    $child = new Scope(false, $this->settings);
+  public function buildChild(): Scope {
+    $child = new Scope();
     $child->parent = $this;
-    $this->children[] = $child;
     return $child;
   }
 
-  public function defineMethod(Method $method): void {
-    if(isset($this->methods[$method->getIdentifier()])) {
-      throw new DoublicateMethodException('Redeclaration of method '.$method->getIdentifier());
-    }
-    $this->methods[$method->getIdentifier()] = $method;
-  }
-
-  public function defineVariable(Type $type, string $identifier): void {
-    if(isset($this->variables[$identifier])) {
-      throw new DoublicateVariableException('Redeclaration of variable "'.$identifier.'"');
-    }
-    $variable = new Variable($identifier, $type->buildNewLocator());
-    $this->variables[$identifier] = $variable;
-  }
-
-  public function initializeVariable(string $identifier, Value $value): void {
-    if(isset($this->variables[$identifier])) {
-      $this->variables[$identifier]->getLocator()
-        ->assign($value);
-    } else if($this->parent !== null) {
-      $this->parent->initializeVariable($identifier, $value);
+  public function isDefined(string $identifier): bool {
+    if(isset($this->defined[$identifier])) {
+      return true;
     } else {
-      throw new FormulaRuntimeException('Variable "'.$identifier.'" is not defined');
+      return $this->parent?->isDefined($identifier) ?? false;
     }
   }
 
-  public function getMethod(string $identifier): ?Method {
-    if(isset($this->methods[$identifier])) {
-      return $this->methods[$identifier];
+  public function define(string $identifier, Type $type): void {
+    if(isset($this->defined[$identifier])) {
+      throw new FormulaRuntimeException('Can\'t redefine '.$identifier);
     }
-    if($this->parent !== null) {
-      return $this->parent->getMethod($identifier);
-    }
-    return null;
+    $this->defined[$identifier] = new DefinedValue($type);
   }
 
-  public function getVariable(string $identifier): ?Variable {
-    if(isset($this->variables[$identifier])) {
-      return $this->variables[$identifier];
+  public function get(string $identifier): Value {
+    if(isset($this->defined[$identifier])) {
+      return $this->defined[$identifier]->get();
+    } else if($this->parent !== null) {
+      return $this->parent->get($identifier);
+    } else {
+      throw new FormulaRuntimeException($identifier.' is not defined');
     }
-    if($this->parent !== null) {
-      $this->parent->getVariable($identifier);
-    }
-    return null;
   }
 
   public function getType(string $identifier): Type {
-    if(isset($this->types[$identifier])) {
-      return $this->types[$identifier];
+    if(isset($this->defined[$identifier])) {
+      return $this->defined[$identifier]->type;
+    } else if($this->parent !== null) {
+      return $this->parent->getType($identifier);
     } else {
-      if($this->parent === null) {
-        throw new FormulaValidationException('Type "'.$identifier.'" is not defined');
-      } else {
-        return $this->parent->getType($identifier);
-      }
+      throw new FormulaRuntimeException($identifier.' is not defined');
     }
   }
 
-/**
- * Dont delete
- * might be useful for user defined functions and variables
- */
-  //   public function unsetVariable(string $identifier): void {
-  //     unset($this->variables[$identifier]);
-  //   }
+  public function assignableBy(string $identifier, Type $type): bool {
+    if(isset($this->defined[$identifier])) {
+      return $this->defined[$identifier]->type->equals($type);
+    } else if($this->parent !== null) {
+      return $this->parent->assignableBy($identifier, $type);
+    } else {
+      throw new FormulaRuntimeException($identifier.' is not defined');
+    }
+  }
 
-  //   public function unsetMethod(string $identifier): void {
-  //     unset($this->methods[$identifier]);
-  //   }
+  public function assign(string $identifier, Value $value): void {
+    if(isset($this->defined[$identifier])) {
+      $this->defined[$identifier]->assign($value);
+    } else if($this->parent !== null) {
+      $this->parent->assign($identifier, $value);
+    } else {
+      throw new FormulaRuntimeException($identifier.' is not defined');
+    }
+  }
+
+  public function copy(): Scope {
+    $copy = new Scope();
+    $copy->parent = $this->parent;
+    foreach($this->defined as $identifier => $defined) {
+      $copy->defined[$identifier] = $defined->copy();
+    }
+    return $copy;
+  }
 }
-

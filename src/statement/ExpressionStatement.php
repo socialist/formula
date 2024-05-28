@@ -1,15 +1,13 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\statement;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\Type;
 
 /**
- *
  * @author Timo Lehnertz
- *        
  */
 class ExpressionStatement implements Statement {
 
@@ -19,28 +17,15 @@ class ExpressionStatement implements Statement {
     $this->expression = $expression;
   }
 
-  public function defineReferences(): void {
-    // expressions dont define anything
+  public function validate(Scope $scope): StatementReturnType {
+    return new StatementReturnType($this->expression->validate($scope), false, false);
   }
 
-  public function run(): StatementValue {
-    $value = $this->expression->run();
-    return new StatementValue($value);
+  public function run(Scope $scope): StatementReturn {
+    return new StatementReturn($this->expression->run($scope), false, false, 0);
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
     return $this->expression->toString($prettyPrintOptions).';';
-  }
-
-  public function setScope(Scope $scope) {
-    $this->expression->setScope($scope);
-  }
-
-  public function getSubParts(): array {
-    return $this->expression->getSubParts();
-  }
-
-  public function validate(): Type {
-    return $this->expression->validate();
   }
 }

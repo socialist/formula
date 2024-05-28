@@ -2,7 +2,6 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\ParsingException;
 use TimoLehnertz\formula\tokens\Token;
 use TimoLehnertz\formula\type\ArrayType;
 use TimoLehnertz\formula\type\BooleanType;
@@ -24,17 +23,17 @@ use TimoLehnertz\formula\type\Type;
  */
 class TypeParser extends Parser {
 
-  private function parseArrayDimension(Token $firstToken, Type $type): ParserReturn|int {
+  private function parseArrayDimension(Token $firstToken, Type $type): ParserReturn {
     $arrayDimension = 0;
     $token = $firstToken;
     while($token !== null) {
       if($token->id === Token::SQUARE_BRACKETS_OPEN) {
         if(!$token->hasNext()) {
-          return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
+          throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
         }
         $token = $token->next();
         if($token->id !== Token::SQUARE_BRACKETS_CLOSED) {
-          return ParsingException::PARSING_ERROR_GENERIC;
+          throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
         }
         $arrayDimension++;
       } else {
@@ -49,7 +48,7 @@ class TypeParser extends Parser {
     return new ParserReturn($type, $token);
   }
 
-  private function parseSingleType(Token $firstToken): ParserReturn|int {
+  private function parseSingleType(Token $firstToken): ParserReturn {
     $type = null;
     if($firstToken->id === Token::IDENTIFIER) {
       $type = new ReferenceType($firstToken->value);
@@ -62,26 +61,23 @@ class TypeParser extends Parser {
     } else if($firstToken->id === Token::KEYWORD_STRING) {
       $type = new StringType();
     } else {
-      return ParsingException::PARSING_ERROR_GENERIC;
+      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
     }
     if(!$firstToken->hasNext()) {
       return new ParserReturn($type, $firstToken->next());
     }
     $type = static::parseArrayDimension($firstToken->next(), $type);
-    if(is_int($type)) {
-      return $type;
-    }
     return $type;
   }
 
-  protected function parsePart(Token $firstToken): ParserReturn|int {
+  protected function parsePart(Token $firstToken): ParserReturn {
     $inBrackets = false;
     $token = $firstToken;
     if($token->id === Token::BRACKETS_OPEN) {
       $inBrackets = true;
       $token = $token->next();
       if($token === null) {
-        return ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT;
+        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
       }
     }
     $types = [];
@@ -91,18 +87,12 @@ class TypeParser extends Parser {
       } else {
         $parsed = $this->parseSingleType($token);
       }
-      if(is_int($parsed)) {
-        break;
-      }
       $token = $parsed->nextToken;
       if($token === null) {
         $types[] = $parsed->parsed;
         break;
       }
       $parsed = $this->parseArrayDimension($token, $parsed->parsed);
-      if(is_int($parsed)) {
-        return $parsed;
-      }
       $types[] = $parsed->parsed;
       $token = $parsed->nextToken;
       if($token === null) {
@@ -114,20 +104,20 @@ class TypeParser extends Parser {
         $token = $token->next();
       }
     }
-    $type = CompoundType::concatManyTypes($types);
+    if(count($types) === 0) {
+      throw new ParsingException(ParsingException::PARSING_ERROR_INVALID_TYPE, $firstToken);
+    }
+    $type = CompoundType::buildFromTypes($types);
     if($type === null) {
-      return ParsingException::PARSING_ERROR_INVALID_TYPE;
+      throw new ParsingException(ParsingException::PARSING_ERROR_INVALID_TYPE, $firstToken);
     }
     if($inBrackets) {
       if($token === null || $token->id !== Token::BRACKETS_CLOSED) {
-        return ParsingException::PARSING_ERROR_GENERIC;
+        throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
       }
       $token = $token->next();
       if($token->hasNext()) {
         $parsed = $this->parseArrayDimension($token, $type);
-        if(is_int($parsed)) {
-          return $parsed;
-        }
         $token = $parsed->nextToken;
         $type = $parsed->parsed;
       }

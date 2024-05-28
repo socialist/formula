@@ -2,30 +2,62 @@
 namespace test;
 
 use PHPUnit\Framework\TestCase;
-use TimoLehnertz\formula\ExpressionNotFoundException;
 use TimoLehnertz\formula\Formula;
-use TimoLehnertz\formula\NoVariableValueException;
-use DateTime;
+use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\type\FloatType;
+use TimoLehnertz\formula\type\FloatValue;
+use TimoLehnertz\formula\type\IntegerType;
+use TimoLehnertz\formula\type\IntegerValue;
 
 class FormulaTest extends TestCase {
 
-  //   public function testVariables(): void {
-  //     $str = 'a+b+c+d+e';
-  //     $formula = new Formula($str);
-  //     for ($i = 0; $i < 10; $i++) {
-  //       $a = rand(-1000, 1000);
-  //       $b = rand(-1000, 1000);
-  //       $c = rand(-1000, 1000);
-  //       $d = rand(-1000, 1000);
-  //       $e = rand(-1000, 1000);
-  //       $formula->setVariable('a', $a);
-  //       $formula->setVariable('b', $b);
-  //       $formula->setVariable('c', $c);
-  //       $formula->setVariable('d', $d);
-  //       $formula->setVariable('e', $e);
-  //       $this->assertEquals($a + $b + $c + $d + $e, $formula->calculate());
+  //   public function foo(int $a, bool $b = false): bool {
+  //     var_dump('Moin'.$a.$b);
+  //     return false;
+  //   }
+
+  //   public function testReflection(): void {
+  //     $callable = [$this,"foo"];
+  //     $callable(1);
+  //     $name = '';
+  //     is_callable($callable, false, $name);
+  //     var_dump($name);
+  //     $f = new \ReflectionMethod($name);
+  //     $params = $f->getParameters();
+  //     /**
+  //      * @var ReflectionParameter $parameter
+  //      */
+  //     $parameter = $params[0];
+  //     $type = $parameter->getType();
+  //     if($type instanceof \ReflectionNamedType) {
+  //       var_dump($type->getName());
   //     }
   //   }
+  public function testVariables(): void {
+    $scope = new Scope();
+    $scope->define('a', new IntegerType());
+    $scope->define('b', new IntegerType());
+    $scope->define('c', new IntegerType());
+    $scope->define('d', new IntegerType());
+    $scope->define('e', new FloatType());
+    $str = 'a+b+c+d+e;';
+    $formula = new Formula($str, $scope);
+    for($i = 0;$i < 10;$i++) {
+      $a = rand(-1000, 1000);
+      $b = rand(-1000, 1000);
+      $c = rand(-1000, 1000);
+      $d = rand(-1000, 1000);
+      $e = rand(-1000, 1000);
+      $scope->assign('a', new IntegerValue($a));
+      $scope->assign('b', new IntegerValue($b));
+      $scope->assign('c', new IntegerValue($c));
+      $scope->assign('d', new IntegerValue($d));
+      $scope->assign('e', new FloatValue($e));
+      $result = $formula->calculate();
+      $this->assertInstanceOf(IntegerValue::class, $result);
+      $this->assertEquals($a + $b + $c + $d + $e, $result->getValue());
+    }
+  }
 
   //   public function testDivisionByZero(): void {
   //     $str = '1 / 0';
