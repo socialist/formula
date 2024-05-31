@@ -8,41 +8,29 @@ use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 
 /**
- *
  * @author Timo Lehnertz
  */
 class ArrayExpression implements Expression {
 
-  /**
-   *
-   * @var array<Expression>
-   */
-  private array $elements = [];
+  private readonly ExpressionListExpression $expressionList;
 
-  /**
-   *
-   * @param array<Expression> $elements
-   */
-  public function __construct(array $elements) {
-    $this->elements = $elements;
+  public function __construct(ExpressionListExpression $expressionList) {
+    $this->expressionList = $expressionList;
   }
 
-  public function run(): Value {}
+  public function run(Scope $scope): Value {
+    return $this->expressionList->run($scope);
+  }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    $str = '';
-    $del = '';
-    /** @var Expression $element */
-    foreach($this->elements as $element) {
-      $str .= $del.$element->toString($prettyPrintOptions);
-      $del = ',';
-    }
-    return '('.$str.')';
+    return '('.$this->expressionList->toString().')';
   }
 
-  public function getSubParts(): array {
-    return $this->elements;
+  public function validate(Scope $scope): Type {
+    $this->expressionList->validate($scope);
   }
 
-  public function validate(Scope $scope): Type {}
+  public function buildNode(Scope $scope): array {
+    return ['type' => 'Array','outerType' => $this->validate($scope)->buildNode($scope),'content' => $this->expressionList->buildNode($scope)];
+  }
 }

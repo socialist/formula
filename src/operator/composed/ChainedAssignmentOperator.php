@@ -7,7 +7,6 @@ use TimoLehnertz\formula\ValidationException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\operator\InfixOperator;
 use TimoLehnertz\formula\operator\Operator;
-use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 
@@ -50,6 +49,4 @@ class ChainedAssignmentOperator extends InfixOperator {
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return $this->identifier;
   }
-
-  public function validate(Scope $scope): void {}
 }

@@ -41,7 +41,7 @@ class FloatValue extends Value {
   }
 
   protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    return NumberValueHelper::getNumberOperatorResultType($this, $operator, $otherType);
+    return NumberValueHelper::getNumberOperatorResultType($this->getType(), $operator, $otherType);
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
@@ -54,5 +54,9 @@ class FloatValue extends Value {
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return ''.$this->value;
+  }
+
+  public function buildNode(): array {
+    return ['type' => 'FloatValue','value' => $this->value];
   }
 }

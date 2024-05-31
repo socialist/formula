@@ -3,7 +3,6 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\procedure\Scope;
 
 /**
  * @author Timo Lehnertz
@@ -18,23 +17,15 @@ class VoidType implements Type {
     return $type instanceof VoidType;
   }
 
-  public function getSubProperties(): array {
-    return [];
-  }
-
-  public function getImplementedOperators(): array {
-    return [];
-  }
-
-  public function validate(Scope $scope): Type {
-    return $this;
-  }
-
   public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     return (new VoidValue())->getOperatorResultType($operator, $otherType);
   }
 
   public function getCompatibleOperands(ImplementableOperator $operator): array {
     return (new VoidValue())->getCompatibleOperands($operator);
+  }
+
+  public function buildNode(): array {
+    return ['type' => 'VoidType'];
   }
 }

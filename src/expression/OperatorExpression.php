@@ -11,6 +11,7 @@ use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 use TimoLehnertz\formula\type\VoidType;
+use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
  * @author Timo Lehnertz
@@ -21,16 +22,20 @@ class OperatorExpression implements Expression {
 
   public readonly Operator $operator;
 
-  public readonly ?Expression $rightExpression;
+  public ?Expression $rightExpression;
 
   public function __construct(?Expression $leftExpression, Operator $operator, ?Expression $rightExpression) {
     $this->leftExpression = $leftExpression;
     $this->operator = $operator;
+    if($operator->id === Operator::IMPLEMENTABLE_TYPE_CAST && $leftExpression === null) {
+      var_dump($leftExpression);
+      var_dump($rightExpression);
+      throw new \BadMethodCallException('Moin');
+    }
     $this->rightExpression = $rightExpression;
   }
 
   public function validate(Scope $scope): Type {
-    $this->operator->validate($scope);
     $leftType = $this->leftExpression?->validate($scope) ?? null;
     $rightType = $this->rightExpression?->validate($scope) ?? null;
     if($this->operator->getOperatorType() === OperatorType::InfixOperator && $leftType !== null && $rightType !== null) {
@@ -47,8 +52,10 @@ class OperatorExpression implements Expression {
         $found = false;
         foreach($castableTypes as $castableType) {
           foreach($operands as $operand) {
-            if($castableType->equals($operand)) {
-              $this->rightExpression = new OperatorExpression(null, new TypeCastOperator(false, $operand), $this->rightExpression);
+            if($castableType->getType()->equals($operand)) {
+              $typeExpression = new TypeExpression($operand);
+              $typeExpression->validate($scope);
+              $this->rightExpression = new OperatorExpression($this->rightExpression, new TypeCastOperator(false, $operand), $typeExpression);
               $rightType = $operand;
               $found = true;
               break;
@@ -59,7 +66,7 @@ class OperatorExpression implements Expression {
           }
         }
         if(!$found) {
-          throw new FormulaValidationException('Incompatible operands '.$leftType->getIdentifier().' ' + $this->operator->toString(PrettyPrintOptions::buildDefault()).' '.$rightType->getIdentifier());
+          throw new FormulaValidationException('Incompatible operands '.$leftType->getIdentifier().' '.$this->operator->toString(PrettyPrintOptions::buildDefault()).' '.$rightType->getIdentifier());
         }
       }
     }
@@ -80,5 +87,13 @@ class OperatorExpression implements Expression {
       $string .= $this->rightExpression->toString($prettyPrintOptions);
     }
     return $string;
+  }
+
+  public function buildNode(Scope $scope): array {
+    if(($this->operator instanceof ImplementableOperator) && $this->operator->id !== Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT) {
+      return ['type' => 'Operator','outerType' => $this->validate($scope)->buildNode(),'operator' => $this->operator->getIdentifier(),'leftNode' => $this->leftExpression?->buildNode($scope) ?? null,'rightNode' => $this->rightExpression?->buildNode($scope) ?? null];
+    } else {
+      throw new \BadMethodCallException('Not implementable operator is not supported by Node system');
+    }
   }
 }

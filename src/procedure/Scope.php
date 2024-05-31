@@ -3,6 +3,10 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\procedure;
 
 use TimoLehnertz\formula\FormulaRuntimeException;
+use TimoLehnertz\formula\type\BooleanValue;
+use TimoLehnertz\formula\type\FloatValue;
+use TimoLehnertz\formula\type\IntegerValue;
+use TimoLehnertz\formula\type\StringValue;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 
@@ -71,7 +75,23 @@ class Scope {
     }
   }
 
-  public function assign(string $identifier, Value $value): void {
+  private static function valueByPHPVar(mixed $value): Value {
+    if(is_int($value)) {
+      return new IntegerValue($value);
+    } else if(is_float($value)) {
+      return new FloatValue($value);
+    } else if(is_bool($value)) {
+      return new BooleanValue($value);
+    } else if(is_string($value)) {
+      return new StringValue($value);
+    }
+    throw new FormulaRuntimeException($value.' has no supported php type');
+  }
+
+  public function assign(string $identifier, mixed $value): void {
+    if(!($value instanceof Value)) {
+      $value = Scope::valueByPHPVar($value);
+    }
     if(isset($this->defined[$identifier])) {
       $this->defined[$identifier]->assign($value);
     } else if($this->parent !== null) {

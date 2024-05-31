@@ -59,5 +59,9 @@ class TypeValue extends Value {
   protected function getValueExpectedOperands(ImplementableOperator $operator): array {
     throw new \BadFunctionCallException();
   }
+
+  public function buildNode(): array {
+    throw new \BadFunctionCallException();
+  }
 }
 

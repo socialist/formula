@@ -1,27 +1,26 @@
 <?php
 namespace TimoLehnertz\formula;
 
-use TimoLehnertz\formula\parsing\CodeBlockParser;
+use TimoLehnertz\formula\parsing\CodeBlockOrExpressionParser;
 use TimoLehnertz\formula\procedure\Method;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\statement\CodeBlock;
-use TimoLehnertz\formula\tokens\Token;
+use TimoLehnertz\formula\statement\CodeBlockOrExpression;
 use TimoLehnertz\formula\tokens\Tokenizer;
 use TimoLehnertz\formula\type\BooleanValue;
 use TimoLehnertz\formula\type\FloatValue;
 use TimoLehnertz\formula\type\IntegerValue;
 use TimoLehnertz\formula\type\StringValue;
+use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 
 /**
  * This class represents a formula session that can interpret/run code
  *
  * @author Timo Lehnertz
- *
  */
 class Formula {
 
-  private readonly CodeBlock $codeBlock;
+  private readonly CodeBlockOrExpression $content;
 
   /**
    * The global scope containing all local scopes
@@ -31,6 +30,8 @@ class Formula {
   private readonly FormulaSettings $formulaSettings;
 
   private readonly string $source;
+
+  private readonly Type $returnType;
 
   public function __construct(string $source, ?Scope $parentScope = null, ?FormulaSettings $formulaSettings = null) {
     $this->source = $source;
@@ -43,22 +44,17 @@ class Formula {
     if($firstToken === null) {
       throw new FormulaValidationException();
     }
-    $parsedCodeblock = (new CodeBlockParser(true))->parse($firstToken);
-    $this->codeBlock = $parsedCodeblock->parsed;
-    $this->codeBlock->validate($this->buildDefaultScope());
+    $parsedContent = (new CodeBlockOrExpressionParser(true))->parse($firstToken, true);
+    $this->content = $parsedContent->parsed;
+    $this->returnType = $this->content->validate($this->buildDefaultScope())->returnType;
   }
 
-  private static function valueByPHPVar(mixed $value): Value {
-    if(is_int($value)) {
-      return new IntegerValue($value);
-    } else if(is_float($value)) {
-      return new FloatValue($value);
-    } else if(is_bool($value)) {
-      return new BooleanValue($value);
-    } else if(is_string($value)) {
-      return new StringValue($value);
-    }
-    throw new FormulaRuntimeException($value.' has no supported php type');
+  public function getNodeTree(): array {
+    return $this->content->buildNode($this->buildDefaultScope());
+  }
+
+  public function getReturnType(): Type {
+    return $this->returnType;
   }
 
   /**
@@ -115,11 +111,9 @@ class Formula {
 
   /**
    * Calculates and returnes the result of this formula
-   *
-   * @return mixed
    */
   public function calculate(): Value {
-    return $this->codeBlock->run($this->buildDefaultScope())->returnValue;
+    return $this->content->run($this->buildDefaultScope())->returnValue;
   }
 
   private function parse(): void {

@@ -4,61 +4,25 @@ namespace TimoLehnertz\formula\operator;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
-use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\Type;
-use TimoLehnertz\formula\type\Value;
+use TimoLehnertz\formula\expression\ExpressionListExpression;
 
 /**
  * @author Timo Lehnertz
  */
-class CallOperator extends PostfixOperator {
+class CallOperator extends ImplementableOperator implements CoupledOperator {
 
-  /**
-   * @var array<Expression>
-   */
-  private readonly array $args;
+  private readonly ExpressionListExpression $args;
 
-  private ?array $argTypes = null;
-
-  /**
-   * @param array<Expression> $args
-   */
-  public function __construct(array $args) {
-    parent::__construct(2);
+  public function __construct(ExpressionListExpression $args) {
+    parent::__construct(ImplementableOperator::TYPE_CALL);
     $this->args = $args;
   }
 
-  public function validate(Scope $scope): void {
-    $this->argTypes = [];
-    /** @var Expression $arg */
-    foreach($this->args as $arg) {
-      $this->argTypes[] = $arg->validate($scope);
-    }
-  }
-
-  protected function validatePostfixOperation(Type $leftType): Type {
-    return $leftType->getOperatorResultType($this, null);
-  }
-
-  protected function operatePostfix(Value $leftValue): Value {
-    return $leftValue->operate($this, null);
-  }
-
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    $argsStr = '';
-    $delimiter = '';
-    /** @var Expression $arg */
-    foreach($this->args as $arg) {
-      $argsStr .= $delimiter.$arg->toString($prettyPrintOptions);
-      $delimiter = ',';
-    }
-    return '('.$argsStr.')';
+    return '('.$this->args->toString($prettyPrintOptions).')';
   }
 
-  public function getArgTypes(): array {
-    if($this->argTypes === null) {
-      throw new \BadMethodCallException('Must call validate() first!');
-    }
-    return $this->argTypes;
+  public function getCoupledExpression(): Expression {
+    return $this->args;
   }
 }

@@ -18,19 +18,15 @@ class FloatType implements Type {
     return 'float';
   }
 
-  public function getImplementedOperators(): array {
-    return [];
-  }
-
-  public function validate(Scope $scope): Type {
-    return $this;
-  }
-
   public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     return (new FloatValue(0))->getOperatorResultType($operator, $otherType);
   }
 
   public function getCompatibleOperands(ImplementableOperator $operator): array {
-    return (new FloatValue(0))->getExpectedOperands($operator);
+    return (new FloatValue(0))->getCompatibleOperands($operator);
+  }
+
+  public function buildNode(): array {
+    return ['type' => 'FloatType'];
   }
 }

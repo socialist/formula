@@ -29,4 +29,12 @@ class BracketExpression implements Expression {
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return '('.$this->expression->toString($prettyPrintOptions).')';
   }
+
+  public function buildNode(Scope $scope): array {
+    $subNodes = [];
+    foreach($this->expressions as $expression) {
+      $subNodes[] = $expression->buildNode($scope);
+    }
+    return ['type' => 'Bracket','outerType' => $this->validate($scope)->buildNode(),'nodes' => $subNodes];
+  }
 }

@@ -5,6 +5,7 @@ namespace TimoLehnertz\formula\operator;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\expression\TypeExpression;
+use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 
 /**

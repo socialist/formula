@@ -3,27 +3,35 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
-use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\operator\ArrayAccessOperator;
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\statement\CodeBlock;
+use TimoLehnertz\formula\operator\Operator;
 
 /**
  * @author Timo Lehnertz
  */
-class ArrayValue extends Value {
+class FunctionValue extends Value {
+
+  private readonly CodeBlock|callable $body;
 
   /**
-   * @var array<array-key, Value>
+   * @var array<FunctionArgument>
    */
-  private array $value;
+  private readonly array $arguments;
 
-  private ArrayType $type;
+  private readonly Type $returnType;
+
+  private readonly Scope $scope;
 
   /**
-   * @param array<array-key, Value>
+   * @param array<FunctionArgument> $arguments
    */
-  public function __construct(array $value, ArrayType $arrayType) {
-    $this->value = $value;
+  public function __construct(CodeBlock|callable $body, array $arguments, Type $returnType, Scope $scope) {
+    $this->body = $body;
+    $this->arguments = $arguments;
+    $this->scope = $scope;
   }
 
   public function getType(): Type {
@@ -38,26 +46,24 @@ class ArrayValue extends Value {
     return new ArrayValue($this->value);
   }
 
-  public function &getValue(): bool {
-    return $this->value;
-  }
-
   public function valueEquals(Value $other): bool {
     return $other === $this;
   }
 
-  protected function getValueExpectedOperands(ImplementableOperator $operator): array {}
+  protected function getValueExpectedOperands(ImplementableOperator $operator): array {
+    if($operator->id === Operator::IMPLEMENTABLE_CALL) {
+      return [new ExpressionListType($expressionTypes)];
+    } else {
+      return [];
+    }
+  }
 
   protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    if($operator instanceof ArrayAccessOperator) {
-      if(!$operator->getIndexType()->canCastTo($this->keyType)) {
-        return null;
-      }
-      return $this->elementsType;
-    } else if($operator->id === ImplementableOperator::TYPE_EQUALS && $otherType instanceof ArrayType) {
-      return new BooleanType();
+    if($operator->id === Operator::IMPLEMENTABLE_CALL) {
+      return $this->returnType;
+    } else {
+      return [];
     }
-    return null;
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
@@ -84,26 +90,18 @@ class ArrayValue extends Value {
   }
 
   public function assign(Value $value): void {
-    $this->value = &$value->getValue();
+    if($value instanceof FunctionValue) {
+      $this->body = $value->body;
+      $this->scope = $value->scope;
+    }
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    $string = '';
-    $del = '';
-    /** @var Expression $value */
-    foreach($this->value as $value) {
-      $string .= $del.$value->toString($prettyPrintOptions);
-      $del = ',';
-    }
-    return '{'.$string.'}';
+    return 'function';
   }
 
   public function buildNode(): array {
-    $elements = [];
-    foreach($this->value as $key => $value) {
-      $elements[$key] = $value->buildNode();
-    }
-    return ['type' => 'ArrayValue','elements' => $elements];
+    throw new \BadMethodCallException('FunctionValue is not supported by node system');
   }
 }
 

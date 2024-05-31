@@ -35,7 +35,7 @@ class CodeBlock implements Statement {
     /** @var Statement $expression */
     foreach($this->statements as $statement) {
       $statementReturnType = $statement->validate($scope);
-      if($statementReturnType->returnType !== null) {
+      if($statementReturnType->returnType !== null && ($statementReturnType->alwaysReturns || $statementReturnType->mayReturn)) {
         $types[] = $statementReturnType->returnType;
       }
       if($statementReturnType->alwaysReturns) {
@@ -50,6 +50,7 @@ class CodeBlock implements Statement {
     if(!$alwaysReturns) {
       $types[] = new VoidType();
     }
+    print_r($types);
     $returnType = CompoundType::buildFromTypes($types);
     return new StatementReturnType($returnType, $mayReturn, $alwaysReturns);
   }
@@ -63,11 +64,7 @@ class CodeBlock implements Statement {
         return $statementReturn;
       }
     }
-    if($this->singleLine) {
-      return new StatementReturn($statementReturn->returnValue, false, false, 0);
-    } else {
-      return new StatementReturn(new VoidValue(), false, false, 0);
-    }
+    return new StatementReturn(new VoidValue(), false, false, 0);
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {

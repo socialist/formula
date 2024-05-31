@@ -60,6 +60,4 @@ interface Operator extends FormulaPart {
   public function validateOperation(?Type $leftType, ?Type $rigthType): Type;
 
   public function operate(?Value $leftValue, ?Value $rightValue): Value;
-
-  public function validate(Scope $scope): void;
 }

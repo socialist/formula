@@ -14,24 +14,26 @@ use TimoLehnertz\formula\type\Value;
  */
 class TypeExpression implements Expression {
 
-  private readonly Type $initialType;
-
-  private Type $validatedType;
+  private Type $type;
 
   public function __construct(Type $type) {
-    $this->initialType = $type;
+    $this->type = $type;
   }
 
   public function validate(Scope $scope): Type {
-    $this->validatedType = $this->initialType->validate($scope);
-    return new TypeType($this->validatedType);
+    $this->type = $this->type->validate($scope);
+    return new TypeType($this->type);
   }
 
   public function run(Scope $scope): Value {
-    return new TypeValue($this->validatedType);
+    return new TypeValue($this->type);
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    return $this->validatedType->getIdentifier();
+    return $this->type->getIdentifier();
+  }
+
+  public function buildNode(Scope $scope): array {
+    return ['type' => 'Type','outerType' => $this->validate($scope)->buildNode(),'type' => $this->type->buildNode()];
   }
 }

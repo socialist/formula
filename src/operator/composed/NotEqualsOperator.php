@@ -8,7 +8,6 @@ use TimoLehnertz\formula\ValidationException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\operator\InfixOperator;
 use TimoLehnertz\formula\operator\Operator;
-use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\BooleanType;
 use TimoLehnertz\formula\type\BooleanValue;
 use TimoLehnertz\formula\type\Type;
@@ -44,6 +43,4 @@ class NotEqualsOperator extends InfixOperator {
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return '!=';
   }
-
-  public function validate(Scope $scope): void {}
 }

@@ -21,19 +21,11 @@ class TypeType implements Type {
   }
 
   public function equals(Type $type): bool {
-    return $type instanceof StringType;
+    return ($type instanceof TypeType) && $type->getType()->equals($this->type);
   }
 
   public function getIdentifier(bool $nested = false): string {
     return 'Type';
-  }
-
-  public function getImplementedOperators(): array {
-    return [];
-  }
-
-  public function validate(Scope $scope): Type {
-    return $this;
   }
 
   public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
@@ -42,5 +34,9 @@ class TypeType implements Type {
 
   public function getCompatibleOperands(ImplementableOperator $operator): array {
     return [];
+  }
+
+  public function buildNode(): array {
+    return ['type' => 'TypeType','type' => $this->type->buildNode()];
   }
 }

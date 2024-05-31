@@ -7,7 +7,6 @@ use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\operator\Operator;
 use TimoLehnertz\formula\operator\PrefixOperator;
-use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\IntegerValue;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
@@ -47,6 +46,4 @@ class DecrementPostfixOperator extends PrefixOperator {
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return '--';
   }
-
-  public function validate(Scope $scope): void {}
 }

@@ -66,4 +66,8 @@ class StringValue extends Value {
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return "'".$this->value."'";
   }
+
+  public function buildNode(): array {
+    return ['type' => 'StringValue','value' => $this->value];
+  }
 }

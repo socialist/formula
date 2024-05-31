@@ -40,21 +40,22 @@ class FormulaTest extends TestCase {
     $scope->define('c', new IntegerType());
     $scope->define('d', new IntegerType());
     $scope->define('e', new FloatType());
-    $str = 'a+b+c+d+e;';
+    $str = 'a+b+c+d+e';
     $formula = new Formula($str, $scope);
+    $this->assertInstanceOf(FloatType::class, $formula->getReturnType());
     for($i = 0;$i < 10;$i++) {
       $a = rand(-1000, 1000);
       $b = rand(-1000, 1000);
       $c = rand(-1000, 1000);
       $d = rand(-1000, 1000);
-      $e = rand(-1000, 1000);
-      $scope->assign('a', new IntegerValue($a));
-      $scope->assign('b', new IntegerValue($b));
-      $scope->assign('c', new IntegerValue($c));
-      $scope->assign('d', new IntegerValue($d));
-      $scope->assign('e', new FloatValue($e));
+      $e = rand(-1000, 1000) + 1.5;
+      $scope->assign('a', $a);
+      $scope->assign('b', $b);
+      $scope->assign('c', $c);
+      $scope->assign('d', $d);
+      $scope->assign('e', $e);
       $result = $formula->calculate();
-      $this->assertInstanceOf(IntegerValue::class, $result);
+      $this->assertInstanceOf(FloatValue::class, $result);
       $this->assertEquals($a + $b + $c + $d + $e, $result->getValue());
     }
   }
@@ -64,20 +65,19 @@ class FormulaTest extends TestCase {
   //     $formula = new Formula($str);
   //     $result = $formula->calculate();
   //     $this->assertNan($result);
-  //   }
-
-  //   public function testpow(): void {
-  //     $str = 'pow(a,b)';
-  //     $formula = new Formula($str);
-  //     for ($i = 0; $i < 1; $i++) {
-  //       $a = rand(0, 10);
-  //       $b = rand(0, 10);
-  //       $formula->setVariable('a', $a);
-  //       $formula->setVariable('b', $b);
-  //       $result = $formula->calculate();
-  //       $this->assertEquals(round(pow($a, $b)), round($result));
-  //     }
-  //   }
+  // }
+  public function testpow(): void {
+    $str = 'pow(a,b)';
+    $formula = new Formula($str);
+    for($i = 0;$i < 1;$i++) {
+      $a = rand(0, 10);
+      $b = rand(0, 10);
+      $formula->setVariable('a', $a);
+      $formula->setVariable('b', $b);
+      $result = $formula->calculate();
+      $this->assertEquals(round(pow($a, $b)), round($result));
+    }
+  }
 
   //   public function testMathRules(): void {
   //     $str = '(a+(b-c))*(a/d)*e+pow(a,b)*(b/d)-pow(a,e)';

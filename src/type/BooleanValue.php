@@ -96,4 +96,8 @@ class BooleanValue extends Value {
   public function toString(PrettyPrintOptions $prettyprintOptions): string {
     return $this->value ? 'true' : 'false';
   }
+
+  public function buildNode(): array {
+    return ['type' => 'BooleanValue','value' => $this->value];
+  }
 }

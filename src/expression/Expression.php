@@ -25,4 +25,6 @@ interface Expression extends FormulaPart {
   public function validate(Scope $scope): Type;
 
   public function run(Scope $scope): Value;
+
+  public function buildNode(Scope $scope): array;
 }

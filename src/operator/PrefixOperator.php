@@ -16,13 +16,6 @@ abstract class PrefixOperator implements Operator {
     return OperatorType::PrefixOperator;
   }
 
-  public function operate(?Value $leftValue, ?Value $rightValue): Value {
-    if($rightValue === null) {
-      throw new FormulaValidationException('Missing right operand!');
-    }
-    return $this->operatePrefix($rightValue);
-  }
-
   public function validateOperation(?Type $leftType, ?Type $rightType): Type {
     if($leftType !== null) {
       throw new \UnexpectedValueException('Expected leftExpression to be null');
@@ -31,6 +24,13 @@ abstract class PrefixOperator implements Operator {
       throw new FormulaValidationException('Missing right operand!');
     }
     return $this->validatePrefixOperation($rightType);
+  }
+
+  public function operate(?Value $leftValue, ?Value $rightValue): Value {
+    if($rightValue === null) {
+      throw new FormulaValidationException('Missing right operand!');
+    }
+    return $this->operatePrefix($rightValue);
   }
 
   protected abstract function validatePrefixOperation(Type $rightType): Type;

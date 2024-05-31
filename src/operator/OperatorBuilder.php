@@ -5,10 +5,10 @@ namespace TimoLehnertz\formula\operator;
 use TimoLehnertz\formula\operator\composed\ChainedAssignmentOperator;
 use TimoLehnertz\formula\operator\composed\DecrementPostfixOperator;
 use TimoLehnertz\formula\operator\composed\DecrementPrefixOperator;
+use TimoLehnertz\formula\operator\composed\GreaterEqualsOperator;
 use TimoLehnertz\formula\operator\composed\IncrementPostfixOperator;
 use TimoLehnertz\formula\operator\composed\IncrementPrefixOperator;
 use TimoLehnertz\formula\operator\composed\LessEqualsOperator;
-use TimoLehnertz\formula\operator\composed\GreaterEqualsOperator;
 use TimoLehnertz\formula\operator\composed\NotEqualsOperator;
 
 /**

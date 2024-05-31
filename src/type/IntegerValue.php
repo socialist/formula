@@ -55,4 +55,8 @@ class IntegerValue extends Value {
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
     return NumberValueHelper::numberOperate($this, $operator, $other);
   }
+
+  public function buildNode(): array {
+    return ['type' => 'IntegerValue','value' => $this->value];
+  }
 }

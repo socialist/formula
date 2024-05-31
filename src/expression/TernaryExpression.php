@@ -39,4 +39,8 @@ class TernaryExpression implements Expression {
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return ''.$this->condition->toString($prettyPrintOptions).'?'.$this->leftExpression->toString($prettyPrintOptions).':'.$this->rightExpression->toString($prettyPrintOptions).'';
   }
+
+  public function buildNode(Scope $scope): array {
+    return ['type' => 'Ternary','outerType' => $this->validate($scope)->buildNode(),'condition' => $this->condition->buildNode($scope),'leftNode' => $this->leftExpression->buildNode($scope),'rightNode' => $this->rightExpression->buildNode($scope)];
+  }
 }

@@ -50,4 +50,8 @@ class NullValue extends Value {
   protected function getValueExpectedOperands(ImplementableOperator $operator): array {
     return [];
   }
+
+  public function buildNode(): array {
+    return ['type' => 'NullValue'];
+  }
 }

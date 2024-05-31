@@ -50,9 +50,7 @@ class TypeParser extends Parser {
 
   private function parseSingleType(Token $firstToken): ParserReturn {
     $type = null;
-    if($firstToken->id === Token::IDENTIFIER) {
-      $type = new ReferenceType($firstToken->value);
-    } else if($firstToken->id === Token::KEYWORD_BOOL) {
+    if($firstToken->id === Token::KEYWORD_BOOL) {
       $type = new BooleanType();
     } else if($firstToken->id === Token::KEYWORD_INT) {
       $type = new IntegerType();

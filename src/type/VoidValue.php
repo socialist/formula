@@ -45,4 +45,8 @@ class VoidValue extends Value {
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return 'void';
   }
+
+  public function buildNode(): array {
+    return ['type' => 'VoidValue'];
+  }
 }

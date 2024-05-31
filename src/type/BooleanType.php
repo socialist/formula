@@ -19,15 +19,15 @@ class BooleanType implements Type {
     return 'bool';
   }
 
-  public function validate(Scope $scope): Type {
-    return $this;
-  }
-
   public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     return (new BooleanValue(false))->getOperatorResultType($operator, $otherType);
   }
 
   public function getCompatibleOperands(ImplementableOperator $operator): array {
     return (new BooleanValue(false))->getCompatibleOperands($operator);
+  }
+
+  public function buildNode(): array {
+    return ['type' => 'BooleanType'];
   }
 }

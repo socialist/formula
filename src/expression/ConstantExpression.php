@@ -29,4 +29,8 @@ class ConstantExpression implements Expression {
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return $this->value->toString($prettyPrintOptions);
   }
+
+  public function buildNode(Scope $scope): array {
+    return ['type' => 'Constant','outerType' => $this->validate($scope)->buildNode(),'value' => $this->value->buildNode()];
+  }
 }

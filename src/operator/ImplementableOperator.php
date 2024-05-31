@@ -2,11 +2,10 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\operator;
 
+use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\PrettyPrintOptions;
-use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
-use TimoLehnertz\formula\FormulaValidationException;
 
 /**
  * @author Timo Lehnertz
@@ -84,7 +83,10 @@ class ImplementableOperator implements Operator {
       case self::TYPE_UNARY_PLUS:
       case self::TYPE_UNARY_MINUS:
       case self::TYPE_TYPE_CAST:
+      case self::TYPE_CALL:
         return OperatorType::PrefixOperator;
+      case self::TYPE_ARRAY_ACCESS:
+        return OperatorType::PostfixOperator;
       default:
         throw new \UnexpectedValueException('invalid ImplementableOperator ID '.$id);
     }
@@ -95,6 +97,8 @@ class ImplementableOperator implements Operator {
       case self::TYPE_SCOPE_RESOLUTION:
         return 1;
       case self::TYPE_MEMBER_ACCESS:
+      case self::TYPE_ARRAY_ACCESS:
+      case self::TYPE_CALL:
         return 2;
       case self::TYPE_UNARY_PLUS:
       case self::TYPE_UNARY_MINUS:
@@ -169,20 +173,28 @@ class ImplementableOperator implements Operator {
         return '=';
       case self::TYPE_TYPE_CAST:
         return 'typecast';
+      case self::TYPE_ARRAY_ACCESS:
+        return '[]';
+      case self::TYPE_CALL:
+        return '()';
       default:
         throw new \UnexpectedValueException('invalid ImplementableOperator ID '.$id);
     }
   }
 
   public function validateOperation(?Type $leftType, ?Type $rigthType): Type {
-    switch($this->operatorType) {
+    $operatorType = $this->operatorType;
+    if($this instanceof CoupledOperator) {
+      $operatorType = OperatorType::InfixOperator;
+    }
+    switch($operatorType) {
       case OperatorType::PrefixOperator:
         if($leftType !== null || $rigthType === null) {
           throw new \UnexpectedValueException('Invalid operands for operator #'.$this->id);
         }
-        $resultType = $leftType->getOperatorResultType($this, null);
+        $resultType = $rigthType->getOperatorResultType($this, null);
         if($resultType === null) {
-          throw new FormulaValidationException('Invalid operation');
+          throw new FormulaValidationException('Invalid prefix operation '.$this->toString(PrettyPrintOptions::buildDefault()).$rigthType->getIdentifier());
         }
         return $resultType;
       case OperatorType::InfixOperator:
@@ -191,7 +203,7 @@ class ImplementableOperator implements Operator {
         }
         $resultType = $leftType->getOperatorResultType($this, $rigthType);
         if($resultType === null) {
-          throw new FormulaValidationException('Invalid operation');
+          throw new FormulaValidationException('Invalid infix operation '.$leftType->getIdentifier().' '.$this->toString(PrettyPrintOptions::buildDefault()).' '.$rigthType->getIdentifier());
         }
         return $resultType;
       case OperatorType::PostOperator:
@@ -200,7 +212,7 @@ class ImplementableOperator implements Operator {
         }
         $resultType = $leftType->getOperatorResultType($this, null);
         if($resultType === null) {
-          throw new FormulaValidationException('Invalid operation');
+          throw new FormulaValidationException('Invalid postfix operation '.$leftType->getIdentifier().' '.$this->toString(PrettyPrintOptions::buildDefault()));
         }
         return $resultType;
       default:
@@ -209,12 +221,16 @@ class ImplementableOperator implements Operator {
   }
 
   public function operate(?Value $leftValue, ?Value $rightValue): Value {
-    switch($this->operatorType) {
+    $operatorType = $this->operatorType;
+    if($this instanceof CoupledOperator) {
+      $operatorType = OperatorType::InfixOperator;
+    }
+    switch($operatorType) {
       case OperatorType::PrefixOperator:
         if($leftValue !== null || $rightValue === null) {
           throw new \UnexpectedValueException('Invalid operands for operator #'.$this->id);
         }
-        return $rightValue->operate($this, null);
+        return $rightValue->operate($this, $rightValue);
       case OperatorType::InfixOperator:
         if($leftValue === null || $rightValue === null) {
           throw new \UnexpectedValueException('Invalid operands for operator #'.$this->id);
@@ -238,9 +254,11 @@ class ImplementableOperator implements Operator {
     return $this->precedence;
   }
 
-  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
+  public function getIdentifier(): string {
     return $this->identifier;
   }
 
-  public function validate(Scope $scope): void {}
+  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
+    return $this->identifier;
+  }
 }

@@ -22,12 +22,14 @@ class ParsingException extends \Exception {
 
   public const PARSING_ERROR_EXPECTED_SEMICOLON = 7;
 
+  public const PARSING_ERROR_EXPECTED_EOF = 8;
+
   /**
    * @param ParsingException::PARSING_ERROR_* $code
    */
   public function __construct(int $code, ?Token $token) {
     if($token !== null) {
-      parent::__construct('Parsing failed at "'.$token->value.'" at: '.$token->line.':'.$token->position.' Message: '.static::codeToMessage($code));
+      parent::__construct('Parsing failed at: '.$token->line.':'.$token->position.' > "'.$token->value.'" '.static::codeToMessage($code));
     } else {
       parent::__construct('Parsing failed. Message: '.static::codeToMessage($code));
     }
@@ -49,6 +51,8 @@ class ParsingException extends \Exception {
         return 'invalid use of operator';
       case static::PARSING_ERROR_EXPECTED_SEMICOLON:
         return 'expected ;';
+      case static::PARSING_ERROR_EXPECTED_EOF:
+        return 'expected ond of file';
       default:
         throw new \UnexpectedValueException($code.' is no valid ParsingExceptionCode');
     }

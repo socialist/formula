@@ -5,6 +5,7 @@ namespace TimoLehnertz\formula\statement;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\expression\OperatorExpression;
+use TimoLehnertz\formula\expression\TypeExpression;
 use TimoLehnertz\formula\operator\TypeCastOperator;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
@@ -30,7 +31,7 @@ class VariableDeclarationStatement implements Statement {
     $this->type = $this->type->validate($scope);
     $initilizerType = $this->initilizer->validate($scope);
     if(!$initilizerType->equals($this->type)) {
-      $this->initilizer = new OperatorExpression(null, new TypeCastOperator(false, $this->type), $this->initilizer);
+      $this->initilizer = new OperatorExpression($this->initilizer, new TypeCastOperator(false, $this->type), new TypeExpression($this->type));
       $this->initilizer->validate($scope);
     }
     $scope->define($this->identifier, $this->type);

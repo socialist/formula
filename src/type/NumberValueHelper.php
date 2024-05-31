@@ -36,7 +36,13 @@ abstract class NumberValueHelper {
       case ImplementableOperator::TYPE_DIVISION:
       case ImplementableOperator::TYPE_GREATER:
       case ImplementableOperator::TYPE_LESS:
-        return [$self->getType()];
+        return [new IntegerType(),new FloatType()];
+      case ImplementableOperator::TYPE_TYPE_CAST:
+        if($self instanceof IntegerValue) {
+          return [new TypeType(new FloatType())];
+        } else {
+          return [new TypeType(new IntegerType())];
+        }
       default:
         return [];
     }
@@ -50,7 +56,22 @@ abstract class NumberValueHelper {
         return $typeA;
     }
     // binary operations
-    if($typeB === null || !($typeB instanceof IntegerType) || !($typeB instanceof IntegerType)) {
+    if($typeB === null) {
+      return null;
+    }
+    if($operator->id === ImplementableOperator::TYPE_TYPE_CAST) {
+      if($typeB instanceof TypeType) {
+        if($typeB->getType() instanceof FloatType) {
+          return new FloatType();
+        }
+        if($typeB->getType() instanceof IntegerType) {
+          return new IntegerType();
+        }
+      }
+      return null;
+    }
+    // number operations
+    if(!($typeB instanceof IntegerType) && !($typeB instanceof FloatType)) {
       return null;
     }
     switch($operator->id) {
@@ -76,7 +97,22 @@ abstract class NumberValueHelper {
         return new IntegerValue($self->getValue());
     }
     // binary operations
-    if($other === null || (!($other instanceof FloatValue) && !($other instanceof IntegerValue))) {
+    if($other === null) {
+      throw new \BadFunctionCallException('Invalid operation');
+    }
+    // cast
+    if($operator->id === ImplementableOperator::TYPE_TYPE_CAST) {
+      if($other instanceof TypeValue) {
+        if($other->getValue() instanceof FloatType) {
+          return new FloatValue($self->getValue());
+        }
+        if($other->getValue() instanceof IntegerType) {
+          return new IntegerValue((int) $self->getValue());
+        }
+      }
+      throw new \BadFunctionCallException('Invalid operation');
+    }
+    if(!($other instanceof FloatValue) && !($other instanceof IntegerValue)) { // only numbers
       throw new \BadFunctionCallException('Invalid operation');
     }
     switch($operator->id) {

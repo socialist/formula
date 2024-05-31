@@ -35,10 +35,6 @@ class ArrayType implements Type {
     }
   }
 
-  public function validate(Scope $scope): Type {
-    return new ArrayType($this->keyType->validate($scope), $this->elementsType->validate($scope));
-  }
-
   public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     $arrayValue = new ArrayValue([], $this);
     return $arrayValue->getOperatorResultType($operator, $otherType);
@@ -49,5 +45,9 @@ class ArrayType implements Type {
       return [$this->keyType];
     }
     return [];
+  }
+
+  public function buildNode(): array {
+    return ['type' => 'ArrayType','keyType' => $this->keyType->buildNode(),'elementsType' => $this->elementsType->buildNode()];
   }
 }

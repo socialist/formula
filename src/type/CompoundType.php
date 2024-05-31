@@ -100,12 +100,12 @@ class CompoundType implements Type {
     return $operandTypes;
   }
 
-  public function validate(Scope $scope): Type {
+  public function buildNode(): array {
     $types = [];
     foreach($this->types as $type) {
-      $types[] = $type->validate();
+      $type[] = $type->buildNode();
     }
-    return new CompoundType($types);
+    return ['type' => 'CompoundType','types' => $types];
   }
 }
 

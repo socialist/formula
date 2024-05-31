@@ -120,7 +120,7 @@ class ExpressionParser extends Parser {
       // combine operator and operands into OperatorExpression
       if($operator instanceof CoupledOperator) {
         if($operator->getOperatorType() === OperatorType::PrefixOperator) {
-          $operatorExpression = new OperatorExpression($operator->getCoupledExpression(), $operator, $rightExpression);
+          $operatorExpression = new OperatorExpression($rightExpression, $operator, $operator->getCoupledExpression());
         } else if($operator->getOperatorType() === OperatorType::PostfixOperator) {
           $operatorExpression = new OperatorExpression($leftExpression, $operator, $operator->getCoupledExpression());
         } else {

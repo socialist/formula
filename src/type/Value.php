@@ -5,7 +5,6 @@ namespace TimoLehnertz\formula\type;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\operator\Operator;
-use TimoLehnertz\formula\operator\TypeCastOperator;
 
 /**
  * @author Timo Lehnertz
@@ -22,8 +21,8 @@ abstract class Value implements OperatorHandler {
         $array[] = $this->getType();
         break;
       case Operator::IMPLEMENTABLE_TYPE_CAST:
-        $array[] = new BooleanType();
-        $array[] = $this->getType();
+        $array[] = new TypeType(new BooleanType());
+        $array[] = new TypeType($this->getType());
     }
     return $array;
   }
@@ -46,16 +45,18 @@ abstract class Value implements OperatorHandler {
         }
         return new BooleanType();
       case Operator::IMPLEMENTABLE_TYPE_CAST:
-        if($operator instanceof TypeCastOperator) {
-          if($operator->getCastType() instanceof BooleanType) {
+        if($otherType instanceof TypeType) {
+          if($otherType->getType() instanceof BooleanType) {
             return new BooleanType();
           }
-          if($operator->getCastType()->equals($this->getType())) {
-            return $operator->getCastType();
+          if($otherType->getType()->equals($this->getType())) {
+            return $this->getType();
           }
         }
+        return null;
+      default:
+        return null;
     }
-    return null;
   }
 
   public function operate(ImplementableOperator $operator, ?Value $other): Value {
@@ -73,11 +74,11 @@ abstract class Value implements OperatorHandler {
         }
         break;
       case Operator::IMPLEMENTABLE_TYPE_CAST:
-        if($operator instanceof TypeCastOperator) {
-          if($operator->getCastType() instanceof BooleanType) {
+        if($other instanceof TypeValue) {
+          if($other->getValue() instanceof BooleanType) {
             return new BooleanValue($this->isTruthy());
           }
-          if($operator->getCastType()->equals($this->getType())) {
+          if($other->getValue()->equals($this->getType())) {
             return $this;
           }
         }
@@ -116,4 +117,6 @@ abstract class Value implements OperatorHandler {
    * @param Value $other guaranteed to be assignable
    */
   protected abstract function valueEquals(Value $other): bool;
+
+  public abstract function buildNode(): array;
 }
