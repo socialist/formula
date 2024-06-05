@@ -18,7 +18,7 @@ use TimoLehnertz\formula\type\Value;
 class IncrementPrefixOperator extends PrefixOperator {
 
   public function __construct() {
-    parent::__construct(3);
+    parent::__construct(3, Operator::PARSABLE_INCREMENT_PREFIX);
   }
 
   protected function validatePrefixOperation(Type $rightType): Type {

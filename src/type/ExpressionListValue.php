@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\operator\ImplementableOperator;
@@ -82,5 +83,9 @@ class ExpressionListValue extends Value {
 
   public function buildNode(): array {
     throw new \BadMethodCallException('ExpressionListValue can build nodes');
+  }
+
+  public function toPHPValue(): mixed {
+    throw new FormulaBugException('ExpressionListValue list does not have a php representation');
   }
 }

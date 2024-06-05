@@ -13,7 +13,7 @@ abstract class Value implements OperatorHandler {
 
   public function getCompatibleOperands(ImplementableOperator $operator): array {
     $array = $this->getValueExpectedOperands($operator);
-    switch($operator->id) {
+    switch($operator->getID()) {
       case Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT:
         $array[] = $this->getType();
         break;
@@ -33,7 +33,7 @@ abstract class Value implements OperatorHandler {
       return $type;
     }
     // default operators
-    switch($operator->id) {
+    switch($operator->getID()) {
       case Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT:
         if($otherType === null || !$this->getType()->equals($otherType)) {
           return null;
@@ -61,7 +61,7 @@ abstract class Value implements OperatorHandler {
 
   public function operate(ImplementableOperator $operator, ?Value $other): Value {
     // default operators
-    switch($operator->id) {
+    switch($operator->getID()) {
       case Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT:
         if($this->getType()->equals($other->getType())) {
           $this->assign($other);
@@ -119,4 +119,9 @@ abstract class Value implements OperatorHandler {
   protected abstract function valueEquals(Value $other): bool;
 
   public abstract function buildNode(): array;
+
+  /**
+   * @return mixed the php representation of this Value
+   */
+  public abstract function toPHPValue(): mixed;
 }

@@ -6,6 +6,7 @@ use TimoLehnertz\formula\expression\ConstantExpression;
 use TimoLehnertz\formula\parsing\ConstantExpressionParser;
 use TimoLehnertz\formula\tokens\Tokenizer;
 use TimoLehnertz\formula\type\NullValue;
+use TimoLehnertz\formula\procedure\Scope;
 
 class ConstantExpressionParserTest extends TestCase {
 
@@ -14,7 +15,7 @@ class ConstantExpressionParserTest extends TestCase {
     $parsedConstant = (new ConstantExpressionParser())->parse($firstToken);
     $this->assertNull($parsedConstant->nextToken);
     $this->assertInstanceOf(ConstantExpression::class, $parsedConstant->parsed);
-    $this->assertEquals(123.456, $parsedConstant->parsed->run()->getValue());
+    $this->assertEquals(123.456, $parsedConstant->parsed->run(new Scope())->toPHPValue());
   }
 
   public function testInt(): void {
@@ -22,7 +23,7 @@ class ConstantExpressionParserTest extends TestCase {
     $parsedConstant = (new ConstantExpressionParser())->parse($firstToken);
     $this->assertNull($parsedConstant->nextToken);
     $this->assertInstanceOf(ConstantExpression::class, $parsedConstant->parsed);
-    $this->assertEquals(123, $parsedConstant->parsed->run()->getValue());
+    $this->assertEquals(123, $parsedConstant->parsed->run(new Scope())->toPHPValue());
   }
 
   public function testFalse(): void {
@@ -30,7 +31,7 @@ class ConstantExpressionParserTest extends TestCase {
     $parsedConstant = (new ConstantExpressionParser())->parse($firstToken);
     $this->assertNull($parsedConstant->nextToken);
     $this->assertInstanceOf(ConstantExpression::class, $parsedConstant->parsed);
-    $this->assertEquals(false, $parsedConstant->parsed->run()->getValue());
+    $this->assertEquals(false, $parsedConstant->parsed->run(new Scope())->toPHPValue());
   }
 
   public function testTrue(): void {
@@ -38,7 +39,7 @@ class ConstantExpressionParserTest extends TestCase {
     $parsedConstant = (new ConstantExpressionParser())->parse($firstToken);
     $this->assertNull($parsedConstant->nextToken);
     $this->assertInstanceOf(ConstantExpression::class, $parsedConstant->parsed);
-    $this->assertEquals(true, $parsedConstant->parsed->run()->getValue());
+    $this->assertEquals(true, $parsedConstant->parsed->run(new Scope())->toPHPValue());
   }
 
   public function testString(): void {
@@ -46,7 +47,7 @@ class ConstantExpressionParserTest extends TestCase {
     $parsedConstant = (new ConstantExpressionParser())->parse($firstToken);
     $this->assertNull($parsedConstant->nextToken);
     $this->assertInstanceOf(ConstantExpression::class, $parsedConstant->parsed);
-    $this->assertEquals('abc', $parsedConstant->parsed->run()->getValue());
+    $this->assertEquals('abc', $parsedConstant->parsed->run(new Scope())->toPHPValue());
   }
 
   public function testNull(): void {
@@ -54,6 +55,6 @@ class ConstantExpressionParserTest extends TestCase {
     $parsedConstant = (new ConstantExpressionParser())->parse($firstToken);
     $this->assertNull($parsedConstant->nextToken);
     $this->assertInstanceOf(ConstantExpression::class, $parsedConstant->parsed);
-    $this->assertInstanceOf(NullValue::class, $parsedConstant->parsed->run());
+    $this->assertEquals(null, $parsedConstant->parsed->run(new Scope())->toPHPValue());
   }
 }

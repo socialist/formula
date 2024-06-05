@@ -11,6 +11,7 @@ use TimoLehnertz\formula\operator\CallOperator;
 use TimoLehnertz\formula\operator\Operator;
 use TimoLehnertz\formula\parsing\ExpressionParser;
 use TimoLehnertz\formula\tokens\Tokenizer;
+use TimoLehnertz\formula\expression\ExpressionListExpression;
 
 class ExpressionParserTest extends TestCase {
 
@@ -63,7 +64,7 @@ class ExpressionParserTest extends TestCase {
     $this->assertEquals('+', $result->parsed->operator->toString(PrettyPrintOptions::buildDefault()));
 
     $this->assertInstanceOf(OperatorExpression::class, $result->parsed->rightExpression);
-    $this->assertEquals(Operator::IMPLEMENTABLE_UNARY_MINUS, $result->parsed->rightExpression->operator->id);
+    $this->assertEquals(Operator::IMPLEMENTABLE_UNARY_MINUS, $result->parsed->rightExpression->operator->getID());
     $this->assertNull($result->parsed->rightExpression->leftExpression);
     $this->assertInstanceOf(ConstantExpression::class, $result->parsed->rightExpression->rightExpression);
     $this->assertEquals('1+-1', $result->parsed->toString(PrettyPrintOptions::buildDefault()));
@@ -76,7 +77,7 @@ class ExpressionParserTest extends TestCase {
     $this->assertInstanceOf(OperatorExpression::class, $result->parsed);
     $this->assertInstanceOf(IdentifierExpression::class, $result->parsed->leftExpression);
     $this->assertInstanceOf(CallOperator::class, $result->parsed->operator);
-    $this->assertNull($result->parsed->rightExpression);
+    $this->assertInstanceOf(ExpressionListExpression::class, $result->parsed->rightExpression);
 
     $this->assertEquals('a(1)', $result->parsed->toString(PrettyPrintOptions::buildDefault()));
   }

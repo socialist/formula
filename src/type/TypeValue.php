@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 
@@ -63,5 +64,8 @@ class TypeValue extends Value {
   public function buildNode(): array {
     throw new \BadFunctionCallException();
   }
-}
 
+  public function toPHPValue(): mixed {
+    throw new FormulaBugException('TypeValue list does not have a php representation');
+  }
+}

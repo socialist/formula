@@ -2,10 +2,10 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use PHPUnit\Framework\Constraint\Operator;
+use TimoLehnertz\formula\InternalFormulaException;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\InternalFormulaException;
+use TimoLehnertz\formula\operator\Operator;
 
 /**
  * @author Timo Lehnertz
@@ -39,21 +39,21 @@ class StringValue extends Value {
   }
 
   protected function getValueExpectedOperands(ImplementableOperator $operator): array {
-    if($operator->id === ImplementableOperator::TYPE_ADDITION) {
+    if($operator->getID() === Operator::IMPLEMENTABLE_ADDITION) {
       return [new StringType()];
     }
     return [];
   }
 
   protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    if($operator->id === ImplementableOperator::TYPE_ADDITION && $otherType instanceof StringType) {
+    if($operator->getID() === Operator::IMPLEMENTABLE_ADDITION && $otherType instanceof StringType) {
       return new StringType();
     }
     return null;
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
-    if($other === null || !($other instanceof StringValue) || $operator->id !== ImplementableOperator::TYPE_ADDITION) {
+    if($other === null || !($other instanceof StringValue) || $operator->getID() !== Operator::IMPLEMENTABLE_ADDITION) {
       throw new InternalFormulaException('Invalid operation on string value!');
     }
     return new StringType($this->value + $other->getValue());
@@ -69,5 +69,9 @@ class StringValue extends Value {
 
   public function buildNode(): array {
     return ['type' => 'StringValue','value' => $this->value];
+  }
+
+  public function toPHPValue(): mixed {
+    return $this->value;
   }
 }

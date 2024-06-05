@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
@@ -12,13 +13,26 @@ class ArgumentListType implements Type {
   /**
    * @var array<FunctionArgument>|null
    */
-  private ?array $arguments;
+  public readonly ?array $arguments;
 
   /**
    * @var array<FunctionArgument>
    */
   public function __construct(?array $arguments) {
     $this->arguments = $arguments;
+    if($arguments !== null) {
+      // check that optional parameters are at the end
+      $optional = false;
+      /** @var FunctionArgument $argument */
+      foreach($arguments as $argument) {
+        if($optional && !$argument->optional) {
+          throw new FormulaValidationException('Not optional parameter cannot follow optional parameter');
+        }
+        if($argument->optional) {
+          $optional = true;
+        }
+      }
+    }
   }
 
   public function equals(Type $type): bool {
@@ -46,7 +60,7 @@ class ArgumentListType implements Type {
     $identifier = '';
     $delimiter = '';
     foreach($this->arguments as $argument) {
-      $identifier .= $delimiter.$argument->getIdentifier();
+      $identifier .= $delimiter.$argument->type->getIdentifier();
       $delimiter = ',';
     }
     return 'ArgumentList('.$identifier.')';

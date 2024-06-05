@@ -3,6 +3,7 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use SebastianBergmann\Type\VoidType;
+use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\InternalFormulaException;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\ImplementableOperator;
@@ -48,5 +49,9 @@ class VoidValue extends Value {
 
   public function buildNode(): array {
     return ['type' => 'VoidValue'];
+  }
+
+  public function toPHPValue(): mixed {
+    throw new FormulaBugException('VoidValue list does not have a php representation');
   }
 }

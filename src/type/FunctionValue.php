@@ -2,35 +2,32 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\FormulaBugException;
+use TimoLehnertz\formula\FormulaRuntimeException;
 use TimoLehnertz\formula\PrettyPrintOptions;
-use TimoLehnertz\formula\operator\ArrayAccessOperator;
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\operator\Operator;
+use TimoLehnertz\formula\operator\TypeCastOperator;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\statement\CodeBlock;
-use TimoLehnertz\formula\operator\Operator;
 
 /**
  * @author Timo Lehnertz
  */
 class FunctionValue extends Value {
 
-  private readonly CodeBlock|callable $body;
-
   /**
-   * @var array<FunctionArgument>
+   * @var CodeBlock|callable
    */
-  private readonly array $arguments;
+  private readonly mixed $body;
 
-  private readonly Type $returnType;
+  private readonly FunctionType $type;
 
   private readonly Scope $scope;
 
-  /**
-   * @param array<FunctionArgument> $arguments
-   */
-  public function __construct(CodeBlock|callable $body, array $arguments, Type $returnType, Scope $scope) {
+  public function __construct(CodeBlock|callable $body, FunctionType $type, Scope $scope) {
     $this->body = $body;
-    $this->arguments = $arguments;
+    $this->type = $type;
     $this->scope = $scope;
   }
 
@@ -43,7 +40,7 @@ class FunctionValue extends Value {
   }
 
   public function copy(): ArrayValue {
-    return new ArrayValue($this->value);
+    return new FunctionValue($this->body, $this->type, $this->scope);
   }
 
   public function valueEquals(Value $other): bool {
@@ -51,41 +48,50 @@ class FunctionValue extends Value {
   }
 
   protected function getValueExpectedOperands(ImplementableOperator $operator): array {
-    if($operator->id === Operator::IMPLEMENTABLE_CALL) {
-      return [new ExpressionListType($expressionTypes)];
+    if($operator->getID() === Operator::IMPLEMENTABLE_CALL) {
+      return [new ArgumentListType($this->type->arguments)];
     } else {
       return [];
     }
   }
 
   protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    if($operator->id === Operator::IMPLEMENTABLE_CALL) {
-      return $this->returnType;
+    if($operator->getID() === Operator::IMPLEMENTABLE_CALL) {
+      return $this->type->returnType;
     } else {
       return [];
     }
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
-    if($operator instanceof ArrayAccessOperator) {
-      if($other instanceof IntegerValue) {
-        $key = $other->getValue();
+    var_dump($other);
+    if($operator->getID() === Operator::IMPLEMENTABLE_CALL && $other !== null && $other instanceof ArgumentListValue) {
+      if(is_callable($this->body)) {
+        $args = [];
+        $argValues = $other->getValues();
+        for($i = 0;$i < count($argValues);$i++) {
+          /** @var Value $argValue */
+          $argValue = $argValues[$i];
+          $expectedType = $this->type->arguments[$i]->type;
+          if($argValue->getType()->equals($expectedType)) {
+            $args[$i] = $argValue->toPHPValue();
+          } else {
+            $args[$i] = $argValue->operate(new TypeCastOperator(false, $expectedType), new TypeValue($expectedType))->toPHPValue();
+          }
+        }
+        $phpReturn = call_user_func_array($this->body, $args);
+        $formulaReturn = Scope::valueByPHPVar($phpReturn);
+        if(!$formulaReturn->getType()->equals($this->type->returnType)) {
+          $castedReturnType = $formulaReturn->getOperatorResultType(new TypeCastOperator(false, $this->type->returnType), new TypeValue($this->type->returnType));
+          if($castedReturnType === null) {
+            throw new FormulaRuntimeException('PHP function returned invalid return value '.$formulaReturn->getType()->getIdentifier().'. Expected '.$this->type->returnType->getIdentifier());
+          }
+          $formulaReturn = $formulaReturn->operate(new TypeCastOperator(false, $this->type->returnType), new TypeValue($this->type->returnType));
+        }
+        return $formulaReturn;
       }
-      if($other instanceof FloatValue) {
-        $key = $other->getValue();
-      }
-      if($other instanceof StringValue) {
-        $key = $other->getValue();
-      }
-      if(defined($this->value[$key])) {
-        return $this->value[$key];
-      } else {
-        throw new \BadFunctionCallException('Array key does not exist!');
-      }
-    } else if($operator->id === ImplementableOperator::TYPE_EQUALS) {
-      return new BooleanValue($this === $other);
     } else {
-      throw new \BadFunctionCallException('Invalid operator!');
+      throw new FormulaBugException('Invalid operator');
     }
   }
 
@@ -102,6 +108,10 @@ class FunctionValue extends Value {
 
   public function buildNode(): array {
     throw new \BadMethodCallException('FunctionValue is not supported by node system');
+  }
+
+  public function toPHPValue(): mixed {
+    throw new FormulaBugException('FunctionValue list does not have a php representation');
   }
 }
 

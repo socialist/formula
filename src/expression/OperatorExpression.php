@@ -27,7 +27,7 @@ class OperatorExpression implements Expression {
   public function __construct(?Expression $leftExpression, Operator $operator, ?Expression $rightExpression) {
     $this->leftExpression = $leftExpression;
     $this->operator = $operator;
-    if($operator->id === Operator::IMPLEMENTABLE_TYPE_CAST && $leftExpression === null) {
+    if($operator->getID() === Operator::IMPLEMENTABLE_TYPE_CAST && $leftExpression === null) {
       var_dump($leftExpression);
       var_dump($rightExpression);
       throw new \BadMethodCallException('Moin');

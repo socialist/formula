@@ -7,19 +7,16 @@ namespace TimoLehnertz\formula\type;
  */
 class FunctionArgument {
 
-  public readonly string $identifier;
-
   public readonly Type $type;
 
   public readonly bool $optional;
 
-  public function __construct(string $identifier, Type $type, bool $optional) {
-    $this->identifier = $identifier;
+  public function __construct(Type $type, bool $optional) {
     $this->type = $type;
     $this->optional = $optional;
   }
 
   public function equals(FunctionArgument $other): bool {
-    return $this->identifier === $other->identifier && $this->type->equals($other->type) && $this->optional === $other->optional;
+    return $this->type->equals($other->type) && $this->optional === $other->optional;
   }
 }

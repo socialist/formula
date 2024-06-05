@@ -68,12 +68,15 @@ class FormulaTest extends TestCase {
   // }
   public function testpow(): void {
     $str = 'pow(a,b)';
-    $formula = new Formula($str);
+    $scope = new Scope();
+    $scope->define('a', new IntegerType());
+    $scope->define('b', new IntegerType());
+    $formula = new Formula($str, $scope);
     for($i = 0;$i < 1;$i++) {
       $a = rand(0, 10);
       $b = rand(0, 10);
-      $formula->setVariable('a', $a);
-      $formula->setVariable('b', $b);
+      $scope->assign('a', new IntegerValue($a));
+      $scope->assign('b', new IntegerValue($b));
       $result = $formula->calculate();
       $this->assertEquals(round(pow($a, $b)), round($result));
     }

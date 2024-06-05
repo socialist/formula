@@ -19,7 +19,7 @@ use TimoLehnertz\formula\type\Value;
 class NotEqualsOperator extends InfixOperator {
 
   public function __construct() {
-    parent::__construct(10);
+    parent::__construct(10, Operator::PARSABLE_NOT_EQUAL);
   }
 
   protected function validateInfixOperation(Type $leftValue, Type $rightType): Type {

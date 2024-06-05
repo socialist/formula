@@ -17,7 +17,7 @@ use TimoLehnertz\formula\type\Value;
 class DecrementPrefixOperator extends PrefixOperator {
 
   public function __construct() {
-    parent::__construct(3);
+    parent::__construct(3, Operator::PARSABLE_DECREMENT_PREFIX);
   }
 
   protected function validatePrefixOperation(Type $rightType): Type {

@@ -14,7 +14,7 @@ class CallOperator extends ImplementableOperator implements CoupledOperator {
   private readonly ExpressionListExpression $args;
 
   public function __construct(ExpressionListExpression $args) {
-    parent::__construct(ImplementableOperator::TYPE_CALL);
+    parent::__construct(Operator::IMPLEMENTABLE_CALL);
     $this->args = $args;
   }
 

@@ -6,10 +6,6 @@ use TimoLehnertz\formula\procedure\Method;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\statement\CodeBlockOrExpression;
 use TimoLehnertz\formula\tokens\Tokenizer;
-use TimoLehnertz\formula\type\BooleanValue;
-use TimoLehnertz\formula\type\FloatValue;
-use TimoLehnertz\formula\type\IntegerValue;
-use TimoLehnertz\formula\type\StringValue;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 
@@ -22,9 +18,8 @@ class Formula {
 
   private readonly CodeBlockOrExpression $content;
 
-  /**
-   * The global scope containing all local scopes
-   */
+  private static Scope $inbuildScope;
+
   private readonly Scope $parentScope;
 
   private readonly FormulaSettings $formulaSettings;
@@ -35,6 +30,9 @@ class Formula {
 
   public function __construct(string $source, ?Scope $parentScope = null, ?FormulaSettings $formulaSettings = null) {
     $this->source = $source;
+    if(!isset(Formula::$inbuildScope)) {
+      Formula::$inbuildScope = Formula::buildInbuildScope();
+    }
     if($formulaSettings === null) {
       $formulaSettings = FormulaSettings::buildDefaultSettings();
     }
@@ -90,8 +88,7 @@ class Formula {
   public function renameMethods(string $oldName, string $newName, bool $caseSensitive = true): void {
     foreach($this->expression->getContent() as $content) {
       if($content instanceof Method) {
-        if(self::strcmp($content->getIdentifier(), $oldName, $caseSensitive))
-          $content->setIdentifier($newName);
+        if(self::strcmp($content->getIdentifier(), $oldName, $caseSensitive)) $content->setIdentifier($newName);
       }
     }
     $this->initDefaultMethods(); // in case a method got renamed to a buildin method
@@ -104,8 +101,7 @@ class Formula {
    * @return bool equal
    */
   private static function strcmp(string $a, string $b, bool $caseSensitive): bool {
-    if($caseSensitive)
-      return $a === $b;
+    if($caseSensitive) return $a === $b;
     return strcasecmp($a, $b) == 0;
   }
 
@@ -146,8 +142,7 @@ class Formula {
   public function getMethodIdentifiers(): array {
     $methods = [];
     foreach($this->expression->getContent() as $content) {
-      if($content instanceof Method)
-        $methods[] = $content;
+      if($content instanceof Method) $methods[] = $content;
     }
     $identifiers = [];
     foreach($methods as $method) {
@@ -196,65 +191,65 @@ class Formula {
     return $merged;
   }
 
-  public function minFunc(...$values) {
+  public static function minFunc(...$values) {
     $values = Formula::mergeArraysRecursive($values);
     return min($values);
   }
 
-  public function maxFunc(...$values) {
+  public static function maxFunc(...$values) {
     $values = Formula::mergeArraysRecursive($values);
     return max($values);
   }
 
-  public function powFunc($base, $exp) {
-    return pow($base, $exp);
+  public static function powFunc(float $base, float $exp): float {
+    return (float) pow($base, $exp);
   }
 
-  public function sqrtFunc(float $arg) {
+  public static function sqrtFunc(float $arg) {
     return sqrt($arg);
   }
 
-  public function ceilFunc(float $value) {
+  public static function ceilFunc(float $value) {
     return ceil($value);
   }
 
-  public function floorFunc(float $value) {
+  public static function floorFunc(float $value) {
     return floor($value);
   }
 
-  public function roundFunc(float $val, int $precision = null, int $mode = null) {
+  public static function roundFunc(float $val, int $precision = null, int $mode = null) {
     return round($val, $precision, $mode);
   }
 
-  public function sinFunc(float $arg) {
+  public static function sinFunc(float $arg) {
     return sin($arg);
   }
 
-  public function cosFunc(float $arg) {
+  public static function cosFunc(float $arg) {
     return cos($arg);
   }
 
-  public function tanFunc(float $arg) {
+  public static function tanFunc(float $arg) {
     return tan($arg);
   }
 
-  public function is_nanFunc(float $val) {
+  public static function is_nanFunc(float $val) {
     return is_nan($val);
   }
 
-  public function absFunc(float $number) {
+  public static function absFunc(float $number) {
     return abs($number);
   }
 
-  public function asVectorFunc(...$values) {
+  public static function asVectorFunc(...$values) {
     return $values;
   }
 
-  public function sizeofFunc(...$values) {
+  public static function sizeofFunc(...$values) {
     $count = 0;
     foreach($values as $value) {
       if(is_array($value)) {
-        $count += $this->sizeofFunc(...$value);
+        $count += static::sizeofFunc(...$value);
       } else {
         $count++;
       }
@@ -262,11 +257,11 @@ class Formula {
     return $count;
   }
 
-  public function inRangeFunc(float $value, float $min, float $max): bool {
+  public static function inRangeFunc(float $value, float $min, float $max): bool {
     return ($min <= $value) && ($value <= $max);
   }
 
-  public function reduceFunc(array $values, array $filter): array {
+  public static function reduceFunc(array $values, array $filter): array {
     $result = [];
     foreach($values as $value) {
       if(in_array($value, $filter)) {
@@ -276,9 +271,8 @@ class Formula {
     return $result;
   }
 
-  public function firstOrNullFunc($array) {
-    if(sizeof($array) === 0)
-      return null;
+  public static function firstOrNullFunc($array) {
+    if(sizeof($array) === 0) return null;
     return $array[0];
   }
 
@@ -309,11 +303,11 @@ class Formula {
     return $sum / $this->sizeofFunc($values);
   }
 
-  private function buildDefaultScope(): Scope {
-    $scope = $this->parentScope->buildChild();
+  private static function buildInbuildScope(): Scope {
+    $scope = new Scope();
     //     $scope->defineMethod(new Method("min", [$this,"minFunc"]));
     //     $scope->defineMethod(new Method("max", [$this,"maxFunc"]));
-    //     $scope->defineMethod(new Method("pow", [$this,"powFunc"]));
+    $scope->definePHPFunction('pow', [Formula::class,'powFunc']);
     //     $scope->defineMethod(new Method("sqrt", [$this,"sqrtFunc"]));
     //     $scope->defineMethod(new Method("ceil", [$this,"ceilFunc"]));
     //     $scope->defineMethod(new Method("floor", [$this,"floorFunc"]));
@@ -329,6 +323,13 @@ class Formula {
     //     $scope->defineMethod(new Method("reduce", [$this,"reduceFunc"]));
     //     $scope->defineMethod(new Method("firstOrNull", [$this,"firstOrNullFunc"]));
     //     $scope->defineMethod(new Method("sum", [$this,"sumFunc"]));
+    return $scope;
+  }
+
+  private function buildDefaultScope(): Scope {
+    $scope = new Scope();
+    $this->parentScope->setParent(Formula::$inbuildScope);
+    $scope->setParent($this->parentScope);
     return $scope;
 
     // $this->setMethod("min", [$this, "minFunc"]);

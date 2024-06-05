@@ -8,7 +8,6 @@ use TimoLehnertz\formula\type\ArrayType;
 use TimoLehnertz\formula\type\BooleanType;
 use TimoLehnertz\formula\type\CompoundType;
 use TimoLehnertz\formula\type\IntegerType;
-use TimoLehnertz\formula\type\ReferenceType;
 use TimoLehnertz\formula\type\StringType;
 
 class TypeParserTest extends TestCase {
@@ -34,14 +33,6 @@ class TypeParserTest extends TestCase {
     $this->assertInstanceOf(StringType::class, $type->parsed);
   }
 
-  public function testReferenceType(): void {
-    $firstToken = Tokenizer::tokenize("abc");
-    $type = (new TypeParser())->parse($firstToken);
-    $this->assertNull($type->nextToken);
-    $this->assertInstanceOf(ReferenceType::class, $type->parsed);
-    $this->assertEquals('abc', $type->parsed->getIdentifier());
-  }
-
   public function testArray(): void {
     $firstToken = Tokenizer::tokenize("int[]");
     $type = (new TypeParser())->parse($firstToken);
@@ -51,34 +42,34 @@ class TypeParserTest extends TestCase {
   }
 
   public function testCompound(): void {
-    $firstToken = Tokenizer::tokenize("int|bool|abc");
+    $firstToken = Tokenizer::tokenize("int|bool");
     $type = (new TypeParser())->parse($firstToken);
     $this->assertNull($type->nextToken);
     $this->assertInstanceOf(CompoundType::class, $type->parsed);
-    $this->assertEquals('int|bool|abc', $type->parsed->getIdentifier());
+    $this->assertEquals('int|bool', $type->parsed->getIdentifier());
   }
 
   public function testCompoundArray(): void {
-    $firstToken = Tokenizer::tokenize("int|bool[]|abc");
+    $firstToken = Tokenizer::tokenize("int|bool[]");
     $type = (new TypeParser())->parse($firstToken);
     $this->assertNull($type->nextToken);
     $this->assertInstanceOf(CompoundType::class, $type->parsed);
-    $this->assertEquals('int|bool[]|abc', $type->parsed->getIdentifier());
+    $this->assertEquals('int|bool[]', $type->parsed->getIdentifier());
   }
 
   public function testNestedCompoundArray(): void {
-    $firstToken = Tokenizer::tokenize("(int|bool|abc)[]");
+    $firstToken = Tokenizer::tokenize("(int|bool)[]");
     $type = (new TypeParser())->parse($firstToken);
     $this->assertNull($type->nextToken);
     $this->assertInstanceOf(ArrayType::class, $type->parsed);
-    $this->assertEquals('(int|bool|abc)[]', $type->parsed->getIdentifier());
+    $this->assertEquals('(int|bool)[]', $type->parsed->getIdentifier());
   }
 
   public function testDeeplyNestedCompound(): void {
-    $firstToken = Tokenizer::tokenize("int|(bool|(abcd|abc))[]");
+    $firstToken = Tokenizer::tokenize("int|(bool|(int|int))[]");
     $type = (new TypeParser())->parse($firstToken);
     $this->assertNull($type->nextToken);
     $this->assertInstanceOf(CompoundType::class, $type->parsed);
-    $this->assertEquals('int|(bool|(abcd|abc))[]', $type->parsed->getIdentifier());
+    $this->assertEquals('int|(bool|int)[]', $type->parsed->getIdentifier());
   }
 }

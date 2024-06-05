@@ -4,6 +4,7 @@ namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\operator\Operator;
 
 /**
  * @author Timo Lehnertz
@@ -29,15 +30,15 @@ abstract class NumberValueHelper {
   }
 
   public static function getValueExpectedOperands(IntegerValue|FloatValue $self, ImplementableOperator $operator): array {
-    switch($operator->id) {
-      case ImplementableOperator::TYPE_ADDITION:
-      case ImplementableOperator::TYPE_SUBTRACTION:
-      case ImplementableOperator::TYPE_MULTIPLICATION:
-      case ImplementableOperator::TYPE_DIVISION:
-      case ImplementableOperator::TYPE_GREATER:
-      case ImplementableOperator::TYPE_LESS:
+    switch($operator->getID()) {
+      case Operator::IMPLEMENTABLE_ADDITION:
+      case Operator::IMPLEMENTABLE_SUBTRACTION:
+      case Operator::IMPLEMENTABLE_MULTIPLICATION:
+      case Operator::IMPLEMENTABLE_DIVISION:
+      case Operator::IMPLEMENTABLE_GREATER:
+      case Operator::IMPLEMENTABLE_LES:
         return [new IntegerType(),new FloatType()];
-      case ImplementableOperator::TYPE_TYPE_CAST:
+      case Operator::IMPLEMENTABLE_TYPE_CAST:
         if($self instanceof IntegerValue) {
           return [new TypeType(new FloatType())];
         } else {
@@ -50,16 +51,16 @@ abstract class NumberValueHelper {
 
   public static function getNumberOperatorResultType(IntegerType|FloatType $typeA, ImplementableOperator $operator, ?Type $typeB): ?Type {
     // unary operations
-    switch($operator->id) {
-      case ImplementableOperator::TYPE_UNARY_MINUS:
-      case ImplementableOperator::TYPE_UNARY_PLUS:
+    switch($operator->getID()) {
+      case Operator::IMPLEMENTABLE_UNARY_MINUS:
+      case Operator::IMPLEMENTABLE_UNARY_PLUS:
         return $typeA;
     }
     // binary operations
     if($typeB === null) {
       return null;
     }
-    if($operator->id === ImplementableOperator::TYPE_TYPE_CAST) {
+    if($operator->getID() === Operator::IMPLEMENTABLE_TYPE_CAST) {
       if($typeB instanceof TypeType) {
         if($typeB->getType() instanceof FloatType) {
           return new FloatType();
@@ -74,14 +75,14 @@ abstract class NumberValueHelper {
     if(!($typeB instanceof IntegerType) && !($typeB instanceof FloatType)) {
       return null;
     }
-    switch($operator->id) {
-      case ImplementableOperator::TYPE_ADDITION:
-      case ImplementableOperator::TYPE_SUBTRACTION:
-      case ImplementableOperator::TYPE_MULTIPLICATION:
-      case ImplementableOperator::TYPE_DIVISION:
+    switch($operator->getID()) {
+      case Operator::IMPLEMENTABLE_ADDITION:
+      case Operator::IMPLEMENTABLE_SUBTRACTION:
+      case Operator::IMPLEMENTABLE_MULTIPLICATION:
+      case Operator::IMPLEMENTABLE_DIVISION:
         return self::getMostPreciseNumberType($typeA, $typeB);
-      case ImplementableOperator::TYPE_GREATER:
-      case ImplementableOperator::TYPE_LESS:
+      case Operator::IMPLEMENTABLE_GREATER:
+      case Operator::IMPLEMENTABLE_LESS:
         return new BooleanType();
       default:
         return null;
@@ -90,10 +91,10 @@ abstract class NumberValueHelper {
 
   public static function numberOperate(IntegerValue|FloatValue $self, ImplementableOperator $operator, ?Value $other): Value {
     // unary operations
-    switch($operator->id) {
-      case ImplementableOperator::TYPE_UNARY_MINUS:
+    switch($operator->getID()) {
+      case Operator::IMPLEMENTABLE_UNARY_MINUS:
         return new IntegerValue(-$self->getValue());
-      case ImplementableOperator::TYPE_UNARY_PLUS:
+      case Operator::IMPLEMENTABLE_UNARY_PLUS:
         return new IntegerValue($self->getValue());
     }
     // binary operations
@@ -101,7 +102,7 @@ abstract class NumberValueHelper {
       throw new \BadFunctionCallException('Invalid operation');
     }
     // cast
-    if($operator->id === ImplementableOperator::TYPE_TYPE_CAST) {
+    if($operator->getID() === Operator::IMPLEMENTABLE_TYPE_CAST) {
       if($other instanceof TypeValue) {
         if($other->getValue() instanceof FloatType) {
           return new FloatValue($self->getValue());
@@ -115,18 +116,18 @@ abstract class NumberValueHelper {
     if(!($other instanceof FloatValue) && !($other instanceof IntegerValue)) { // only numbers
       throw new \BadFunctionCallException('Invalid operation');
     }
-    switch($operator->id) {
-      case ImplementableOperator::TYPE_ADDITION:
+    switch($operator->getID()) {
+      case Operator::IMPLEMENTABLE_ADDITION:
         return new (static::getMostPreciseNumberValueClass($self, $other))($self->getValue() + $other->getValue());
-      case ImplementableOperator::TYPE_SUBTRACTION:
+      case Operator::IMPLEMENTABLE_SUBTRACTION:
         return new (static::getMostPreciseNumberValueClass($self, $other))($self->getValue() - $other->getValue());
-      case ImplementableOperator::TYPE_MULTIPLICATION:
+      case Operator::IMPLEMENTABLE_MULTIPLICATION:
         return new (static::getMostPreciseNumberValueClass($self, $other))($self->getValue() * $other->getValue());
-      case ImplementableOperator::TYPE_DIVISION:
+      case Operator::IMPLEMENTABLE_DIVISION:
         return new (static::getMostPreciseNumberValueClass($self, $other))($self->getValue() / $other->getValue());
-      case ImplementableOperator::TYPE_GREATER:
+      case Operator::IMPLEMENTABLE_GREATER:
         return new BooleanValue($self->getValue() > $other->getValue());
-      case ImplementableOperator::TYPE_LESS:
+      case Operator::IMPLEMENTABLE_LESS:
         return new BooleanValue($self->getValue() < $other->getValue());
       default:
         throw new \BadFunctionCallException('Invalid operation '.$self->getType()->getIdentifier().' '.$operator->toString(PrettyPrintOptions::buildDefault()).' '.$other?->getType()->getIdentifier());

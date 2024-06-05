@@ -6,6 +6,7 @@ use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\operator\ArrayAccessOperator;
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\operator\Operator;
 
 /**
  * @author Timo Lehnertz
@@ -54,7 +55,7 @@ class ArrayValue extends Value {
         return null;
       }
       return $this->elementsType;
-    } else if($operator->id === ImplementableOperator::TYPE_EQUALS && $otherType instanceof ArrayType) {
+    } else if($operator->getID() === Operator::IMPLEMENTABLE_EQUALS && $otherType instanceof ArrayType) {
       return new BooleanType();
     }
     return null;
@@ -76,7 +77,7 @@ class ArrayValue extends Value {
       } else {
         throw new \BadFunctionCallException('Array key does not exist!');
       }
-    } else if($operator->id === ImplementableOperator::TYPE_EQUALS) {
+    } else if($operator->getID() === Operator::IMPLEMENTABLE_EQUALS) {
       return new BooleanValue($this === $other);
     } else {
       throw new \BadFunctionCallException('Invalid operator!');
@@ -104,6 +105,14 @@ class ArrayValue extends Value {
       $elements[$key] = $value->buildNode();
     }
     return ['type' => 'ArrayValue','elements' => $elements];
+  }
+
+  public function toPHPValue(): mixed {
+    $arr = [];
+    foreach($this->value as $key => $value) {
+      $arr[$key] = $value->toPHPValue();
+    }
+    return $arr;
   }
 }
 

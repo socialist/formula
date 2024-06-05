@@ -5,7 +5,6 @@ namespace TimoLehnertz\formula\operator;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\expression\TypeExpression;
-use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 
 /**
@@ -18,7 +17,7 @@ class TypeCastOperator extends ImplementableOperator implements CoupledOperator 
   private readonly Type $type;
 
   public function __construct(bool $explicit, Type $type) {
-    parent::__construct(ImplementableOperator::IMPLEMENTABLE_TYPE_CAST);
+    parent::__construct(Operator::IMPLEMENTABLE_TYPE_CAST);
     $this->explicit = $explicit;
     $this->type = $type;
   }

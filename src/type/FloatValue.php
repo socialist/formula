@@ -59,4 +59,8 @@ class FloatValue extends Value {
   public function buildNode(): array {
     return ['type' => 'FloatValue','value' => $this->value];
   }
+
+  public function toPHPValue(): mixed {
+    return $this->value;
+  }
 }

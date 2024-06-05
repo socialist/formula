@@ -53,21 +53,21 @@ class OperatorBuilder {
       case Operator::PARSABLE_NOT_EQUAL:
         return new NotEqualsOperator();
       case Operator::PARSABLE_ADDITION_ASSIGNMENT:
-        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_ADDITION), '+=');
+        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_ADDITION), '+=', Operator::PARSABLE_ADDITION_ASSIGNMENT);
       case Operator::PARSABLE_SUBTRACTION_ASSIGNMENT:
-        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_SUBTRACTION), '-=');
+        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_SUBTRACTION), '-=', Operator::PARSABLE_SUBTRACTION_ASSIGNMENT);
       case Operator::PARSABLE_MULTIPLICATION_ASSIGNMENT:
-        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_MULTIPLICATION), '*=');
+        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_MULTIPLICATION), '*=', Operator::PARSABLE_MULTIPLICATION_ASSIGNMENT);
       case Operator::PARSABLE_DIVISION_ASSIGNMENT:
-        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_DIVISION), '/=');
+        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_DIVISION), '/=', Operator::PARSABLE_DIVISION_ASSIGNMENT);
       case Operator::PARSABLE_AND_ASSIGNMENT:
-        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_LOGICAL_AND), '&=');
+        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_LOGICAL_AND), '&=', Operator::PARSABLE_AND_ASSIGNMENT);
       case Operator::PARSABLE_OR_ASSIGNMENT:
-        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_LOGICAL_OR), '|=');
+        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_LOGICAL_OR), '|=', Operator::PARSABLE_OR_ASSIGNMENT);
       case Operator::PARSABLE_XOR_ASSIGNMENT:
-        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_LOGICAL_XOR), '^=');
+        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_LOGICAL_XOR), '^=', Operator::PARSABLE_XOR_ASSIGNMENT);
       case Operator::PARSABLE_MODULO_ASSIGNMENT:
-        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_MODULO), '%=');
+        return new ChainedAssignmentOperator(new ImplementableOperator(Operator::IMPLEMENTABLE_MODULO), '%=', Operator::PARSABLE_MODULO_ASSIGNMENT);
       default:
         throw new \UnexpectedValueException('Invalid OperatorID '.$operatorID);
     }

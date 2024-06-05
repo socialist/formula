@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
+use TimoLehnertz\formula\expression\ExpressionListExpression;
 use TimoLehnertz\formula\operator\CallOperator;
 use TimoLehnertz\formula\tokens\Token;
 
@@ -16,6 +17,6 @@ class CallOperatorParser extends EnumeratedParser {
 
   protected function parsePart(Token $firstToken): ParserReturn {
     $result = parent::parsePart($firstToken);
-    return new ParserReturn(new CallOperator($result->parsed), $result->nextToken);
+    return new ParserReturn(new CallOperator(new ExpressionListExpression($result->parsed)), $result->nextToken);
   }
 }

@@ -51,8 +51,10 @@ interface Operator extends FormulaPart {
   public const PARSABLE_OR_ASSIGNMENT = 34;
   public const PARSABLE_XOR_ASSIGNMENT = 35;
   public const PARSABLE_MODULO_ASSIGNMENT = 36;
-
+  
   // @formatter:on
+  public function getID(): int;
+
   public function getPrecedence(): int;
 
   public function getOperatorType(): OperatorType;

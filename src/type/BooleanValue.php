@@ -38,7 +38,7 @@ class BooleanValue extends Value {
   }
 
   protected function getValueExpectedOperands(ImplementableOperator $operator): array {
-    switch($operator->id) {
+    switch($operator->getID()) {
       case Operator::IMPLEMENTABLE_LOGICAL_AND:
         return [new BooleanType()];
       case Operator::IMPLEMENTABLE_LOGICAL_OR:
@@ -50,16 +50,16 @@ class BooleanValue extends Value {
   }
 
   protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    if($operator->id === ImplementableOperator::TYPE_LOGICAL_NOT) {
+    if($operator->getID() === Operator::IMPLEMENTABLE_LOGICAL_NOT) {
       return new BooleanType();
     }
     if($otherType === null || !($otherType instanceof BooleanType)) {
       return null;
     }
-    switch($operator->id) {
-      case ImplementableOperator::TYPE_LOGICAL_AND:
-      case ImplementableOperator::TYPE_LOGICAL_OR:
-      case ImplementableOperator::TYPE_LOGICAL_XOR:
+    switch($operator->getID()) {
+      case Operator::IMPLEMENTABLE_LOGICAL_AND:
+      case Operator::IMPLEMENTABLE_LOGICAL_OR:
+      case Operator::IMPLEMENTABLE_LOGICAL_XOR:
         return new BooleanType();
       default:
         return null;
@@ -67,22 +67,20 @@ class BooleanValue extends Value {
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
-    if($operator->id === ImplementableOperator::TYPE_LOGICAL_NOT) {
+    if($operator->getID() === ImplementableOperator::TYPE_LOGICAL_NOT) {
       return new BooleanValue(!$this->value);
     }
     if($other === null || !($other instanceof BooleanValue)) {
       throw new \BadFunctionCallException('Invalid value');
     }
-    switch($operator->id) {
-      case ImplementableOperator::TYPE_LOGICAL_AND:
+    switch($operator->getID()) {
+      case Operator::IMPLEMENTABLE_LOGICAL_AND:
         return new BooleanValue($other->value && $this->value);
-      case ImplementableOperator::TYPE_LOGICAL_OR:
+      case Operator::IMPLEMENTABLE_LOGICAL_OR:
         return new BooleanValue($other->value || $this->value);
-      case ImplementableOperator::TYPE_LOGICAL_XOR:
+      case Operator::IMPLEMENTABLE_LOGICAL_XOR:
         return new BooleanValue($other->value xor $this->value);
-      case ImplementableOperator::TYPE_LOGICAL_XOR:
-        return new BooleanValue($other->value xor $this->value);
-      case ImplementableOperator::TYPE_EQUALS:
+      case Operator::IMPLEMENTABLE_EQUALS:
         return new BooleanValue($other->value === $this->value);
       default:
         throw new \BadFunctionCallException('Invalid operation');
@@ -99,5 +97,9 @@ class BooleanValue extends Value {
 
   public function buildNode(): array {
     return ['type' => 'BooleanValue','value' => $this->value];
+  }
+
+  public function toPHPValue(): mixed {
+    return $this->value;
   }
 }

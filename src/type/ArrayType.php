@@ -41,7 +41,7 @@ class ArrayType implements Type {
   }
 
   public function getCompatibleOperands(ImplementableOperator $operator): array {
-    if($operator->id === Operator::IMPLEMENTABLE_ARRAY_ACCESS) {
+    if($operator->getID() === Operator::IMPLEMENTABLE_ARRAY_ACCESS) {
       return [$this->keyType];
     }
     return [];

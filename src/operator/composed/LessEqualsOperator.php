@@ -19,7 +19,7 @@ use TimoLehnertz\formula\type\Value;
 class LessEqualsOperator extends InfixOperator {
 
   public function __construct() {
-    parent::__construct(9);
+    parent::__construct(9, Operator::PARSABLE_LESS_EQUALS);
   }
 
   protected function validateInfixOperation(Type $leftValue, Type $rightType): Type {

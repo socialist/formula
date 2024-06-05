@@ -19,8 +19,8 @@ class ChainedAssignmentOperator extends InfixOperator {
 
   private readonly string $identifier;
 
-  public function __construct(ImplementableOperator $chainedOperator, string $identifier) {
-    parent::__construct(16);
+  public function __construct(ImplementableOperator $chainedOperator, string $identifier, int $id) {
+    parent::__construct(16, $id);
     $this->chainedOperator = $chainedOperator;
     $this->identifier = $identifier;
   }

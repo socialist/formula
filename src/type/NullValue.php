@@ -54,4 +54,8 @@ class NullValue extends Value {
   public function buildNode(): array {
     return ['type' => 'NullValue'];
   }
+
+  public function toPHPValue(): mixed {
+    return null;
+  }
 }

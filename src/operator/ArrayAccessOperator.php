@@ -19,7 +19,7 @@ class ArrayAccessOperator extends ImplementableOperator implements CoupledOperat
   private ?Scope $scope = null;
 
   public function __construct(Expression $indexExpression) {
-    parent::__construct(ImplementableOperator::IMPLEMENTABLE_ARRAY_ACCESS);
+    parent::__construct(Operator::IMPLEMENTABLE_ARRAY_ACCESS);
     $this->indexExpression = $indexExpression;
   }
 

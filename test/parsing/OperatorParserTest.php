@@ -4,10 +4,10 @@ namespace test\parsing;
 use PHPUnit\Framework\TestCase;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\Operator;
-use TimoLehnertz\formula\parsing\OperatorParser;
-use TimoLehnertz\formula\tokens\Tokenizer;
 use TimoLehnertz\formula\operator\OperatorType;
-use TimoLehnertz\formula\ParsingException;
+use TimoLehnertz\formula\parsing\OperatorParser;
+use TimoLehnertz\formula\parsing\ParsingException;
+use TimoLehnertz\formula\tokens\Tokenizer;
 
 class OperatorParserTest extends TestCase {
 
@@ -70,6 +70,9 @@ class OperatorParserTest extends TestCase {
     }
     $this->assertInstanceOf(Operator::class, $parsed->parsed);
     $this->assertEquals($expectedOperator, $parsed->parsed->toString(PrettyPrintOptions::buildDefault()));
+    //     if($operatorType !== $parsed->parsed->getOperatorType()) {
+    //       var_dump($parsed->parsed);
+    //     }
     $this->assertEquals($operatorType, $parsed->parsed->getOperatorType());
   }
 }

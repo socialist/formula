@@ -59,4 +59,8 @@ class IntegerValue extends Value {
   public function buildNode(): array {
     return ['type' => 'IntegerValue','value' => $this->value];
   }
+
+  public function toPHPValue(): mixed {
+    return $this->value;
+  }
 }
