@@ -64,7 +64,6 @@ class FunctionValue extends Value {
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
-    var_dump($other);
     if($operator->getID() === Operator::IMPLEMENTABLE_CALL && $other !== null && $other instanceof ArgumentListValue) {
       if(is_callable($this->body)) {
         $args = [];
@@ -72,7 +71,7 @@ class FunctionValue extends Value {
         for($i = 0;$i < count($argValues);$i++) {
           /** @var Value $argValue */
           $argValue = $argValues[$i];
-          $expectedType = $this->type->arguments[$i]->type;
+          $expectedType = $this->type->arguments->arguments[$i]->type;
           if($argValue->getType()->equals($expectedType)) {
             $args[$i] = $argValue->toPHPValue();
           } else {

@@ -4,33 +4,34 @@ namespace TimoLehnertz\formula\expression;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\ExpressionListType;
-use TimoLehnertz\formula\type\ExpressionListValue;
+use TimoLehnertz\formula\type\ArgumentListType;
+use TimoLehnertz\formula\type\ArgumentListValue;
+use TimoLehnertz\formula\type\FunctionArgument;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 
 /**
  * @author Timo Lehnertz
  */
-class ExpressionListExpression implements Expression {
+class CallExpression implements Expression {
 
   /**
    * @var array<Expression>
    */
   private readonly array $expressions;
 
-  private Type $type;
+  private ArgumentListType $type;
 
   public function __construct(array $expressions) {
     $this->expressions = $expressions;
   }
 
   public function validate(Scope $scope): Type {
-    $types = [];
+    $arguments = [];
     foreach($this->expressions as $expression) {
-      $types[] = $expression->validate($scope);
+      $arguments[] = new FunctionArgument($expression->validate($scope), false);
     }
-    $this->type = new ExpressionListType($types);
+    $this->type = new ArgumentListType($arguments);
     return $this->type;
   }
 
@@ -39,7 +40,7 @@ class ExpressionListExpression implements Expression {
     foreach($this->expressions as $expression) {
       $values[] = $expression->run($scope);
     }
-    return new ExpressionListValue($values, $this->type);
+    return new ArgumentListValue($values, $this->type);
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {

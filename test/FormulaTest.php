@@ -78,7 +78,7 @@ class FormulaTest extends TestCase {
       $scope->assign('a', new IntegerValue($a));
       $scope->assign('b', new IntegerValue($b));
       $result = $formula->calculate();
-      $this->assertEquals(round(pow($a, $b)), round($result));
+      $this->assertEquals(pow($a, $b), $result->toPHPValue());
     }
   }
 

@@ -27,9 +27,14 @@ class OperatorExpression implements Expression {
   public function __construct(?Expression $leftExpression, Operator $operator, ?Expression $rightExpression) {
     $this->leftExpression = $leftExpression;
     $this->operator = $operator;
+    try {
+      $operator->getID();
+    } catch(\Error $e) {
+      var_dump($operator);
+      //       throw $e;
+      return;
+    }
     if($operator->getID() === Operator::IMPLEMENTABLE_TYPE_CAST && $leftExpression === null) {
-      var_dump($leftExpression);
-      var_dump($rightExpression);
       throw new \BadMethodCallException('Moin');
     }
     $this->rightExpression = $rightExpression;

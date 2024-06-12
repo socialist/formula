@@ -13,6 +13,7 @@ trait OperatorHelper {
 
   public function __construct(int $precedence, int $id) {
     $this->precedence = $precedence;
+    $this->id = $id;
   }
 
   public function getPrecedence(): int {
