@@ -11,28 +11,6 @@ use TimoLehnertz\formula\type\IntegerValue;
 
 class FormulaTest extends TestCase {
 
-  //   public function foo(int $a, bool $b = false): bool {
-  //     var_dump('Moin'.$a.$b);
-  //     return false;
-  //   }
-
-  //   public function testReflection(): void {
-  //     $callable = [$this,"foo"];
-  //     $callable(1);
-  //     $name = '';
-  //     is_callable($callable, false, $name);
-  //     var_dump($name);
-  //     $f = new \ReflectionMethod($name);
-  //     $params = $f->getParameters();
-  //     /**
-  //      * @var ReflectionParameter $parameter
-  //      */
-  //     $parameter = $params[0];
-  //     $type = $parameter->getType();
-  //     if($type instanceof \ReflectionNamedType) {
-  //       var_dump($type->getName());
-  //     }
-  //   }
   public function testVariables(): void {
     $scope = new Scope();
     $scope->define('a', new IntegerType());
@@ -78,31 +56,35 @@ class FormulaTest extends TestCase {
       $scope->assign('a', new IntegerValue($a));
       $scope->assign('b', new IntegerValue($b));
       $result = $formula->calculate();
-      $this->assertEquals(round(pow($a, $b)), round($result));
+      $this->assertEquals(round(pow($a, $b)), round($result->toPHPValue()));
     }
   }
 
-  //   public function testMathRules(): void {
-  //     $str = '(a+(b-c))*(a/d)*e+pow(a,b)*(b/d)-pow(a,e)';
-  //     $formula = new Formula($str);
-  //     for ($i = 0; $i < 10; $i++) { // tested with 1000000
-  //       $a = rand(1, 10);
-  //       $b = rand(-10, 10);
-  //       $c = rand(-10, 10);
-  //       $d = rand(1, 10);
-  //       $e = rand(1, 10);
-  //       $f = rand(-10, 10);
-  //       $formula->setVariable('a', $a);
-  //       $formula->setVariable('b', $b);
-  //       $formula->setVariable('c', $c);
-  //       $formula->setVariable('d', $d);
-  //       $formula->setVariable('e', $e);
-  //       $formula->setVariable('f', $f);
-  //       $correct = round(($a+($b-$c))*($a/$d)*$e+pow($a,$b)*($b/$d)-pow($a,$e));
-  //       $calculated = $formula->calculate();
-  //       $this->assertTrue(abs($calculated - $correct) < 1); // rounding errors...
-  //     }
-  //   }
+  public function testMathOperatorPrecedence(): void {
+    $str = '(a+(b-c))*(a/d)*e+pow(a,b)*(b/d)-pow(a,e)';
+    $scope = new Scope();
+    $scope->define('a', new IntegerType());
+    $scope->define('b', new IntegerType());
+    $scope->define('c', new IntegerType());
+    $scope->define('d', new IntegerType());
+    $scope->define('e', new IntegerType());
+    $formula = new Formula($str, $scope);
+    for($i = 0;$i < 10;$i++) { // tested with 1000000
+      $a = rand(1, 10);
+      $b = rand(-10, 10);
+      $c = rand(-10, 10);
+      $d = rand(1, 10);
+      $e = rand(1, 10);
+      $scope->assign('a', $a);
+      $scope->assign('b', $b);
+      $scope->assign('c', $c);
+      $scope->assign('d', $d);
+      $scope->assign('e', $e);
+      $correct = round(($a + ($b - $c)) * ($a / $d) * $e + pow($a, $b) * ($b / $d) - pow($a, $e));
+      $calculated = $formula->calculate();
+      $this->assertTrue(abs($calculated->toPHPValue() - $correct) < 1); // rounding errors...
+    }
+  }
 
   //   public function testFunctions(): void {
   //     $str = 'max(min(a,b),c)';

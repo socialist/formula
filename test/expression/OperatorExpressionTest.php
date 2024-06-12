@@ -4,6 +4,7 @@ namespace TimoLehnertz\formula\expression;
 use PHPUnit\Framework\TestCase;
 use TimoLehnertz\formula\operator\Operator;
 use TimoLehnertz\formula\operator\OperatorBuilder;
+use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\FloatValue;
 use TimoLehnertz\formula\type\IntegerValue;
 
@@ -14,7 +15,7 @@ class OperatorExpressionTest extends TestCase {
     $rightExpression = new ConstantExpression(new FloatValue(.123));
     $operator = OperatorBuilder::buildOperator(Operator::IMPLEMENTABLE_ADDITION);
     $expression = new OperatorExpression($leftExpression, $operator, $rightExpression);
-    $value = $expression->run();
+    $value = $expression->run(new Scope());
     $this->assertInstanceOf(FloatValue::class, $value);
     $this->assertEquals(123.123, $value->getValue());
   }
@@ -24,7 +25,7 @@ class OperatorExpressionTest extends TestCase {
     $rightExpression = new ConstantExpression(new FloatValue(.123));
     $operator = OperatorBuilder::buildOperator(Operator::PARSABLE_INCREMENT_PREFIX);
     $expression = new OperatorExpression($leftExpression, $operator, $rightExpression);
-    $value = $expression->run();
+    $value = $expression->run(new Scope());
     $this->assertInstanceOf(FloatValue::class, $value);
     $this->assertEquals(1.123, $value->getValue());
   }

@@ -12,6 +12,7 @@ use TimoLehnertz\formula\operator\Operator;
 use TimoLehnertz\formula\parsing\ExpressionParser;
 use TimoLehnertz\formula\tokens\Tokenizer;
 use TimoLehnertz\formula\expression\ExpressionListExpression;
+use TimoLehnertz\formula\expression\CallExpression;
 
 class ExpressionParserTest extends TestCase {
 
@@ -77,7 +78,7 @@ class ExpressionParserTest extends TestCase {
     $this->assertInstanceOf(OperatorExpression::class, $result->parsed);
     $this->assertInstanceOf(IdentifierExpression::class, $result->parsed->leftExpression);
     $this->assertInstanceOf(CallOperator::class, $result->parsed->operator);
-    $this->assertInstanceOf(ExpressionListExpression::class, $result->parsed->rightExpression);
+    $this->assertInstanceOf(CallExpression::class, $result->parsed->rightExpression);
 
     $this->assertEquals('a(1)', $result->parsed->toString(PrettyPrintOptions::buildDefault()));
   }

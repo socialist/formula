@@ -23,11 +23,8 @@ class OperatorParser extends Parser {
     // tokens before expressions
     Token::COMMA => true,
     Token::BRACKETS_OPEN => true,
-    Token::BRACKETS_CLOSED => true,
     Token::CURLY_BRACKETS_OPEN => true,
-    Token::CURLY_BRACKETS_CLOSED => true,
     Token::SQUARE_BRACKETS_OPEN => true,
-    Token::SQUARE_BRACKETS_CLOSED => true,
     Token::QUESTIONMARK => true,
     Token::COlON => true,
     Token::INTL_BACKSLASH => true,
