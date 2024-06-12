@@ -58,6 +58,6 @@ class CallExpression implements Expression {
     foreach($this->expressions as $expression) {
       $subNodes[] = $expression->buildNode($scope);
     }
-    return ['type' => 'ExpressionList','outerType' => $this->validate($scope)->buildNode(),'nodes' => $subNodes];
+    return ['type' => 'Call','outerType' => $this->validate($scope)->buildNode(),'nodes' => $subNodes];
   }
 }

@@ -27,16 +27,6 @@ class OperatorExpression implements Expression {
   public function __construct(?Expression $leftExpression, Operator $operator, ?Expression $rightExpression) {
     $this->leftExpression = $leftExpression;
     $this->operator = $operator;
-    try {
-      $operator->getID();
-    } catch(\Error $e) {
-      var_dump($operator);
-      //       throw $e;
-      return;
-    }
-    if($operator->getID() === Operator::IMPLEMENTABLE_TYPE_CAST && $leftExpression === null) {
-      throw new \BadMethodCallException('Moin');
-    }
     $this->rightExpression = $rightExpression;
   }
 
@@ -95,7 +85,7 @@ class OperatorExpression implements Expression {
   }
 
   public function buildNode(Scope $scope): array {
-    if(($this->operator instanceof ImplementableOperator) && $this->operator->id !== Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT) {
+    if(($this->operator instanceof ImplementableOperator) && $this->operator->getID() !== Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT) {
       return ['type' => 'Operator','outerType' => $this->validate($scope)->buildNode(),'operator' => $this->operator->getIdentifier(),'leftNode' => $this->leftExpression?->buildNode($scope) ?? null,'rightNode' => $this->rightExpression?->buildNode($scope) ?? null];
     } else {
       throw new \BadMethodCallException('Not implementable operator is not supported by Node system');

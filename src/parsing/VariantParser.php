@@ -22,12 +22,19 @@ class VariantParser extends Parser {
   }
 
   protected function parsePart(Token $firstToken): ParserReturn {
+    $exception = null;
     /** @var Parser $parser */
     foreach($this->parsers as $parser) {
       try {
         return $parser->parse($firstToken);
-      } catch(ParsingException $e) {} // try the next one
+      } catch(ParsingException $e) {
+        $exception = $e;
+      } // try the next one
     }
-    throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
+    if($exception !== null) {
+      throw $exception;
+    } else {
+      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
+    }
   }
 }

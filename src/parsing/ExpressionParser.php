@@ -5,10 +5,10 @@ namespace TimoLehnertz\formula\parsing;
 use TimoLehnertz\formula\expression\BracketExpression;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\expression\OperatorExpression;
+use TimoLehnertz\formula\operator\CoupledOperator;
 use TimoLehnertz\formula\operator\Operator;
 use TimoLehnertz\formula\operator\OperatorType;
 use TimoLehnertz\formula\tokens\Token;
-use TimoLehnertz\formula\operator\CoupledOperator;
 
 /**
  * @author Timo Lehnertz

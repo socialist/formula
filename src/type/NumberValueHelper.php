@@ -79,8 +79,9 @@ abstract class NumberValueHelper {
       case Operator::IMPLEMENTABLE_ADDITION:
       case Operator::IMPLEMENTABLE_SUBTRACTION:
       case Operator::IMPLEMENTABLE_MULTIPLICATION:
-      case Operator::IMPLEMENTABLE_DIVISION:
         return self::getMostPreciseNumberType($typeA, $typeB);
+      case Operator::IMPLEMENTABLE_DIVISION:
+        return new FloatType();
       case Operator::IMPLEMENTABLE_GREATER:
       case Operator::IMPLEMENTABLE_LESS:
         return new BooleanType();
@@ -124,7 +125,7 @@ abstract class NumberValueHelper {
       case Operator::IMPLEMENTABLE_MULTIPLICATION:
         return new (static::getMostPreciseNumberValueClass($self, $other))($self->getValue() * $other->getValue());
       case Operator::IMPLEMENTABLE_DIVISION:
-        return new (static::getMostPreciseNumberValueClass($self, $other))($self->getValue() / $other->getValue());
+        return new FloatValue($self->getValue() / $other->getValue());
       case Operator::IMPLEMENTABLE_GREATER:
         return new BooleanValue($self->getValue() > $other->getValue());
       case Operator::IMPLEMENTABLE_LESS:
