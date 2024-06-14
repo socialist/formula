@@ -19,4 +19,8 @@ class FunctionArgument {
   public function equals(FunctionArgument $other): bool {
     return $this->type->equals($other->type) && $this->optional === $other->optional;
   }
+
+  public function buildNode(): array {
+    return ['type' => 'FunctionArgument','argumentType' => $this->type->buildNode(),'optional' => $this->optional];
+  }
 }

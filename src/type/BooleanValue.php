@@ -67,7 +67,7 @@ class BooleanValue extends Value {
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
-    if($operator->getID() === ImplementableOperator::TYPE_LOGICAL_NOT) {
+    if($operator->getID() === Operator::IMPLEMENTABLE_LOGICAL_NOT) {
       return new BooleanValue(!$this->value);
     }
     if($other === null || !($other instanceof BooleanValue)) {
@@ -101,5 +101,9 @@ class BooleanValue extends Value {
 
   public function toPHPValue(): mixed {
     return $this->value;
+  }
+
+  public function toStringValue(): StringValue {
+    return new StringValue($this->value ? 'true' : 'false');
   }
 }

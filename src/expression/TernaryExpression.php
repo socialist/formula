@@ -13,11 +13,11 @@ use TimoLehnertz\formula\type\CompoundType;
  */
 class TernaryExpression implements Expression {
 
-  private readonly Expression $condition = null;
+  private readonly Expression $condition;
 
-  private readonly Expression $leftExpression = null;
+  private readonly Expression $leftExpression;
 
-  private readonly Expression $rightExpression = null;
+  private readonly Expression $rightExpression;
 
   public function __construct(Expression $condition, Expression $leftExpression, Expression $rightExpression) {
     $this->condition = $condition;

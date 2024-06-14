@@ -19,6 +19,10 @@ class FunctionType implements Type {
     $this->returnType = $returnType;
   }
 
+  public function assignableBy(Type $type): bool {
+    return $this->equals($type);
+  }
+
   public function equals(Type $type): bool {
     if($type instanceof FunctionType) {
       return $this->arguments->equals($type->arguments) && $this->returnType->equals($type->returnType);
@@ -28,13 +32,7 @@ class FunctionType implements Type {
   }
 
   public function getIdentifier(bool $nested = false): string {
-    $str = '';
-    $del = '';
-    foreach($this->arguments as $argument) {
-      $str .= $del.$argument->type->getIdentifier();
-      $del = ',';
-    }
-    return '('.$str.') => '.$this->returnType->getIdentifier();
+    return $this->arguments->getIdentifier().': '.$this->returnType->getIdentifier();
   }
 
   public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
@@ -46,6 +44,6 @@ class FunctionType implements Type {
   }
 
   public function buildNode(): array {
-    return ['type' => 'FunctionType'];
+    return ['type' => 'FunctionType','signature' => $this->getIdentifier()];
   }
 }

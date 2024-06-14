@@ -6,7 +6,7 @@ use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\operator\Operator;
-use TimoLehnertz\formula\operator\PrefixOperator;
+use TimoLehnertz\formula\operator\PostfixOperator;
 use TimoLehnertz\formula\type\IntegerValue;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
@@ -14,13 +14,13 @@ use TimoLehnertz\formula\type\Value;
 /**
  * @author Timo Lehnertz
  */
-class DecrementPostfixOperator extends PrefixOperator {
+class DecrementPostfixOperator extends PostfixOperator {
 
   public function __construct() {
     parent::__construct(2, Operator::PARSABLE_DECREMENT_POSTFIX);
   }
 
-  protected function validatePrefixOperation(Type $rightType): Type {
+  protected function validatePostfixOperation(Type $rightType): Type {
     $additionOperator = new ImplementableOperator(Operator::IMPLEMENTABLE_SUBTRACTION);
     $assignmentOperator = new ImplementableOperator(Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT);
     $incrementedType = $rightType->getOperatorResultType($additionOperator, $rightType);
@@ -34,7 +34,7 @@ class DecrementPostfixOperator extends PrefixOperator {
     return $finalType;
   }
 
-  protected function operatePrefix(Value $rightValue): Value {
+  protected function operatePostfix(Value $rightValue): Value {
     $result = $rightValue->copy();
     $additionOperator = new ImplementableOperator(Operator::IMPLEMENTABLE_SUBTRACTION);
     $assignmentOperator = new ImplementableOperator(Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT);
@@ -45,5 +45,9 @@ class DecrementPostfixOperator extends PrefixOperator {
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return '--';
+  }
+
+  public function getCompatibleOperands(Type $leftType): array {
+    return [];
   }
 }

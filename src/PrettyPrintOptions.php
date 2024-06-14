@@ -7,10 +7,40 @@ namespace TimoLehnertz\formula;
  */
 class PrettyPrintOptions {
 
+  private int $indentations = 0;
+
+  public int $charsPerIndent = 2;
+
+  public bool $indentationMethodSpaces = true;
+
+  public string $newLine = '\r\n';
+
   public function __construct() {}
 
   public static function buildDefault(): PrettyPrintOptions {
     return new PrettyPrintOptions();
+  }
+
+  public function indent(): string {
+    $this->indentations++;
+    return $this->getIndentStr();
+  }
+
+  public function outdent(): string {
+    $this->indentations--;
+    return $this->getIndentStr();
+  }
+
+  public function getIndentStr(): string {
+    $str = '';
+    for($i = 0;$i < $this->indentations * $this->charsPerIndent;$i++) {
+      if($this->indentationMethodSpaces) {
+        $str += ' ';
+      } else {
+        $str += "\t";
+      }
+    }
+    return $str;
   }
 }
 

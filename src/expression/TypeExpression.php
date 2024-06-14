@@ -21,7 +21,6 @@ class TypeExpression implements Expression {
   }
 
   public function validate(Scope $scope): Type {
-    $this->type = $this->type->validate($scope);
     return new TypeType($this->type);
   }
 

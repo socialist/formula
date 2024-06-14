@@ -14,6 +14,10 @@ class MixedType implements Type {
     return 'mixed';
   }
 
+  public function assignableBy(Type $type): bool {
+    return true;
+  }
+
   public function equals(Type $type): bool {
     return $type instanceof MixedType;
   }

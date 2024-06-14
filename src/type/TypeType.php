@@ -20,6 +20,10 @@ class TypeType implements Type {
     return $this->type;
   }
 
+  public function assignableBy(Type $type): bool {
+    return $this->equals($type);
+  }
+
   public function equals(Type $type): bool {
     return ($type instanceof TypeType) && $type->getType()->equals($this->type);
   }

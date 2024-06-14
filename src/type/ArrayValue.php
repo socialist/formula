@@ -25,6 +25,7 @@ class ArrayValue extends Value {
    */
   public function __construct(array $value, ArrayType $arrayType) {
     $this->value = $value;
+    $this->type = $arrayType;
   }
 
   public function getType(): Type {
@@ -113,6 +114,16 @@ class ArrayValue extends Value {
       $arr[$key] = $value->toPHPValue();
     }
     return $arr;
+  }
+
+  public function toStringValue(): StringValue {
+    $str = '{';
+    $del = '';
+    foreach($this->value as $element) {
+      $str .= $del.$element->toStringValue()->toPHPValue();
+      $del = ', ';
+    }
+    return new StringValue($str.'}');
   }
 }
 

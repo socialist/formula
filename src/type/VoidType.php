@@ -13,6 +13,10 @@ class VoidType implements Type {
     return 'void';
   }
 
+  public function assignableBy(Type $type): bool {
+    return true;
+  }
+
   public function equals(Type $type): bool {
     return $type instanceof VoidType;
   }

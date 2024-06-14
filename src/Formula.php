@@ -31,14 +31,14 @@ class Formula {
   public function __construct(string $source, ?Scope $parentScope = null, ?FormulaSettings $formulaSettings = null) {
     $this->source = $source;
     if(!isset(Formula::$inbuildScope)) {
-      Formula::$inbuildScope = Formula::buildInbuildScope();
+      Formula::$inbuildScope = Formula::buildInbuiltScope();
     }
     if($formulaSettings === null) {
       $formulaSettings = FormulaSettings::buildDefaultSettings();
     }
     $this->formulaSettings = $formulaSettings;
     $this->parentScope = $parentScope ?? new Scope();
-    $firstToken = Tokenizer::tokenize($source);
+    $firstToken = Tokenizer::tokenize($source)->skipComment();
     if($firstToken === null) {
       throw new FormulaValidationException();
     }
@@ -88,7 +88,8 @@ class Formula {
   public function renameMethods(string $oldName, string $newName, bool $caseSensitive = true): void {
     foreach($this->expression->getContent() as $content) {
       if($content instanceof Method) {
-        if(self::strcmp($content->getIdentifier(), $oldName, $caseSensitive)) $content->setIdentifier($newName);
+        if(self::strcmp($content->getIdentifier(), $oldName, $caseSensitive))
+          $content->setIdentifier($newName);
       }
     }
     $this->initDefaultMethods(); // in case a method got renamed to a buildin method
@@ -101,7 +102,8 @@ class Formula {
    * @return bool equal
    */
   private static function strcmp(string $a, string $b, bool $caseSensitive): bool {
-    if($caseSensitive) return $a === $b;
+    if($caseSensitive)
+      return $a === $b;
     return strcasecmp($a, $b) == 0;
   }
 
@@ -142,7 +144,8 @@ class Formula {
   public function getMethodIdentifiers(): array {
     $methods = [];
     foreach($this->expression->getContent() as $content) {
-      if($content instanceof Method) $methods[] = $content;
+      if($content instanceof Method)
+        $methods[] = $content;
     }
     $identifiers = [];
     foreach($methods as $method) {
@@ -172,6 +175,13 @@ class Formula {
   //     }
   //     return $identifiers;
   //   }
+  public static function printFunc(string $str): void {
+    echo $str;
+  }
+
+  public static function printnlFunc(string $str): void {
+    echo $str."\r\n";
+  }
 
   /**
    * Merges an array of arrays into one flat array (Recursively)
@@ -179,7 +189,7 @@ class Formula {
    * @param array $arrays
    * @return array
    */
-  private static function mergeArraysRecursive($arrays): array {
+  private static function mergeArraysRecursive(array $arrays): array {
     $merged = [];
     foreach($arrays as $val) {
       if(is_array($val)) {
@@ -191,12 +201,12 @@ class Formula {
     return $merged;
   }
 
-  public static function minFunc(...$values) {
+  public static function minFunc(float|array ...$values): float {
     $values = Formula::mergeArraysRecursive($values);
     return min($values);
   }
 
-  public static function maxFunc(...$values) {
+  public static function maxFunc(float|array ...$values): float {
     $values = Formula::mergeArraysRecursive($values);
     return max($values);
   }
@@ -205,47 +215,47 @@ class Formula {
     return (float) pow($base, $exp);
   }
 
-  public static function sqrtFunc(float $arg) {
+  public static function sqrtFunc(float $arg): float {
     return sqrt($arg);
   }
 
-  public static function ceilFunc(float $value) {
+  public static function ceilFunc(float $value): float {
     return ceil($value);
   }
 
-  public static function floorFunc(float $value) {
+  public static function floorFunc(float $value): float {
     return floor($value);
   }
 
-  public static function roundFunc(float $val, int $precision = null, int $mode = null) {
+  public static function roundFunc(float $val, int $precision = null, int $mode = null): float {
     return round($val, $precision, $mode);
   }
 
-  public static function sinFunc(float $arg) {
+  public static function sinFunc(float $arg): float {
     return sin($arg);
   }
 
-  public static function cosFunc(float $arg) {
+  public static function cosFunc(float $arg): float {
     return cos($arg);
   }
 
-  public static function tanFunc(float $arg) {
+  public static function tanFunc(float $arg): float {
     return tan($arg);
   }
 
-  public static function is_nanFunc(float $val) {
+  public static function is_nanFunc(float $val): float {
     return is_nan($val);
   }
 
-  public static function absFunc(float $number) {
+  public static function absFunc(float $number): float {
     return abs($number);
   }
 
-  public static function asVectorFunc(...$values) {
+  public static function asVectorFunc(mixed ...$values): array {
     return $values;
   }
 
-  public static function sizeofFunc(...$values) {
+  public static function sizeofFunc(array|float ...$values): int {
     $count = 0;
     foreach($values as $value) {
       if(is_array($value)) {
@@ -271,8 +281,9 @@ class Formula {
     return $result;
   }
 
-  public static function firstOrNullFunc($array) {
-    if(sizeof($array) === 0) return null;
+  public static function firstOrNullFunc(array $array): mixed {
+    if(sizeof($array) === 0)
+      return null;
     return $array[0];
   }
 
@@ -280,13 +291,13 @@ class Formula {
    * @param float[] $values
    * @return number sum of all numeric members in $values
    */
-  public function sumFunc(...$values) {
+  public static function sumFunc(float|array ...$values): float {
     $res = 0;
     foreach($values as $value) {
       if(is_numeric($value) && !is_string($value)) {
         $res += $value;
       } else if(is_array($value)) {
-        $res += $this->sumFunc(...$value);
+        $res += static::sumFunc(...$value);
       } else {
         throw new \Exception('Only numeric values or vectors are allowed for sum');
       }
@@ -298,31 +309,33 @@ class Formula {
    * @param float[] $values
    * @return number sum of all numeric members in $values
    */
-  public function avgFunc(...$values) {
-    $sum = $this->sumFunc($values);
-    return $sum / $this->sizeofFunc($values);
+  public static function avgFunc(float|array ...$values) {
+    $sum = self::sumFunc($values);
+    return $sum / self::sizeofFunc($values);
   }
 
-  private static function buildInbuildScope(): Scope {
+  private static function buildInbuiltScope(): Scope {
     $scope = new Scope();
-    //     $scope->defineMethod(new Method("min", [$this,"minFunc"]));
-    //     $scope->defineMethod(new Method("max", [$this,"maxFunc"]));
+    $scope->definePHPFunction('print', [Formula::class,'printFunc']);
+    $scope->definePHPFunction('printnl', [Formula::class,'printnlFunc']);
     $scope->definePHPFunction('pow', [Formula::class,'powFunc']);
-    //     $scope->defineMethod(new Method("sqrt", [$this,"sqrtFunc"]));
-    //     $scope->defineMethod(new Method("ceil", [$this,"ceilFunc"]));
-    //     $scope->defineMethod(new Method("floor", [$this,"floorFunc"]));
-    //     $scope->defineMethod(new Method("round", [$this,"roundFunc"]));
-    //     $scope->defineMethod(new Method("sin", [$this,"sinFunc"]));
-    //     $scope->defineMethod(new Method("cos", [$this,"cosFunc"]));
-    //     $scope->defineMethod(new Method("tan", [$this,"tanFunc"]));
-    //     $scope->defineMethod(new Method("is_nan", [$this,"is_nanFunc"]));
-    //     $scope->defineMethod(new Method("abs", [$this,"absFunc"]));
-    //     $scope->defineMethod(new Method("asVector", [$this,"asVectorFunc"]));
-    //     $scope->defineMethod(new Method("sizeof", [$this,"sizeofFunc"]));
-    //     $scope->defineMethod(new Method("inRange", [$this,"inRangeFunc"]));
-    //     $scope->defineMethod(new Method("reduce", [$this,"reduceFunc"]));
-    //     $scope->defineMethod(new Method("firstOrNull", [$this,"firstOrNullFunc"]));
-    //     $scope->defineMethod(new Method("sum", [$this,"sumFunc"]));
+    $scope->definePHPFunction("min", [Formula::class,"minFunc"]);
+    $scope->definePHPFunction("max", [Formula::class,"maxFunc"]);
+    $scope->definePHPFunction("sqrt", [Formula::class,"sqrtFunc"]);
+    $scope->definePHPFunction("ceil", [Formula::class,"ceilFunc"]);
+    $scope->definePHPFunction("floor", [Formula::class,"floorFunc"]);
+    $scope->definePHPFunction("round", [Formula::class,"roundFunc"]);
+    $scope->definePHPFunction("sin", [Formula::class,"sinFunc"]);
+    $scope->definePHPFunction("cos", [Formula::class,"cosFunc"]);
+    $scope->definePHPFunction("tan", [Formula::class,"tanFunc"]);
+    $scope->definePHPFunction("is_nan", [Formula::class,"is_nanFunc"]);
+    $scope->definePHPFunction("abs", [Formula::class,"absFunc"]);
+    $scope->definePHPFunction("asVector", [Formula::class,"asVectorFunc"]);
+    $scope->definePHPFunction("sizeof", [Formula::class,"sizeofFunc"]);
+    $scope->definePHPFunction("inRange", [Formula::class,"inRangeFunc"]);
+    $scope->definePHPFunction("reduce", [Formula::class,"reduceFunc"]);
+    $scope->definePHPFunction("firstOrNull", [Formula::class,"firstOrNullFunc"]);
+    $scope->definePHPFunction("sum", [Formula::class,"sumFunc"]);
     return $scope;
   }
 
@@ -331,26 +344,6 @@ class Formula {
     $this->parentScope->setParent(Formula::$inbuildScope);
     $scope->setParent($this->parentScope);
     return $scope;
-
-    // $this->setMethod("min", [$this, "minFunc"]);
-    // $this->setMethod("max", [$this, "maxFunc"]);
-    // $this->setMethod("pow", [$this, "powFunc"]);
-    // $this->setMethod("sqrt", [$this, "sqrtFunc"]);
-    // $this->setMethod("ceil", [$this, "ceilFunc"]);
-    // $this->setMethod("floor", [$this, "floorFunc"]);
-    // $this->setMethod("round", [$this, "roundFunc"]);
-    // $this->setMethod("sin", [$this, "sinFunc"]);
-    // $this->setMethod("cos", [$this, "cosFunc"]);
-    // $this->setMethod("tan", [$this, "tanFunc"]);
-    // $this->setMethod("is_nan", [$this, "is_nanFunc"]);
-    // $this->setMethod("abs", [$this, "absFunc"]);
-    // $this->setMethod("asVector", [$this, "asVectorFunc"]);
-    // $this->setMethod("sizeof", [$this, "sizeofFunc"]);
-    // $this->setMethod("inRange", [$this, "inRangeFunc"]);
-    // $this->setMethod("reduce", [$this, "reduceFunc"]);
-    // $this->setMethod("firstOrNull", [$this, "firstOrNullFunc"]);
-    // $this->setMethod("sum", [$this, "sumFunc"]);
-    // $this->setMethod("avg", [$this, "avgFunc"]);
   }
 
   public function getFormula(): string {

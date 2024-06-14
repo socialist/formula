@@ -9,7 +9,7 @@ use TimoLehnertz\formula\type\Value;
 
 /**
  * @author Timo Lehnertz
- *        
+ *
  *         Operators that can be implemented by values
  */
 class ImplementableOperator implements Operator {
@@ -49,13 +49,13 @@ class ImplementableOperator implements Operator {
       case Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT:
       case Operator::IMPLEMENTABLE_MEMBER_ACCESS:
       case Operator::IMPLEMENTABLE_SCOPE_RESOLUTION:
-      case Operator::IMPLEMENTABLE_LOGICAL_NOT:
       case Operator::IMPLEMENTABLE_LOGICAL_XOR:
       case Operator::IMPLEMENTABLE_INSTANCEOF:
-        return OperatorType::InfixOperator;
       case Operator::IMPLEMENTABLE_LOGICAL_OR:
+        return OperatorType::InfixOperator;
       case Operator::IMPLEMENTABLE_NEW:
       case Operator::IMPLEMENTABLE_UNARY_PLUS:
+      case Operator::IMPLEMENTABLE_LOGICAL_NOT:
       case Operator::IMPLEMENTABLE_UNARY_MINUS:
       case Operator::IMPLEMENTABLE_TYPE_CAST:
         return OperatorType::PrefixOperator;
@@ -239,5 +239,9 @@ class ImplementableOperator implements Operator {
 
   public function getID(): int {
     return $this->id;
+  }
+
+  public function getCompatibleOperands(?Type $leftType): array {
+    return $leftType->getCompatibleOperands($this);
   }
 }

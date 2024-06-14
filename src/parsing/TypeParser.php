@@ -8,7 +8,6 @@ use TimoLehnertz\formula\type\BooleanType;
 use TimoLehnertz\formula\type\CompoundType;
 use TimoLehnertz\formula\type\FloatType;
 use TimoLehnertz\formula\type\IntegerType;
-use TimoLehnertz\formula\type\ReferenceType;
 use TimoLehnertz\formula\type\StringType;
 use TimoLehnertz\formula\type\Type;
 

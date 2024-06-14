@@ -3,12 +3,15 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\procedure\Scope;
 
 /**
  * @author Timo Lehnertz
  */
 class FloatType implements Type {
+
+  public function assignableBy(Type $type): bool {
+    return $this->equals($type);
+  }
 
   public function equals(Type $type): bool {
     return $type instanceof FloatType;

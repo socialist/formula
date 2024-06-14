@@ -48,9 +48,9 @@ class CodeBlock implements Statement {
       }
     }
     if(!$alwaysReturns) {
+
       $types[] = new VoidType();
     }
-    print_r($types);
     $returnType = CompoundType::buildFromTypes($types);
     return new StatementReturnType($returnType, $mayReturn, $alwaysReturns);
   }
@@ -69,14 +69,17 @@ class CodeBlock implements Statement {
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
     if($this->singleLine) {
-      return $this->statements[0]->toString($prettyPrintOptions);
+      $prettyPrintOptions->indent();
+      $str = $prettyPrintOptions->newLine.$prettyPrintOptions->getIndentStr().$this->statements[0]->toString($prettyPrintOptions);
+      $prettyPrintOptions->outdent();
+      return $str;
     }
-    $string = '';
-    $delimiter = '';
+    $string = '{';
+    $prettyPrintOptions->indent();
     foreach($this->expressions as $expression) {
-      $string .= $delimiter.$expression->toString($prettyPrintOptions);
-      $delimiter = ';';
+      $string .= $prettyPrintOptions->newLine.$prettyPrintOptions->getIndentStr().$expression->toString($prettyPrintOptions);
     }
-    return '{'.$string.'}';
+    $prettyPrintOptions->outdent();
+    return $string.$prettyPrintOptions->newLine.$prettyPrintOptions->getIndentStr().'}';
   }
 }

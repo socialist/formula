@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for A:\dev\formula\src\operator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=9.2.26" rel="stylesheet" type="text/css">
+  <link href="../_css/nv.d3.min.css?v=9.2.26" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=9.2.26" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">A:\dev\formula\src</a></li>
+         <li class="breadcrumb-item"><a href="index.html">operator</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ArrayAccessOperator.php.html#13">TimoLehnertz\formula\operator\ArrayAccessOperator</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PrefixOperator.php.html#12">TimoLehnertz\formula\operator\PrefixOperator</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/ChainedAssignmentOperator.php.html#16">TimoLehnertz\formula\operator\composed\ChainedAssignmentOperator</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/DecrementPrefixOperator.php.html#17">TimoLehnertz\formula\operator\composed\DecrementPrefixOperator</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/GreaterEqualsOperator.php.html#19">TimoLehnertz\formula\operator\composed\GreaterEqualsOperator</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/IncrementPrefixOperator.php.html#18">TimoLehnertz\formula\operator\composed\IncrementPrefixOperator</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/NotEqualsOperator.php.html#19">TimoLehnertz\formula\operator\composed\NotEqualsOperator</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImplementableOperator.php.html#15">TimoLehnertz\formula\operator\ImplementableOperator</a></td><td class="text-right">48%</td></tr>
+       <tr><td><a href="OperatorBuilder.php.html#17">TimoLehnertz\formula\operator\OperatorBuilder</a></td><td class="text-right">54%</td></tr>
+       <tr><td><a href="TypeCastOperator.php.html#13">TimoLehnertz\formula\operator\TypeCastOperator</a></td><td class="text-right">57%</td></tr>
+       <tr><td><a href="PostfixOperator.php.html#12">TimoLehnertz\formula\operator\PostfixOperator</a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="InfixOperator.php.html#12">TimoLehnertz\formula\operator\InfixOperator</a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="CallOperator.php.html#11">TimoLehnertz\formula\operator\CallOperator</a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="OperatorHelper.php.html#8">TimoLehnertz\formula\operator\OperatorHelper</a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="composed/LessEqualsOperator.php.html#19">TimoLehnertz\formula\operator\composed\LessEqualsOperator</a></td><td class="text-right">77%</td></tr>
+       <tr><td><a href="composed/DecrementPostfixOperator.php.html#17">TimoLehnertz\formula\operator\composed\DecrementPostfixOperator</a></td><td class="text-right">77%</td></tr>
+       <tr><td><a href="composed/IncrementPostfixOperator.php.html#18">TimoLehnertz\formula\operator\composed\IncrementPostfixOperator</a></td><td class="text-right">77%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ImplementableOperator.php.html#15">TimoLehnertz\formula\operator\ImplementableOperator</a></td><td class="text-right">1657</td></tr>
+       <tr><td><a href="OperatorBuilder.php.html#17">TimoLehnertz\formula\operator\OperatorBuilder</a></td><td class="text-right">154</td></tr>
+       <tr><td><a href="composed/GreaterEqualsOperator.php.html#19">TimoLehnertz\formula\operator\composed\GreaterEqualsOperator</a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="PrefixOperator.php.html#12">TimoLehnertz\formula\operator\PrefixOperator</a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="composed/ChainedAssignmentOperator.php.html#16">TimoLehnertz\formula\operator\composed\ChainedAssignmentOperator</a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="composed/IncrementPrefixOperator.php.html#18">TimoLehnertz\formula\operator\composed\IncrementPrefixOperator</a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="composed/NotEqualsOperator.php.html#19">TimoLehnertz\formula\operator\composed\NotEqualsOperator</a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="composed/DecrementPrefixOperator.php.html#17">TimoLehnertz\formula\operator\composed\DecrementPrefixOperator</a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="composed/LessEqualsOperator.php.html#19">TimoLehnertz\formula\operator\composed\LessEqualsOperator</a></td><td class="text-right">11</td></tr>
+       <tr><td><a href="InfixOperator.php.html#12">TimoLehnertz\formula\operator\InfixOperator</a></td><td class="text-right">8</td></tr>
+       <tr><td><a href="composed/DecrementPostfixOperator.php.html#17">TimoLehnertz\formula\operator\composed\DecrementPostfixOperator</a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="composed/IncrementPostfixOperator.php.html#18">TimoLehnertz\formula\operator\composed\IncrementPostfixOperator</a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="PostfixOperator.php.html#12">TimoLehnertz\formula\operator\PostfixOperator</a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="TypeCastOperator.php.html#13">TimoLehnertz\formula\operator\TypeCastOperator</a></td><td class="text-right">5</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ArrayAccessOperator.php.html#21"><abbr title="TimoLehnertz\formula\operator\ArrayAccessOperator::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ArrayAccessOperator.php.html#26"><abbr title="TimoLehnertz\formula\operator\ArrayAccessOperator::toString">toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ArrayAccessOperator.php.html#30"><abbr title="TimoLehnertz\formula\operator\ArrayAccessOperator::validate">validate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ArrayAccessOperator.php.html#35"><abbr title="TimoLehnertz\formula\operator\ArrayAccessOperator::getCoupledExpression">getCoupledExpression</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CallOperator.php.html#20"><abbr title="TimoLehnertz\formula\operator\CallOperator::toString">toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImplementableOperator.php.html#232"><abbr title="TimoLehnertz\formula\operator\ImplementableOperator::getIdentifier">getIdentifier</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImplementableOperator.php.html#236"><abbr title="TimoLehnertz\formula\operator\ImplementableOperator::toString">toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PrefixOperator.php.html#15"><abbr title="TimoLehnertz\formula\operator\PrefixOperator::getOperatorType">getOperatorType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PrefixOperator.php.html#19"><abbr title="TimoLehnertz\formula\operator\PrefixOperator::validateOperation">validateOperation</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PrefixOperator.php.html#29"><abbr title="TimoLehnertz\formula\operator\PrefixOperator::operate">operate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PrefixOperator.php.html#40"><abbr title="TimoLehnertz\formula\operator\PrefixOperator::getCompatibleOperands">getCompatibleOperands</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TypeCastOperator.php.html#25"><abbr title="TimoLehnertz\formula\operator\TypeCastOperator::toString">toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/ChainedAssignmentOperator.php.html#22"><abbr title="TimoLehnertz\formula\operator\composed\ChainedAssignmentOperator::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/ChainedAssignmentOperator.php.html#28"><abbr title="TimoLehnertz\formula\operator\composed\ChainedAssignmentOperator::validateInfixOperation">validateInfixOperation</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/ChainedAssignmentOperator.php.html#41"><abbr title="TimoLehnertz\formula\operator\composed\ChainedAssignmentOperator::operateInfix">operateInfix</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/ChainedAssignmentOperator.php.html#49"><abbr title="TimoLehnertz\formula\operator\composed\ChainedAssignmentOperator::toString">toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/ChainedAssignmentOperator.php.html#53"><abbr title="TimoLehnertz\formula\operator\composed\ChainedAssignmentOperator::getCompatibleOperands">getCompatibleOperands</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/DecrementPostfixOperator.php.html#46"><abbr title="TimoLehnertz\formula\operator\composed\DecrementPostfixOperator::toString">toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/DecrementPostfixOperator.php.html#50"><abbr title="TimoLehnertz\formula\operator\composed\DecrementPostfixOperator::getCompatibleOperands">getCompatibleOperands</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/DecrementPrefixOperator.php.html#19"><abbr title="TimoLehnertz\formula\operator\composed\DecrementPrefixOperator::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/DecrementPrefixOperator.php.html#23"><abbr title="TimoLehnertz\formula\operator\composed\DecrementPrefixOperator::validatePrefixOperation">validatePrefixOperation</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/DecrementPrefixOperator.php.html#37"><abbr title="TimoLehnertz\formula\operator\composed\DecrementPrefixOperator::operatePrefix">operatePrefix</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/DecrementPrefixOperator.php.html#46"><abbr title="TimoLehnertz\formula\operator\composed\DecrementPrefixOperator::toString">toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/GreaterEqualsOperator.php.html#21"><abbr title="TimoLehnertz\formula\operator\composed\GreaterEqualsOperator::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/GreaterEqualsOperator.php.html#25"><abbr title="TimoLehnertz\formula\operator\composed\GreaterEqualsOperator::validateInfixOperation">validateInfixOperation</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/GreaterEqualsOperator.php.html#45"><abbr title="TimoLehnertz\formula\operator\composed\GreaterEqualsOperator::operateInfix">operateInfix</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/GreaterEqualsOperator.php.html#56"><abbr title="TimoLehnertz\formula\operator\composed\GreaterEqualsOperator::toString">toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/GreaterEqualsOperator.php.html#60"><abbr title="TimoLehnertz\formula\operator\composed\GreaterEqualsOperator::getCompatibleOperands">getCompatibleOperands</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/IncrementPostfixOperator.php.html#47"><abbr title="TimoLehnertz\formula\operator\composed\IncrementPostfixOperator::toString">toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/IncrementPostfixOperator.php.html#51"><abbr title="TimoLehnertz\formula\operator\composed\IncrementPostfixOperator::getCompatibleOperands">getCompatibleOperands</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/IncrementPrefixOperator.php.html#20"><abbr title="TimoLehnertz\formula\operator\composed\IncrementPrefixOperator::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/IncrementPrefixOperator.php.html#24"><abbr title="TimoLehnertz\formula\operator\composed\IncrementPrefixOperator::validatePrefixOperation">validatePrefixOperation</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/IncrementPrefixOperator.php.html#38"><abbr title="TimoLehnertz\formula\operator\composed\IncrementPrefixOperator::operatePrefix">operatePrefix</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/IncrementPrefixOperator.php.html#50"><abbr title="TimoLehnertz\formula\operator\composed\IncrementPrefixOperator::toString">toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/LessEqualsOperator.php.html#56"><abbr title="TimoLehnertz\formula\operator\composed\LessEqualsOperator::toString">toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/NotEqualsOperator.php.html#21"><abbr title="TimoLehnertz\formula\operator\composed\NotEqualsOperator::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/NotEqualsOperator.php.html#25"><abbr title="TimoLehnertz\formula\operator\composed\NotEqualsOperator::validateInfixOperation">validateInfixOperation</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/NotEqualsOperator.php.html#37"><abbr title="TimoLehnertz\formula\operator\composed\NotEqualsOperator::operateInfix">operateInfix</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/NotEqualsOperator.php.html#43"><abbr title="TimoLehnertz\formula\operator\composed\NotEqualsOperator::toString">toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="composed/NotEqualsOperator.php.html#47"><abbr title="TimoLehnertz\formula\operator\composed\NotEqualsOperator::getCompatibleOperands">getCompatibleOperands</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OperatorHelper.php.html#23"><abbr title="TimoLehnertz\formula\operator\OperatorHelper::getID">getID</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ImplementableOperator.php.html#160"><abbr title="TimoLehnertz\formula\operator\ImplementableOperator::validateOperation">validateOperation</abbr></a></td><td class="text-right">36%</td></tr>
+       <tr><td><a href="ImplementableOperator.php.html#109"><abbr title="TimoLehnertz\formula\operator\ImplementableOperator::idToIdentifier">idToIdentifier</abbr></a></td><td class="text-right">39%</td></tr>
+       <tr><td><a href="ImplementableOperator.php.html#198"><abbr title="TimoLehnertz\formula\operator\ImplementableOperator::operate">operate</abbr></a></td><td class="text-right">43%</td></tr>
+       <tr><td><a href="OperatorBuilder.php.html#19"><abbr title="TimoLehnertz\formula\operator\OperatorBuilder::buildOperator">buildOperator</abbr></a></td><td class="text-right">54%</td></tr>
+       <tr><td><a href="PostfixOperator.php.html#19"><abbr title="TimoLehnertz\formula\operator\PostfixOperator::validateOperation">validateOperation</abbr></a></td><td class="text-right">60%</td></tr>
+       <tr><td><a href="ImplementableOperator.php.html#70"><abbr title="TimoLehnertz\formula\operator\ImplementableOperator::idToPrecedence">idToPrecedence</abbr></a></td><td class="text-right">63%</td></tr>
+       <tr><td><a href="InfixOperator.php.html#19"><abbr title="TimoLehnertz\formula\operator\InfixOperator::operate">operate</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="InfixOperator.php.html#26"><abbr title="TimoLehnertz\formula\operator\InfixOperator::validateOperation">validateOperation</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="PostfixOperator.php.html#29"><abbr title="TimoLehnertz\formula\operator\PostfixOperator::operate">operate</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="composed/LessEqualsOperator.php.html#25"><abbr title="TimoLehnertz\formula\operator\composed\LessEqualsOperator::validateInfixOperation">validateInfixOperation</abbr></a></td><td class="text-right">69%</td></tr>
+       <tr><td><a href="ImplementableOperator.php.html#38"><abbr title="TimoLehnertz\formula\operator\ImplementableOperator::idToOperatorType">idToOperatorType</abbr></a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="composed/DecrementPostfixOperator.php.html#23"><abbr title="TimoLehnertz\formula\operator\composed\DecrementPostfixOperator::validatePostfixOperation">validatePostfixOperation</abbr></a></td><td class="text-right">77%</td></tr>
+       <tr><td><a href="composed/IncrementPostfixOperator.php.html#24"><abbr title="TimoLehnertz\formula\operator\composed\IncrementPostfixOperator::validatePostfixOperation">validatePostfixOperation</abbr></a></td><td class="text-right">77%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="OperatorBuilder.php.html#19"><abbr title="TimoLehnertz\formula\operator\OperatorBuilder::buildOperator">buildOperator</abbr></a></td><td class="text-right">154</td></tr>
+       <tr><td><a href="ImplementableOperator.php.html#109"><abbr title="TimoLehnertz\formula\operator\ImplementableOperator::idToIdentifier">idToIdentifier</abbr></a></td><td class="text-right">153</td></tr>
+       <tr><td><a href="ImplementableOperator.php.html#160"><abbr title="TimoLehnertz\formula\operator\ImplementableOperator::validateOperation">validateOperation</abbr></a></td><td class="text-right">73</td></tr>
+       <tr><td><a href="ImplementableOperator.php.html#70"><abbr title="TimoLehnertz\formula\operator\ImplementableOperator::idToPrecedence">idToPrecedence</abbr></a></td><td class="text-right">51</td></tr>
+       <tr><td><a href="ImplementableOperator.php.html#198"><abbr title="TimoLehnertz\formula\operator\ImplementableOperator::operate">operate</abbr></a></td><td class="text-right">37</td></tr>
+       <tr><td><a href="ImplementableOperator.php.html#38"><abbr title="TimoLehnertz\formula\operator\ImplementableOperator::idToOperatorType">idToOperatorType</abbr></a></td><td class="text-right">33</td></tr>
+       <tr><td><a href="composed/GreaterEqualsOperator.php.html#25"><abbr title="TimoLehnertz\formula\operator\composed\GreaterEqualsOperator::validateInfixOperation">validateInfixOperation</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="PrefixOperator.php.html#19"><abbr title="TimoLehnertz\formula\operator\PrefixOperator::validateOperation">validateOperation</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="composed/ChainedAssignmentOperator.php.html#28"><abbr title="TimoLehnertz\formula\operator\composed\ChainedAssignmentOperator::validateInfixOperation">validateInfixOperation</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="composed/DecrementPrefixOperator.php.html#23"><abbr title="TimoLehnertz\formula\operator\composed\DecrementPrefixOperator::validatePrefixOperation">validatePrefixOperation</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="composed/IncrementPrefixOperator.php.html#24"><abbr title="TimoLehnertz\formula\operator\composed\IncrementPrefixOperator::validatePrefixOperation">validatePrefixOperation</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="composed/NotEqualsOperator.php.html#25"><abbr title="TimoLehnertz\formula\operator\composed\NotEqualsOperator::validateInfixOperation">validateInfixOperation</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="PrefixOperator.php.html#29"><abbr title="TimoLehnertz\formula\operator\PrefixOperator::operate">operate</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TypeCastOperator.php.html#25"><abbr title="TimoLehnertz\formula\operator\TypeCastOperator::toString">toString</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="composed/GreaterEqualsOperator.php.html#45"><abbr title="TimoLehnertz\formula\operator\composed\GreaterEqualsOperator::operateInfix">operateInfix</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="composed/IncrementPrefixOperator.php.html#38"><abbr title="TimoLehnertz\formula\operator\composed\IncrementPrefixOperator::operatePrefix">operatePrefix</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="composed/LessEqualsOperator.php.html#25"><abbr title="TimoLehnertz\formula\operator\composed\LessEqualsOperator::validateInfixOperation">validateInfixOperation</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="PostfixOperator.php.html#19"><abbr title="TimoLehnertz\formula\operator\PostfixOperator::validateOperation">validateOperation</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="InfixOperator.php.html#19"><abbr title="TimoLehnertz\formula\operator\InfixOperator::operate">operate</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="InfixOperator.php.html#26"><abbr title="TimoLehnertz\formula\operator\InfixOperator::validateOperation">validateOperation</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="composed/DecrementPostfixOperator.php.html#23"><abbr title="TimoLehnertz\formula\operator\composed\DecrementPostfixOperator::validatePostfixOperation">validatePostfixOperation</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="composed/IncrementPostfixOperator.php.html#24"><abbr title="TimoLehnertz\formula\operator\composed\IncrementPostfixOperator::validatePostfixOperation">validatePostfixOperation</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="PostfixOperator.php.html#29"><abbr title="TimoLehnertz\formula\operator\PostfixOperator::operate">operate</abbr></a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 9.2.26</a> using <a href="https://secure.php.net/" target="_top">PHP 8.2.12</a> and <a href="https://phpunit.de/">PHPUnit 9.5.28</a> at Fri Jun 14 8:50:56 UTC 2024.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/jquery.min.js?v=9.2.26" type="text/javascript"></script>
+  <script src="../_js/d3.min.js?v=9.2.26" type="text/javascript"></script>
+  <script src="../_js/nv.d3.min.js?v=9.2.26" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([7,0,0,0,0,1,2,1,6,0,0,0], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([41,0,0,0,2,1,1,6,3,0,0,26], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[0,4,"<a href=\"ArrayAccessOperator.php.html#13\">TimoLehnertz\\formula\\operator\\ArrayAccessOperator<\/a>"],[75,3,"<a href=\"CallOperator.php.html#11\">TimoLehnertz\\formula\\operator\\CallOperator<\/a>"],[48.31460674157304,106,"<a href=\"ImplementableOperator.php.html#15\">TimoLehnertz\\formula\\operator\\ImplementableOperator<\/a>"],[71.42857142857143,7,"<a href=\"InfixOperator.php.html#12\">TimoLehnertz\\formula\\operator\\InfixOperator<\/a>"],[54.90196078431373,36,"<a href=\"OperatorBuilder.php.html#17\">TimoLehnertz\\formula\\operator\\OperatorBuilder<\/a>"],[66.66666666666666,6,"<a href=\"PostfixOperator.php.html#12\">TimoLehnertz\\formula\\operator\\PostfixOperator<\/a>"],[0,7,"<a href=\"PrefixOperator.php.html#12\">TimoLehnertz\\formula\\operator\\PrefixOperator<\/a>"],[57.14285714285714,4,"<a href=\"TypeCastOperator.php.html#13\">TimoLehnertz\\formula\\operator\\TypeCastOperator<\/a>"],[0,7,"<a href=\"composed\/ChainedAssignmentOperator.php.html#16\">TimoLehnertz\\formula\\operator\\composed\\ChainedAssignmentOperator<\/a>"],[77.77777777777779,7,"<a href=\"composed\/DecrementPostfixOperator.php.html#17\">TimoLehnertz\\formula\\operator\\composed\\DecrementPostfixOperator<\/a>"],[0,6,"<a href=\"composed\/DecrementPrefixOperator.php.html#17\">TimoLehnertz\\formula\\operator\\composed\\DecrementPrefixOperator<\/a>"],[0,10,"<a href=\"composed\/GreaterEqualsOperator.php.html#19\">TimoLehnertz\\formula\\operator\\composed\\GreaterEqualsOperator<\/a>"],[77.77777777777779,7,"<a href=\"composed\/IncrementPostfixOperator.php.html#18\">TimoLehnertz\\formula\\operator\\composed\\IncrementPostfixOperator<\/a>"],[0,7,"<a href=\"composed\/IncrementPrefixOperator.php.html#18\">TimoLehnertz\\formula\\operator\\composed\\IncrementPrefixOperator<\/a>"],[77.27272727272727,10,"<a href=\"composed\/LessEqualsOperator.php.html#19\">TimoLehnertz\\formula\\operator\\composed\\LessEqualsOperator<\/a>"],[0,7,"<a href=\"composed\/NotEqualsOperator.php.html#19\">TimoLehnertz\\formula\\operator\\composed\\NotEqualsOperator<\/a>"],[75,3,"<a href=\"OperatorHelper.php.html#8\">TimoLehnertz\\formula\\operator\\OperatorHelper<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[0,1,"<a href=\"ArrayAccessOperator.php.html#21\">TimoLehnertz\\formula\\operator\\ArrayAccessOperator::__construct<\/a>"],[0,1,"<a href=\"ArrayAccessOperator.php.html#26\">TimoLehnertz\\formula\\operator\\ArrayAccessOperator::toString<\/a>"],[0,1,"<a href=\"ArrayAccessOperator.php.html#30\">TimoLehnertz\\formula\\operator\\ArrayAccessOperator::validate<\/a>"],[0,1,"<a href=\"ArrayAccessOperator.php.html#35\">TimoLehnertz\\formula\\operator\\ArrayAccessOperator::getCoupledExpression<\/a>"],[100,1,"<a href=\"CallOperator.php.html#15\">TimoLehnertz\\formula\\operator\\CallOperator::__construct<\/a>"],[0,1,"<a href=\"CallOperator.php.html#20\">TimoLehnertz\\formula\\operator\\CallOperator::toString<\/a>"],[100,1,"<a href=\"CallOperator.php.html#24\">TimoLehnertz\\formula\\operator\\CallOperator::getCoupledExpression<\/a>"],[100,1,"<a href=\"ImplementableOperator.php.html#31\">TimoLehnertz\\formula\\operator\\ImplementableOperator::__construct<\/a>"],[75,24,"<a href=\"ImplementableOperator.php.html#38\">TimoLehnertz\\formula\\operator\\ImplementableOperator::idToOperatorType<\/a>"],[63.63636363636363,24,"<a href=\"ImplementableOperator.php.html#70\">TimoLehnertz\\formula\\operator\\ImplementableOperator::idToPrecedence<\/a>"],[39.130434782608695,24,"<a href=\"ImplementableOperator.php.html#109\">TimoLehnertz\\formula\\operator\\ImplementableOperator::idToIdentifier<\/a>"],[36,15,"<a href=\"ImplementableOperator.php.html#160\">TimoLehnertz\\formula\\operator\\ImplementableOperator::validateOperation<\/a>"],[43.75,12,"<a href=\"ImplementableOperator.php.html#198\">TimoLehnertz\\formula\\operator\\ImplementableOperator::operate<\/a>"],[100,1,"<a href=\"ImplementableOperator.php.html#224\">TimoLehnertz\\formula\\operator\\ImplementableOperator::getOperatorType<\/a>"],[100,1,"<a href=\"ImplementableOperator.php.html#228\">TimoLehnertz\\formula\\operator\\ImplementableOperator::getPrecedence<\/a>"],[0,1,"<a href=\"ImplementableOperator.php.html#232\">TimoLehnertz\\formula\\operator\\ImplementableOperator::getIdentifier<\/a>"],[0,1,"<a href=\"ImplementableOperator.php.html#236\">TimoLehnertz\\formula\\operator\\ImplementableOperator::toString<\/a>"],[100,1,"<a href=\"ImplementableOperator.php.html#240\">TimoLehnertz\\formula\\operator\\ImplementableOperator::getID<\/a>"],[100,1,"<a href=\"ImplementableOperator.php.html#244\">TimoLehnertz\\formula\\operator\\ImplementableOperator::getCompatibleOperands<\/a>"],[100,1,"<a href=\"InfixOperator.php.html#15\">TimoLehnertz\\formula\\operator\\InfixOperator::getOperatorType<\/a>"],[66.66666666666666,3,"<a href=\"InfixOperator.php.html#19\">TimoLehnertz\\formula\\operator\\InfixOperator::operate<\/a>"],[66.66666666666666,3,"<a href=\"InfixOperator.php.html#26\">TimoLehnertz\\formula\\operator\\InfixOperator::validateOperation<\/a>"],[100,0,"<a href=\"InfixOperator.php.html#33\">TimoLehnertz\\formula\\operator\\InfixOperator::validateInfixOperation<\/a>"],[100,0,"<a href=\"InfixOperator.php.html#35\">TimoLehnertz\\formula\\operator\\InfixOperator::operateInfix<\/a>"],[54.90196078431373,36,"<a href=\"OperatorBuilder.php.html#19\">TimoLehnertz\\formula\\operator\\OperatorBuilder::buildOperator<\/a>"],[100,1,"<a href=\"PostfixOperator.php.html#15\">TimoLehnertz\\formula\\operator\\PostfixOperator::getOperatorType<\/a>"],[60,3,"<a href=\"PostfixOperator.php.html#19\">TimoLehnertz\\formula\\operator\\PostfixOperator::validateOperation<\/a>"],[66.66666666666666,2,"<a href=\"PostfixOperator.php.html#29\">TimoLehnertz\\formula\\operator\\PostfixOperator::operate<\/a>"],[100,0,"<a href=\"PostfixOperator.php.html#36\">TimoLehnertz\\formula\\operator\\PostfixOperator::validatePostfixOperation<\/a>"],[100,0,"<a href=\"PostfixOperator.php.html#38\">TimoLehnertz\\formula\\operator\\PostfixOperator::operatePostfix<\/a>"],[0,1,"<a href=\"PrefixOperator.php.html#15\">TimoLehnertz\\formula\\operator\\PrefixOperator::getOperatorType<\/a>"],[0,3,"<a href=\"PrefixOperator.php.html#19\">TimoLehnertz\\formula\\operator\\PrefixOperator::validateOperation<\/a>"],[0,2,"<a href=\"PrefixOperator.php.html#29\">TimoLehnertz\\formula\\operator\\PrefixOperator::operate<\/a>"],[100,0,"<a href=\"PrefixOperator.php.html#36\">TimoLehnertz\\formula\\operator\\PrefixOperator::validatePrefixOperation<\/a>"],[100,0,"<a href=\"PrefixOperator.php.html#38\">TimoLehnertz\\formula\\operator\\PrefixOperator::operatePrefix<\/a>"],[0,1,"<a href=\"PrefixOperator.php.html#40\">TimoLehnertz\\formula\\operator\\PrefixOperator::getCompatibleOperands<\/a>"],[100,1,"<a href=\"TypeCastOperator.php.html#19\">TimoLehnertz\\formula\\operator\\TypeCastOperator::__construct<\/a>"],[0,2,"<a href=\"TypeCastOperator.php.html#25\">TimoLehnertz\\formula\\operator\\TypeCastOperator::toString<\/a>"],[100,1,"<a href=\"TypeCastOperator.php.html#33\">TimoLehnertz\\formula\\operator\\TypeCastOperator::getCoupledExpression<\/a>"],[0,1,"<a href=\"composed\/ChainedAssignmentOperator.php.html#22\">TimoLehnertz\\formula\\operator\\composed\\ChainedAssignmentOperator::__construct<\/a>"],[0,3,"<a href=\"composed\/ChainedAssignmentOperator.php.html#28\">TimoLehnertz\\formula\\operator\\composed\\ChainedAssignmentOperator::validateInfixOperation<\/a>"],[0,1,"<a href=\"composed\/ChainedAssignmentOperator.php.html#41\">TimoLehnertz\\formula\\operator\\composed\\ChainedAssignmentOperator::operateInfix<\/a>"],[0,1,"<a href=\"composed\/ChainedAssignmentOperator.php.html#49\">TimoLehnertz\\formula\\operator\\composed\\ChainedAssignmentOperator::toString<\/a>"],[0,1,"<a href=\"composed\/ChainedAssignmentOperator.php.html#53\">TimoLehnertz\\formula\\operator\\composed\\ChainedAssignmentOperator::getCompatibleOperands<\/a>"],[100,1,"<a href=\"composed\/DecrementPostfixOperator.php.html#19\">TimoLehnertz\\formula\\operator\\composed\\DecrementPostfixOperator::__construct<\/a>"],[77.77777777777779,3,"<a href=\"composed\/DecrementPostfixOperator.php.html#23\">TimoLehnertz\\formula\\operator\\composed\\DecrementPostfixOperator::validatePostfixOperation<\/a>"],[100,1,"<a href=\"composed\/DecrementPostfixOperator.php.html#37\">TimoLehnertz\\formula\\operator\\composed\\DecrementPostfixOperator::operatePostfix<\/a>"],[0,1,"<a href=\"composed\/DecrementPostfixOperator.php.html#46\">TimoLehnertz\\formula\\operator\\composed\\DecrementPostfixOperator::toString<\/a>"],[0,1,"<a href=\"composed\/DecrementPostfixOperator.php.html#50\">TimoLehnertz\\formula\\operator\\composed\\DecrementPostfixOperator::getCompatibleOperands<\/a>"],[0,1,"<a href=\"composed\/DecrementPrefixOperator.php.html#19\">TimoLehnertz\\formula\\operator\\composed\\DecrementPrefixOperator::__construct<\/a>"],[0,3,"<a href=\"composed\/DecrementPrefixOperator.php.html#23\">TimoLehnertz\\formula\\operator\\composed\\DecrementPrefixOperator::validatePrefixOperation<\/a>"],[0,1,"<a href=\"composed\/DecrementPrefixOperator.php.html#37\">TimoLehnertz\\formula\\operator\\composed\\DecrementPrefixOperator::operatePrefix<\/a>"],[0,1,"<a href=\"composed\/DecrementPrefixOperator.php.html#46\">TimoLehnertz\\formula\\operator\\composed\\DecrementPrefixOperator::toString<\/a>"],[0,1,"<a href=\"composed\/GreaterEqualsOperator.php.html#21\">TimoLehnertz\\formula\\operator\\composed\\GreaterEqualsOperator::__construct<\/a>"],[0,5,"<a href=\"composed\/GreaterEqualsOperator.php.html#25\">TimoLehnertz\\formula\\operator\\composed\\GreaterEqualsOperator::validateInfixOperation<\/a>"],[0,2,"<a href=\"composed\/GreaterEqualsOperator.php.html#45\">TimoLehnertz\\formula\\operator\\composed\\GreaterEqualsOperator::operateInfix<\/a>"],[0,1,"<a href=\"composed\/GreaterEqualsOperator.php.html#56\">TimoLehnertz\\formula\\operator\\composed\\GreaterEqualsOperator::toString<\/a>"],[0,1,"<a href=\"composed\/GreaterEqualsOperator.php.html#60\">TimoLehnertz\\formula\\operator\\composed\\GreaterEqualsOperator::getCompatibleOperands<\/a>"],[100,1,"<a href=\"composed\/IncrementPostfixOperator.php.html#20\">TimoLehnertz\\formula\\operator\\composed\\IncrementPostfixOperator::__construct<\/a>"],[77.77777777777779,3,"<a href=\"composed\/IncrementPostfixOperator.php.html#24\">TimoLehnertz\\formula\\operator\\composed\\IncrementPostfixOperator::validatePostfixOperation<\/a>"],[100,1,"<a href=\"composed\/IncrementPostfixOperator.php.html#38\">TimoLehnertz\\formula\\operator\\composed\\IncrementPostfixOperator::operatePostfix<\/a>"],[0,1,"<a href=\"composed\/IncrementPostfixOperator.php.html#47\">TimoLehnertz\\formula\\operator\\composed\\IncrementPostfixOperator::toString<\/a>"],[0,1,"<a href=\"composed\/IncrementPostfixOperator.php.html#51\">TimoLehnertz\\formula\\operator\\composed\\IncrementPostfixOperator::getCompatibleOperands<\/a>"],[0,1,"<a href=\"composed\/IncrementPrefixOperator.php.html#20\">TimoLehnertz\\formula\\operator\\composed\\IncrementPrefixOperator::__construct<\/a>"],[0,3,"<a href=\"composed\/IncrementPrefixOperator.php.html#24\">TimoLehnertz\\formula\\operator\\composed\\IncrementPrefixOperator::validatePrefixOperation<\/a>"],[0,2,"<a href=\"composed\/IncrementPrefixOperator.php.html#38\">TimoLehnertz\\formula\\operator\\composed\\IncrementPrefixOperator::operatePrefix<\/a>"],[0,1,"<a href=\"composed\/IncrementPrefixOperator.php.html#50\">TimoLehnertz\\formula\\operator\\composed\\IncrementPrefixOperator::toString<\/a>"],[100,1,"<a href=\"composed\/LessEqualsOperator.php.html#21\">TimoLehnertz\\formula\\operator\\composed\\LessEqualsOperator::__construct<\/a>"],[69.23076923076923,5,"<a href=\"composed\/LessEqualsOperator.php.html#25\">TimoLehnertz\\formula\\operator\\composed\\LessEqualsOperator::validateInfixOperation<\/a>"],[100,2,"<a href=\"composed\/LessEqualsOperator.php.html#45\">TimoLehnertz\\formula\\operator\\composed\\LessEqualsOperator::operateInfix<\/a>"],[0,1,"<a href=\"composed\/LessEqualsOperator.php.html#56\">TimoLehnertz\\formula\\operator\\composed\\LessEqualsOperator::toString<\/a>"],[100,1,"<a href=\"composed\/LessEqualsOperator.php.html#60\">TimoLehnertz\\formula\\operator\\composed\\LessEqualsOperator::getCompatibleOperands<\/a>"],[0,1,"<a href=\"composed\/NotEqualsOperator.php.html#21\">TimoLehnertz\\formula\\operator\\composed\\NotEqualsOperator::__construct<\/a>"],[0,3,"<a href=\"composed\/NotEqualsOperator.php.html#25\">TimoLehnertz\\formula\\operator\\composed\\NotEqualsOperator::validateInfixOperation<\/a>"],[0,1,"<a href=\"composed\/NotEqualsOperator.php.html#37\">TimoLehnertz\\formula\\operator\\composed\\NotEqualsOperator::operateInfix<\/a>"],[0,1,"<a href=\"composed\/NotEqualsOperator.php.html#43\">TimoLehnertz\\formula\\operator\\composed\\NotEqualsOperator::toString<\/a>"],[0,1,"<a href=\"composed\/NotEqualsOperator.php.html#47\">TimoLehnertz\\formula\\operator\\composed\\NotEqualsOperator::getCompatibleOperands<\/a>"],[100,1,"<a href=\"OperatorHelper.php.html#14\">TimoLehnertz\\formula\\operator\\OperatorHelper::__construct<\/a>"],[100,1,"<a href=\"OperatorHelper.php.html#19\">TimoLehnertz\\formula\\operator\\OperatorHelper::getPrecedence<\/a>"],[0,1,"<a href=\"OperatorHelper.php.html#23\">TimoLehnertz\\formula\\operator\\OperatorHelper::getID<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

@@ -9,6 +9,10 @@ use TimoLehnertz\formula\operator\ImplementableOperator;
  */
 class StringType implements Type {
 
+  public function assignableBy(Type $type): bool {
+    return $this->equals($type);
+  }
+
   public function equals(Type $type): bool {
     return $type instanceof StringType;
   }

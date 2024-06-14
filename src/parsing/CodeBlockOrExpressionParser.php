@@ -11,7 +11,7 @@ use TimoLehnertz\formula\tokens\Token;
 class CodeBlockOrExpressionParser extends VariantParser {
 
   public function __construct() {
-    parent::__construct([new CodeBlockParser(false),new ExpressionParser()]);
+    parent::__construct([new CodeBlockParser(false, true),new ExpressionParser()]);
   }
 
   protected function parsePart(Token $firstToken): ParserReturn {

@@ -12,6 +12,7 @@ use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 use TimoLehnertz\formula\type\VoidType;
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\type\TypeType;
 
 /**
  * @author Timo Lehnertz
@@ -30,39 +31,68 @@ class OperatorExpression implements Expression {
     $this->rightExpression = $rightExpression;
   }
 
+  public static function castExpression(Expression $source, Type $sourceType, Type $targetType, Scope $scope): Expression {
+    if($targetType->assignableBy($sourceType)) {
+      return $source;
+    } else {
+      if($source instanceof CastableExpression) {
+        return $source->getCastedExpression($targetType, $scope);
+      }
+      $castableTypes = (new TypeCastOperator(false, new VoidType()))->getCompatibleOperands($sourceType);
+      /** @var TypeType $castableType */
+      foreach($castableTypes as $castableType) {
+        $castableType = $castableType->getType();
+        if($targetType->assignableBy($castableType)) {
+          return new OperatorExpression($source, new TypeCastOperator(false, $castableType), new TypeExpression($castableType));
+        }
+      }
+      throw new FormulaValidationException('No conversion from '.$sourceType->getIdentifier().' to '.$targetType->getIdentifier().' exists');
+    }
+  }
+
+  /**
+   * @param Type[] $targetTypes
+   */
+  public static function castExpressionToOnOf(Expression $source, Type $sourceType, array $targetTypes, Scope $scope): Expression {
+    $error = null;
+    /** @var Type $targetType */
+    foreach($targetTypes as $targetType) {
+      try {
+        return OperatorExpression::castExpression($source, $sourceType, $targetType, $scope);
+      } catch(FormulaValidationException $e) {
+        $error = $e;
+      }
+    }
+    if($error !== null) {
+      throw $error;
+    }
+    if(isset($targetTypes[0])) {
+      throw new FormulaValidationException('No conversion from '.$sourceType->getIdentifier().' to '.$targetTypes[0]->getIdentifier().' exists');
+    } else {
+      throw new FormulaValidationException('No conversion from '.$sourceType->getIdentifier().' to <empty> exists');
+    }
+  }
+
   public function validate(Scope $scope): Type {
     $leftType = $this->leftExpression?->validate($scope) ?? null;
     $rightType = $this->rightExpression?->validate($scope) ?? null;
-    if($this->operator->getOperatorType() === OperatorType::InfixOperator && $leftType !== null && $rightType !== null) {
-      $operands = $leftType->getCompatibleOperands($this->operator);
+    if($leftType !== null && $rightType !== null) {
+      $operands = $this->operator->getCompatibleOperands($leftType);
+      //       if(count($operands) === 0) {
+      //         var_dump($leftType);
+      //         var_dump($this->operator);
+      //       }
       $found = false;
+      /** @var Type $operand */
       foreach($operands as $operand) {
-        if($operand->equals($rightType)) {
+        if($operand->assignableBy($rightType)) {
           $found = true;
           break;
         }
       }
       if(!$found) { // insert type cast
-        $castableTypes = $rightType->getCompatibleOperands(new TypeCastOperator(false, new VoidType()));
-        $found = false;
-        foreach($castableTypes as $castableType) {
-          foreach($operands as $operand) {
-            if($castableType->getType()->equals($operand)) {
-              $typeExpression = new TypeExpression($operand);
-              $typeExpression->validate($scope);
-              $this->rightExpression = new OperatorExpression($this->rightExpression, new TypeCastOperator(false, $operand), $typeExpression);
-              $rightType = $operand;
-              $found = true;
-              break;
-            }
-            if($found) {
-              break;
-            }
-          }
-        }
-        if(!$found) {
-          throw new FormulaValidationException('Incompatible operands '.$leftType->getIdentifier().' '.$this->operator->toString(PrettyPrintOptions::buildDefault()).' '.$rightType->getIdentifier());
-        }
+        $this->rightExpression = OperatorExpression::castExpressionToOnOf($this->rightExpression, $rightType, $operands, $scope);
+        $rightType = $this->rightExpression->validate($scope);
       }
     }
     return $this->operator->validateOperation($leftType, $rightType);

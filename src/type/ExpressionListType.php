@@ -22,6 +22,10 @@ class ExpressionListType implements Type {
     $this->expressionTypes = $expressionTypes;
   }
 
+  public function assignableBy(Type $type): bool {
+    return $this->equals($type);
+  }
+
   public function equals(Type $type): bool {
     if(!($type instanceof ExpressionListType)) {
       return false;

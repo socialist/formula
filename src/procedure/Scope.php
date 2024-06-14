@@ -2,12 +2,13 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\procedure;
 
-use SebastianBergmann\Type\MixedType;
 use TimoLehnertz\formula\FormulaRuntimeException;
 use TimoLehnertz\formula\FormulaValidationException;
+use TimoLehnertz\formula\type\ArgumentListType;
 use TimoLehnertz\formula\type\ArrayType;
 use TimoLehnertz\formula\type\BooleanType;
 use TimoLehnertz\formula\type\BooleanValue;
+use TimoLehnertz\formula\type\CompoundType;
 use TimoLehnertz\formula\type\FloatType;
 use TimoLehnertz\formula\type\FloatValue;
 use TimoLehnertz\formula\type\FunctionArgument;
@@ -15,16 +16,17 @@ use TimoLehnertz\formula\type\FunctionType;
 use TimoLehnertz\formula\type\FunctionValue;
 use TimoLehnertz\formula\type\IntegerType;
 use TimoLehnertz\formula\type\IntegerValue;
+use TimoLehnertz\formula\type\MixedType;
 use TimoLehnertz\formula\type\StringType;
 use TimoLehnertz\formula\type\StringValue;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
+use TimoLehnertz\formula\type\VoidType;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionType;
-use SebastianBergmann\Type\VoidType;
-use TimoLehnertz\formula\type\ArgumentListType;
+use TimoLehnertz\formula\type\NullValue;
 
 /**
  * @author Timo Lehnertz
@@ -67,9 +69,19 @@ class Scope {
           return new BooleanType();
         case 'array':
           return new ArrayType(new MixedType(), new MixedType());
+        case 'mixed':
+          return new MixedType();
+        case 'void':
+          return new VoidType();
       }
+    } else if($reflectionType instanceof \ReflectionUnionType) {
+      $types = [];
+      foreach($reflectionType->getTypes() as $type) {
+        $types[] = self::reflectionTypeToFormulaType($type);
+      }
+      return CompoundType::buildFromTypes($types);
     }
-    throw new FormulaValidationException('Return type of php function is not supported '.$reflectionType);
+    throw new FormulaValidationException('PHP type '.$reflectionType.' is not supported');
   }
 
   public function definePHPFunction(string $identifier, callable $callable): void {
@@ -96,15 +108,19 @@ class Scope {
     }
     $arguments = [];
     $reflectionArguments = $reflection->getParameters();
+    $vargs = false;
     /**  @var ReflectionParameter  $reflectionArgument */
     foreach($reflectionArguments as $reflectionArgument) {
+      if($reflectionArgument->isVariadic()) {
+        $vargs = true;
+      }
       $reflectionArgumentType = $reflectionArgument->getType();
       if($reflectionArgumentType === null) {
         throw new FormulaValidationException('Parameter '.$reflectionArgument->name.' has no php type. Only typed parameters are supported');
       }
       $arguments[] = new FunctionArgument(Scope::reflectionTypeToFormulaType($reflectionArgumentType), $reflectionArgument->isOptional());
     }
-    $functionType = new FunctionType(new ArgumentListType($arguments), $returnType);
+    $functionType = new FunctionType(new ArgumentListType($arguments, $vargs), $returnType);
     $this->define($identifier, $functionType, new FunctionValue($callable, $functionType, $this));
   }
 
@@ -157,6 +173,8 @@ class Scope {
       return new BooleanValue($value);
     } else if(is_string($value)) {
       return new StringValue($value);
+    } else if($value === null) {
+      return new NullValue();
     }
     throw new FormulaRuntimeException($value.' has no supported php type');
   }

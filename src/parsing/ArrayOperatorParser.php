@@ -28,6 +28,6 @@ class ArrayOperatorParser extends Parser {
     if($token->id !== Token::SQUARE_BRACKETS_CLOSED) {
       throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $token);
     }
-    return new ParserReturn(new ArrayAccessOperator($parsedIndexExpression->parsed, $token->next()));
+    return new ParserReturn(new ArrayAccessOperator($parsedIndexExpression->parsed), $token->next());
   }
 }

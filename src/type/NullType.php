@@ -12,6 +12,10 @@ class NullType implements Type {
 
   public function __construct() {}
 
+  public function assignableBy(Type $type): bool {
+    return $this->equals($type);
+  }
+
   public function equals(Type $type): bool {
     return $type instanceof NullType;
   }

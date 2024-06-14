@@ -4,6 +4,10 @@ namespace TimoLehnertz\formula\expression;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\type\ArrayType;
+use TimoLehnertz\formula\type\ArrayValue;
+use TimoLehnertz\formula\type\CompoundType;
+use TimoLehnertz\formula\type\IntegerType;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 
@@ -12,25 +16,47 @@ use TimoLehnertz\formula\type\Value;
  */
 class ArrayExpression implements Expression {
 
-  private readonly ExpressionListExpression $expressionList;
+  private readonly array $expressions;
 
-  public function __construct(ExpressionListExpression $expressionList) {
-    $this->expressionList = $expressionList;
+  private ArrayType $arrayType;
+
+  public function __construct(array $expressions) {
+    $this->expressions = $expressions;
   }
 
   public function run(Scope $scope): Value {
-    return $this->expressionList->run($scope);
+    $values = [];
+    foreach($this->expressions as $expression) {
+      $values[] = $expression->run($scope);
+    }
+    return new ArrayValue($values, $this->arrayType);
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    return '('.$this->expressionList->toString().')';
+    $str = '';
+    $del = '';
+    foreach($this->expressions as $expression) {
+      $str .= $del.$expression->toString($prettyPrintOptions);
+      $del = ',';
+    }
+    return '{'.$str.'}';
   }
 
   public function validate(Scope $scope): Type {
-    $this->expressionList->validate($scope);
+    $types = [];
+    foreach($this->expressions as $expression) {
+      $types[] = $expression->validate($scope);
+    }
+    $elementType = CompoundType::buildFromTypes($types);
+    $this->arrayType = new ArrayType(new IntegerType(), $elementType);
+    return $this->arrayType;
   }
 
   public function buildNode(Scope $scope): array {
-    return ['type' => 'Array','outerType' => $this->validate($scope)->buildNode($scope),'content' => $this->expressionList->buildNode($scope)];
+    $content = [];
+    foreach($this->expressions as $expression) {
+      $content[] = $expression->buildNode($scope);
+    }
+    return ['type' => 'Array','outerType' => $this->validate($scope)->buildNode($scope),'content' => $content];
   }
 }

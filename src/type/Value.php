@@ -23,6 +23,7 @@ abstract class Value implements OperatorHandler {
       case Operator::IMPLEMENTABLE_TYPE_CAST:
         $array[] = new TypeType(new BooleanType());
         $array[] = new TypeType($this->getType());
+        $array[] = new TypeType(new StringType());
     }
     return $array;
   }
@@ -52,6 +53,9 @@ abstract class Value implements OperatorHandler {
           if($otherType->getType()->equals($this->getType())) {
             return $this->getType();
           }
+          if($otherType->getType()->equals(new StringType())) {
+            return new StringType();
+          }
         }
         return null;
       default:
@@ -80,6 +84,9 @@ abstract class Value implements OperatorHandler {
           }
           if($other->getValue()->equals($this->getType())) {
             return $this;
+          }
+          if($other->getValue()->equals(new StringType())) {
+            return $this->toStringValue();
           }
         }
     }
@@ -124,4 +131,6 @@ abstract class Value implements OperatorHandler {
    * @return mixed the php representation of this Value
    */
   public abstract function toPHPValue(): mixed;
+
+  public abstract function toStringValue(): StringValue;
 }

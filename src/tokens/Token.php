@@ -1,11 +1,9 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\tokens;
-
-use TimoLehnertz\formula\UnexpectedEndOfInputException;
 
 /**
  * @author Timo Lehnertz
- *
  */
 class Token {
 
@@ -53,13 +51,14 @@ class Token {
     return $this->next($includeComments) !== null;
   }
 
-  //   public function requireNext(bool $includeComments = false): Token {
-  //     $next = $this->next($includeComments);
-  //     if($next === null) {
-  //       throw new UnexpectedEndOfInputException();
-  //     }
-  //     return $next;
-  //   }
+  public function skipComment(): ?Token {
+    if($this->id !== static::LINE_COMMENT && $this->id !== static::MULTI_LINE_COMMENT) {
+      return $this;
+    } else {
+      return $this->next();
+    }
+  }
+
   public function next(bool $includeComments = false): ?Token {
     if($includeComments) {
       return $this->next;
@@ -139,5 +138,6 @@ class Token {
   public const MODULO = 63;
   public const KEYWORD_INSTANCEOF = 64;
   public const KEYWORD_TYPE = 65;
+  public const KEYWORD_ELSE = 66;
   // @formatter:on
 }

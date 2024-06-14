@@ -68,4 +68,8 @@ class TypeValue extends Value {
   public function toPHPValue(): mixed {
     throw new FormulaBugException('TypeValue list does not have a php representation');
   }
+
+  public function toStringValue(): StringValue {
+    return new StringValue($this->value->getIdentifier());
+  }
 }

@@ -22,9 +22,9 @@ class LessEqualsOperator extends InfixOperator {
     parent::__construct(9, Operator::PARSABLE_LESS_EQUALS);
   }
 
-  protected function validateInfixOperation(Type $leftValue, Type $rightType): Type {
+  protected function validateInfixOperation(Type $leftType, Type $rightType): Type {
     $lessOperator = new ImplementableOperator(Operator::IMPLEMENTABLE_LESS);
-    $lessType = $leftValue->getOperatorResultType($lessOperator, $rightType);
+    $lessType = $leftType->getOperatorResultType($lessOperator, $rightType);
     if($lessType === null) {
       throw new ValidationException('Invalid operand '.$rightType->getIdentifier());
     }
@@ -32,8 +32,12 @@ class LessEqualsOperator extends InfixOperator {
       throw new InternalFormulaException('Result type of comparison operator was not booelan');
     }
     $comparisonOperator = new ImplementableOperator(Operator::IMPLEMENTABLE_EQUALS);
-    $comparisonType = $leftValue->getOperatorResultType($comparisonOperator, $lessType);
+    $comparisonType = $leftType->getOperatorResultType($comparisonOperator, $rightType);
     if(!($comparisonType instanceof BooleanType)) {
+      var_dump($comparisonType);
+      var_dump($leftType);
+      var_dump($comparisonOperator);
+      var_dump($rightType);
       throw new InternalFormulaException('Result type of comparison operator was not booelan');
     }
     if($comparisonType === null) {
@@ -55,5 +59,28 @@ class LessEqualsOperator extends InfixOperator {
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return '<=';
+  }
+
+  /**
+   * @param array<Type> $types
+   * @return array<Type>
+   */
+  public static function joinsTypes(array $typesA, array $typesB): array {
+    $typesC = [];
+    foreach($typesA as $typeA) {
+      foreach($typesB as $typeB) {
+        if($typeB->equals($typeA)) {
+          $typesC[] = $typeA;
+          break;
+        }
+      }
+    }
+    return $typesC;
+  }
+
+  public function getCompatibleOperands(Type $leftType): array {
+    $comparisonOperands = $leftType->getCompatibleOperands(new ImplementableOperator(Operator::IMPLEMENTABLE_EQUALS));
+    $lessOperands = $leftType->getCompatibleOperands(new ImplementableOperator(Operator::IMPLEMENTABLE_LESS));
+    return self::joinsTypes($comparisonOperands, $lessOperands);
   }
 }

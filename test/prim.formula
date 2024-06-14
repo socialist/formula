@@ -1,0 +1,28 @@
+// This script calculates the amount of prim number below 100 (wich is 25)
+
+if(false) {
+	return 0;
+} else {
+	return 1;
+} else {
+	return 2;
+}
+
+int i = 2;
+int count = 0;
+while(i <= 100) {
+	bool isPrim = true;
+	int j = 2;
+	while(j <= sqrt(i)) {
+		if(i % j == 0) {
+			isPrim = false;
+			break;
+		}
+		j++;
+	}
+	if(isPrim) {
+		count++;
+	}
+	i++;
+}
+return count;

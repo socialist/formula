@@ -35,9 +35,12 @@ abstract class NumberValueHelper {
       case Operator::IMPLEMENTABLE_SUBTRACTION:
       case Operator::IMPLEMENTABLE_MULTIPLICATION:
       case Operator::IMPLEMENTABLE_DIVISION:
+      case Operator::IMPLEMENTABLE_LESS:
       case Operator::IMPLEMENTABLE_GREATER:
-      case Operator::IMPLEMENTABLE_LES:
+      case Operator::IMPLEMENTABLE_EQUALS:
         return [new IntegerType(),new FloatType()];
+      case Operator::IMPLEMENTABLE_MODULO:
+        return [new IntegerType()];
       case Operator::IMPLEMENTABLE_TYPE_CAST:
         if($self instanceof IntegerValue) {
           return [new TypeType(new FloatType())];
@@ -82,8 +85,11 @@ abstract class NumberValueHelper {
         return self::getMostPreciseNumberType($typeA, $typeB);
       case Operator::IMPLEMENTABLE_DIVISION:
         return new FloatType();
+      case Operator::IMPLEMENTABLE_MODULO:
+        return new IntegerType();
       case Operator::IMPLEMENTABLE_GREATER:
       case Operator::IMPLEMENTABLE_LESS:
+      case Operator::IMPLEMENTABLE_EQUALS:
         return new BooleanType();
       default:
         return null;
@@ -126,10 +132,14 @@ abstract class NumberValueHelper {
         return new (static::getMostPreciseNumberValueClass($self, $other))($self->getValue() * $other->getValue());
       case Operator::IMPLEMENTABLE_DIVISION:
         return new FloatValue($self->getValue() / $other->getValue());
+      case Operator::IMPLEMENTABLE_MODULO:
+        return new IntegerValue($self->getValue() % $other->getValue());
       case Operator::IMPLEMENTABLE_GREATER:
         return new BooleanValue($self->getValue() > $other->getValue());
       case Operator::IMPLEMENTABLE_LESS:
         return new BooleanValue($self->getValue() < $other->getValue());
+      case Operator::IMPLEMENTABLE_EQUALS:
+        return new BooleanValue($self->getValue() == $other->getValue());
       default:
         throw new \BadFunctionCallException('Invalid operation '.$self->getType()->getIdentifier().' '.$operator->toString(PrettyPrintOptions::buildDefault()).' '.$other?->getType()->getIdentifier());
     }

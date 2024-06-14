@@ -13,46 +13,48 @@ class OperatorParserTest extends TestCase {
 
   public function provideOperators(): array {
     // @formatter:off
-    return [
-//       ["a::b", '::', 1, OperatorType::InfixOperator],
-//       ['(int[]|bool)', '(int[]|bool)', 0, OperatorType::PrefixOperator],
+    $dataset = [
+      ["a::b", '::', 1, OperatorType::InfixOperator],
+      ['(int[]|bool)', '(int[]|bool)', 0, OperatorType::PrefixOperator],
       ['a(a,b,c)', '(a,b,c)', 1, OperatorType::PostfixOperator],
-//       ['[c]', '[c]', 0, OperatorType::PostfixOperator],
-//       ['a.b', '.', 1, OperatorType::InfixOperator],
-//       ['a++', '++', 1, OperatorType::PostfixOperator],
-//       ['a--', '--', 1, OperatorType::PostfixOperator],
-//       ['++a', '++', 0, OperatorType::PrefixOperator],
-//       ['--a', '--', 0, OperatorType::PrefixOperator],
-//       ['a+b', '+', 1, OperatorType::InfixOperator],
-//       ['a-b', '-', 1, OperatorType::InfixOperator],
-//       ['+b', '+', 0, OperatorType::PrefixOperator],
-//       ['(+b)', '+', 1, OperatorType::PrefixOperator],
-//       ['-b', '-', 0, OperatorType::PrefixOperator],
-//       ['(-b)', '-', 1, OperatorType::PrefixOperator],
-//       ['!', '!', 0, OperatorType::PrefixOperator],
-//       ['a*b', '*', 1, OperatorType::InfixOperator],
-//       ['a/b', '/', 1, OperatorType::InfixOperator],
-//       ['a%b', '%', 1, OperatorType::InfixOperator],
-//       ['a<b', '<', 1, OperatorType::InfixOperator],
-//       ['a>b', '>', 1, OperatorType::InfixOperator],
-//       ['a<=b', '<=', 1, OperatorType::InfixOperator],
-//       ['a>=b', '>=', 1, OperatorType::InfixOperator],
-//       ['a==b', '==', 1, OperatorType::InfixOperator],
-//       ['a!=b', '!=', 1, OperatorType::InfixOperator],
-//       ['a&&b', '&&', 1, OperatorType::InfixOperator],
-//       ['a||b', '||', 1, OperatorType::InfixOperator],
-//       ['a^b', '^', 1, OperatorType::InfixOperator],
-//       ['a=b', '=', 1, OperatorType::InfixOperator],
-//       ['a&=b', '&=', 1, OperatorType::InfixOperator],
-//       ['a/=b', '/=', 1, OperatorType::InfixOperator],
-//       ['a-=b', '-=', 1, OperatorType::InfixOperator],
-//       ['a*=b', '*=', 1, OperatorType::InfixOperator],
-//       ['a|=b', '|=', 1, OperatorType::InfixOperator],
-//       ['a+=b', '+=', 1, OperatorType::InfixOperator],
-//       ['a^=b', '^=', 1, OperatorType::InfixOperator],
-//       ['a instanceof b', 'instanceof', 1, OperatorType::InfixOperator],
+      ['[c]', '[c]', 0, OperatorType::PostfixOperator],
+      ['a.b', '.', 1, OperatorType::InfixOperator],
+      ['a++', '++', 1, OperatorType::PostfixOperator],
+      ['a--', '--', 1, OperatorType::PostfixOperator],
+      ['++a', '++', 0, OperatorType::PrefixOperator],
+      ['--a', '--', 0, OperatorType::PrefixOperator],
+      ['a+b', '+', 1, OperatorType::InfixOperator],
+      ['a-b', '-', 1, OperatorType::InfixOperator],
+      ['+b', '+', 0, OperatorType::PrefixOperator],
+      ['(+b)', '+', 1, OperatorType::PrefixOperator],
+      ['-b', '-', 0, OperatorType::PrefixOperator],
+      ['(-b)', '-', 1, OperatorType::PrefixOperator],
+      ['!', '!', 0, OperatorType::PrefixOperator],
+      ['a*b', '*', 1, OperatorType::InfixOperator],
+      ['a/b', '/', 1, OperatorType::InfixOperator],
+      ['a%b', '%', 1, OperatorType::InfixOperator],
+      ['a<b', '<', 1, OperatorType::InfixOperator],
+      ['a>b', '>', 1, OperatorType::InfixOperator],
+      ['a<=b', '<=', 1, OperatorType::InfixOperator],
+      ['a>=b', '>=', 1, OperatorType::InfixOperator],
+      ['a==b', '==', 1, OperatorType::InfixOperator],
+      ['a!=b', '!=', 1, OperatorType::InfixOperator],
+      ['a&&b', '&&', 1, OperatorType::InfixOperator],
+      ['a||b', '||', 1, OperatorType::InfixOperator],
+      ['a^b', '^', 1, OperatorType::InfixOperator],
+      ['a=b', '=', 1, OperatorType::InfixOperator],
+      ['a&=b', '&=', 1, OperatorType::InfixOperator],
+      ['a/=b', '/=', 1, OperatorType::InfixOperator],
+      ['a-=b', '-=', 1, OperatorType::InfixOperator],
+      ['a*=b', '*=', 1, OperatorType::InfixOperator],
+      ['a|=b', '|=', 1, OperatorType::InfixOperator],
+      ['a+=b', '+=', 1, OperatorType::InfixOperator],
+      ['a^=b', '^=', 1, OperatorType::InfixOperator],
+      ['a instanceof b', 'instanceof', 1, OperatorType::InfixOperator],
     ];
   // @formatter:on
+    $this->assertCount(Operator::OPERATORS_COUNT, $dataset); // Assert that no operators are missed
+    return $dataset;
   }
 
   /**
@@ -70,9 +72,6 @@ class OperatorParserTest extends TestCase {
     }
     $this->assertInstanceOf(Operator::class, $parsed->parsed);
     $this->assertEquals($expectedOperator, $parsed->parsed->toString(PrettyPrintOptions::buildDefault()));
-    //     if($operatorType !== $parsed->parsed->getOperatorType()) {
-    //       var_dump($parsed->parsed);
-    //     }
     $this->assertEquals($operatorType, $parsed->parsed->getOperatorType());
   }
 }

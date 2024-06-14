@@ -3,7 +3,6 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\procedure\Scope;
 
 /**
  * @author Timo Lehnertz
@@ -18,7 +17,7 @@ class CompoundType implements Type {
 
   public static function buildFromTypes(array $types): Type {
     if(count($types) === 0) {
-      throw new \UnexpectedValueException('types must contain at least one type');
+      return new NeverType();
     }
     $uniqueTypes = [];
     // eliminate clones
@@ -63,6 +62,19 @@ class CompoundType implements Type {
     }
   }
 
+  public function assignableBy(Type $type): bool {
+    if($type instanceof CompoundType) {
+      return $this->equals($type);
+    } else {
+      foreach($this->types as $ownType) {
+        if($ownType->assignableBy($type)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+
   public function equals(Type $type): bool {
     if($type instanceof CompoundType) {
       if(count($type->types) !== count($this->types)) {
@@ -103,7 +115,7 @@ class CompoundType implements Type {
   public function buildNode(): array {
     $types = [];
     foreach($this->types as $type) {
-      $type[] = $type->buildNode();
+      $types[] = $type->buildNode();
     }
     return ['type' => 'CompoundType','types' => $types];
   }

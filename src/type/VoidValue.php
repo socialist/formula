@@ -13,7 +13,7 @@ use TimoLehnertz\formula\operator\ImplementableOperator;
  */
 class VoidValue extends Value {
 
-  public function assign(VoidValue $value): void {}
+  public function assign(Value $value): void {}
 
   public function getType(): Type {
     return new VoidType();
@@ -52,6 +52,10 @@ class VoidValue extends Value {
   }
 
   public function toPHPValue(): mixed {
-    throw new FormulaBugException('VoidValue list does not have a php representation');
+    throw new FormulaBugException('VoidValue does not have a php representation');
+  }
+
+  public function toStringValue(): StringValue {
+    return new StringValue('void');
   }
 }

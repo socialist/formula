@@ -33,7 +33,13 @@ class FloatValue extends Value {
   }
 
   public function valueEquals(Value $other): bool {
-    return IntegerValue::numberValueEquals($this, $other);
+    if($other instanceof IntegerValue) {
+      return $other->getValue() == $this->getValue();
+    } else if($other instanceof FloatValue) {
+      return $other->getValue() === $this->getValue();
+    } else {
+      return false;
+    }
   }
 
   protected function getValueExpectedOperands(ImplementableOperator $operator): array {
@@ -62,5 +68,9 @@ class FloatValue extends Value {
 
   public function toPHPValue(): mixed {
     return $this->value;
+  }
+
+  public function toStringValue(): StringValue {
+    return new StringValue(''.$this->value);
   }
 }

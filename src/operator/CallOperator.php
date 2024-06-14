@@ -3,16 +3,16 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\operator;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
-use TimoLehnertz\formula\expression\CallExpression;
+use TimoLehnertz\formula\expression\ArgumentListExpression;
 
 /**
  * @author Timo Lehnertz
  */
 class CallOperator extends ImplementableOperator implements CoupledOperator {
 
-  private readonly CallExpression $args;
+  private readonly ArgumentListExpression $args;
 
-  public function __construct(CallExpression $args) {
+  public function __construct(ArgumentListExpression $args) {
     parent::__construct(Operator::IMPLEMENTABLE_CALL);
     $this->args = $args;
   }
@@ -21,7 +21,7 @@ class CallOperator extends ImplementableOperator implements CoupledOperator {
     return '('.$this->args->toString($prettyPrintOptions).')';
   }
 
-  public function getCoupledExpression(): CallExpression {
+  public function getCoupledExpression(): ArgumentListExpression {
     return $this->args;
   }
 }

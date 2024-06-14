@@ -3,6 +3,7 @@ namespace test\parsing;
 
 use PHPUnit\Framework\TestCase;
 use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\expression\ArgumentListExpression;
 use TimoLehnertz\formula\expression\BracketExpression;
 use TimoLehnertz\formula\expression\ConstantExpression;
 use TimoLehnertz\formula\expression\IdentifierExpression;
@@ -11,8 +12,6 @@ use TimoLehnertz\formula\operator\CallOperator;
 use TimoLehnertz\formula\operator\Operator;
 use TimoLehnertz\formula\parsing\ExpressionParser;
 use TimoLehnertz\formula\tokens\Tokenizer;
-use TimoLehnertz\formula\expression\ExpressionListExpression;
-use TimoLehnertz\formula\expression\CallExpression;
 
 class ExpressionParserTest extends TestCase {
 
@@ -78,7 +77,7 @@ class ExpressionParserTest extends TestCase {
     $this->assertInstanceOf(OperatorExpression::class, $result->parsed);
     $this->assertInstanceOf(IdentifierExpression::class, $result->parsed->leftExpression);
     $this->assertInstanceOf(CallOperator::class, $result->parsed->operator);
-    $this->assertInstanceOf(CallExpression::class, $result->parsed->rightExpression);
+    $this->assertInstanceOf(ArgumentListExpression::class, $result->parsed->rightExpression);
 
     $this->assertEquals('a(1)', $result->parsed->toString(PrettyPrintOptions::buildDefault()));
   }

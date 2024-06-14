@@ -36,4 +36,8 @@ abstract class PrefixOperator implements Operator {
   protected abstract function validatePrefixOperation(Type $rightType): Type;
 
   protected abstract function operatePrefix(Value $rightValue): Value;
+
+  public function getCompatibleOperands(Type $leftType): array {
+    return [];
+  }
 }

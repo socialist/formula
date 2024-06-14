@@ -21,7 +21,7 @@ class ReturnStatement implements Statement {
 
   public function validate(Scope $scope): StatementReturnType {
     if($this->expression !== null) {
-      return new StatementReturnType($this->expression->validate($scope), true, false, 0);
+      return new StatementReturnType($this->expression->validate($scope), true, true, 0);
     }
     return new StatementReturnType(new VoidType(), true, true);
   }
@@ -39,5 +39,9 @@ class ReturnStatement implements Statement {
       return 'return;';
     }
     return 'return '.$this->expression->toString($prettyPrintOptions).';';
+  }
+
+  public function getExpression(): ?Expression {
+    return $this->expression;
   }
 }

@@ -3,7 +3,6 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\operator\Operator;
 
 /**
@@ -20,6 +19,13 @@ class ArrayType implements Type {
     $this->elementsType = $elementsType;
   }
 
+  public function assignableBy(Type $type): bool {
+    if(!($type instanceof ArrayType)) {
+      return false;
+    }
+    return $this->keyType->assignableBy($type->keyType) && $this->elementsType->assignableBy($type->elementsType);
+  }
+
   public function equals(Type $type): bool {
     if(!($type instanceof ArrayType)) {
       return false;
@@ -31,7 +37,7 @@ class ArrayType implements Type {
     if($this->keyType instanceof IntegerType) {
       return $this->elementsType->getIdentifier(true).'[]';
     } else {
-      return 'array<'.$this->keyType->getIdentifier().','.$this->elementsType->getIdentifier().' >';
+      return 'array<'.$this->keyType->getIdentifier().','.$this->elementsType->getIdentifier().'>';
     }
   }
 

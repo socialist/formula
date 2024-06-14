@@ -9,6 +9,7 @@ use TimoLehnertz\formula\operator\CoupledOperator;
 use TimoLehnertz\formula\operator\Operator;
 use TimoLehnertz\formula\operator\OperatorType;
 use TimoLehnertz\formula\tokens\Token;
+use TimoLehnertz\formula\expression\TernaryExpression;
 
 /**
  * @author Timo Lehnertz
@@ -23,6 +24,7 @@ class ExpressionParser extends Parser {
     Token::CURLY_BRACKETS_CLOSED => true,
     Token::COlON => true,
     Token::SEMICOLON => true,
+    Token::QUESTIONMARK => true,
   ];
 
   // @formatter:on
@@ -35,9 +37,27 @@ class ExpressionParser extends Parser {
     if($inBrackets) {
       $token = $token->next();
     }
+    $ternaryCondition = null;
+    $ternaryLeftExpression = null;
     $expressionsAndOperators = [];
     $variantParser = new VariantParser([new OperatorParser(),new ConstantExpressionParser(),new ArrayParser(),new IdentifierParser()]);
     while($token !== null) {
+      if($ternaryCondition === null && $token->id === Token::QUESTIONMARK) {
+        $ternaryCondition = $this->transform($expressionsAndOperators, $token);
+        $expressionsAndOperators = [];
+        if(!$token->hasNext()) {
+          throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
+        }
+        $token = $token->next();
+      }
+      if($ternaryCondition !== null && $ternaryLeftExpression === null && $token->id === Token::COlON) {
+        $ternaryLeftExpression = $this->transform($expressionsAndOperators, $token);
+        $expressionsAndOperators = [];
+        if(!$token->hasNext()) {
+          throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
+        }
+        $token = $token->next();
+      }
       if(isset(ExpressionParser::$expressionEndingTokens[$token->id])) {
         break;
       }
@@ -56,19 +76,28 @@ class ExpressionParser extends Parser {
       }
     }
     if($inBrackets) {
-      if($token === null || $token->id !== Token::BRACKETS_CLOSED) {
-        throw ParsingException::PARSING_ERROR_GENERIC;
+      if($token === null) {
+        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, $token);
+      }
+      if($token->id !== Token::BRACKETS_CLOSED) {
+        throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $token);
       }
       $token = $token->next();
     }
     $result = $this->transform($expressionsAndOperators, $token);
-    if($inBrackets) {
-      $result = new ParserReturn(new BracketExpression($result->parsed), $result->nextToken);
+    if($ternaryCondition !== null) {
+      if($ternaryLeftExpression === null) {
+        throw new ParsingException(ParsingException::PARSING_ERROR_INCOMPLETE_TERNARY, $token);
+      }
+      $result = new TernaryExpression($ternaryCondition, $ternaryLeftExpression, $result);
     }
-    return $result;
+    if($inBrackets) {
+      $result = new BracketExpression($result);
+    }
+    return new ParserReturn($result, $token);
   }
 
-  private function transform(array $expressionsAndOperators, ?Token $nextToken): ParserReturn {
+  private function transform(array $expressionsAndOperators, ?Token $nextToken): Expression {
     while(true) {
       // find lowest precedence operator
       $operator = null;
@@ -135,6 +164,6 @@ class ExpressionParser extends Parser {
     if(count($expressionsAndOperators) !== 1) {
       throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $nextToken);
     }
-    return new ParserReturn($expressionsAndOperators[0], $nextToken);
+    return $expressionsAndOperators[0];
   }
 }

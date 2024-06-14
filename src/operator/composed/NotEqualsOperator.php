@@ -43,4 +43,8 @@ class NotEqualsOperator extends InfixOperator {
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return '!=';
   }
+
+  public function getCompatibleOperands(Type $leftType): array {
+    return $leftType->getCompatibleOperands(new ImplementableOperator(Operator::IMPLEMENTABLE_EQUALS));
+  }
 }

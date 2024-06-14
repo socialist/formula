@@ -88,4 +88,8 @@ class ExpressionListValue extends Value {
   public function toPHPValue(): mixed {
     throw new FormulaBugException('ExpressionListValue list does not have a php representation');
   }
+
+  public function toStringValue(): StringValue {
+    return new StringValue('ExpressionListValue');
+  }
 }

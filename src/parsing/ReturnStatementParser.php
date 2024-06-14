@@ -1,11 +1,7 @@
 <?php
 declare(strict_types = 1);
-namespace src\parsing;
+namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\parsing\ExpressionParser;
-use TimoLehnertz\formula\parsing\Parser;
-use TimoLehnertz\formula\parsing\ParserReturn;
-use TimoLehnertz\formula\parsing\ParsingException;
 use TimoLehnertz\formula\statement\ReturnStatement;
 use TimoLehnertz\formula\tokens\Token;
 
@@ -18,11 +14,22 @@ class ReturnStatementParser extends Parser {
     if($firstToken->id !== Token::KEYWORD_RETURN) {
       throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
     }
-    try {
-      $returnExpression = (new ExpressionParser())->parse($firstToken->next());
-      return new ParserReturn(new ReturnStatement($returnExpression->parsed), $returnExpression->nextToken);
-    } catch(ParsingException $e) {
-      return new ParserReturn(new ReturnStatement(null), $firstToken->next());
+    $token = $firstToken->next();
+    if($token === null) {
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, $token);
+    }
+    if($token->id === Token::SEMICOLON) {
+      return new ParserReturn(new ReturnStatement(null), $token->next());
+    } else {
+      $parsedExpression = (new ExpressionParser())->parse($token);
+      if($parsedExpression->nextToken === null) {
+        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, $token);
+      }
+      $token = $parsedExpression->nextToken;
+      if($token->id !== Token::SEMICOLON) {
+        throw new ParsingException(ParsingException::PARSING_ERROR_EXPECTED_SEMICOLON, $token);
+      }
+      return new ParserReturn(new ReturnStatement($parsedExpression->parsed), $token->next());
     }
   }
 }

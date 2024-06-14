@@ -15,5 +15,7 @@ interface Type extends OperatorMeta {
 
   public function equals(Type $type): bool;
 
+  public function assignableBy(Type $type): bool;
+
   public function buildNode(): array;
 }

@@ -74,4 +74,8 @@ class StringValue extends Value {
   public function toPHPValue(): mixed {
     return $this->value;
   }
+
+  public function toStringValue(): StringValue {
+    return $this;
+  }
 }

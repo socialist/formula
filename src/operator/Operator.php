@@ -3,7 +3,6 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\operator;
 
 use TimoLehnertz\formula\FormulaPart;
-use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 
@@ -51,7 +50,8 @@ interface Operator extends FormulaPart {
   public const PARSABLE_OR_ASSIGNMENT = 34;
   public const PARSABLE_XOR_ASSIGNMENT = 35;
   public const PARSABLE_MODULO_ASSIGNMENT = 36;
-  
+  public const OPERATORS_COUNT = 1 + self::PARSABLE_MODULO_ASSIGNMENT;
+
   // @formatter:on
   public function getID(): int;
 
@@ -62,4 +62,9 @@ interface Operator extends FormulaPart {
   public function validateOperation(?Type $leftType, ?Type $rigthType): Type;
 
   public function operate(?Value $leftValue, ?Value $rightValue): Value;
+
+  /**
+   * @return array<Type>
+   */
+  public function getCompatibleOperands(Type $leftType): array;
 }

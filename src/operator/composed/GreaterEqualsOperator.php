@@ -32,7 +32,7 @@ class GreaterEqualsOperator extends InfixOperator {
       throw new InternalFormulaException('Result type of comparison operator was not booelan');
     }
     $comparisonOperator = new ImplementableOperator(Operator::IMPLEMENTABLE_EQUALS);
-    $comparisonType = $leftValue->getOperatorResultType($comparisonOperator, $lessType);
+    $comparisonType = $leftValue->getOperatorResultType($comparisonOperator, $rightType);
     if(!($comparisonType instanceof BooleanType)) {
       throw new InternalFormulaException('Result type of comparison operator was not booelan');
     }
@@ -55,5 +55,11 @@ class GreaterEqualsOperator extends InfixOperator {
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return '>=';
+  }
+
+  public function getCompatibleOperands(Type $leftType): array {
+    $comparisonOperands = $leftType->getCompatibleOperands(new ImplementableOperator(Operator::IMPLEMENTABLE_EQUALS));
+    $greaterOperands = $leftType->getCompatibleOperands(new ImplementableOperator(Operator::IMPLEMENTABLE_GREATER));
+    return LessEqualsOperator::joinsTypes($comparisonOperands, $greaterOperands);
   }
 }

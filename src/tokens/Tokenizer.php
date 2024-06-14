@@ -67,6 +67,9 @@ class Tokenizer {
    * @return array<Token>
    */
   public static function tokenize(string $string): ?Token {
+    $string = str_replace("\r\n", "\n", $string);
+    $string = str_replace("\n\r", "\n", $string);
+    $string = str_replace("\r", "\n", $string);
     $chars = str_split($string);
     $firstToken = null;
     $lastToken = null;
@@ -79,7 +82,8 @@ class Tokenizer {
     $singleToken = null;
     $stringBoundry = null;
     $numberHasDot = false;
-    $addedToken = function () use (&$keyword, &$singleToken, &$mode, &$buffer, &$stringBoundry, &$numberHasDot, &$firstToken, &$lastToken, &$lastStartPosition, &$position) {
+    $tokenStartLine = 0;
+    $addedToken = function () use (&$keyword, &$singleToken, &$mode, &$buffer, &$stringBoundry, &$numberHasDot, &$firstToken, &$lastToken, &$lastStartPosition, &$position, &$tokenStartLine, &$line) {
       $keyword = null;
       $singleToken = null;
       $mode = "normal";
@@ -87,6 +91,7 @@ class Tokenizer {
       $stringBoundry = null;
       $numberHasDot = false;
       $lastStartPosition = $position;
+      $tokenStartLine = $line;
       if($firstToken === null) {
         $firstToken = $lastToken;
       }
@@ -94,12 +99,12 @@ class Tokenizer {
     for($i = 0;$i <= sizeof($chars);$i++) {
       // keep track of position
       $position++;
-      if(strstr($string, PHP_EOL)) {
+      $char = $chars[$i] ?? "\n";
+      if($char === "\n") {
         $line++;
         $lastStartPosition = 0;
         $position = 0;
       }
-      $char = $chars[$i] ?? PHP_EOL;
       switch($mode) {
         // skip white spaces
         case 'normal':
@@ -118,7 +123,7 @@ class Tokenizer {
           }
           // check instant tokens
           if(array_key_exists($buffer, Tokenizer::INSTANT_TOKENS)) {
-            $lastToken = new Token(Tokenizer::INSTANT_TOKENS[$buffer], $buffer, $line, $lastStartPosition, $lastToken);
+            $lastToken = new Token(Tokenizer::INSTANT_TOKENS[$buffer], $buffer, $tokenStartLine, $lastStartPosition, $lastToken);
             $addedToken();
             break;
           }
@@ -129,7 +134,7 @@ class Tokenizer {
             }
           } else {
             if(!static::isValidForIdentifier($char)) {
-              $lastToken = new Token($keyword, substr($buffer, 0, strlen($buffer) - strlen($char)), $line, $lastStartPosition, $lastToken);
+              $lastToken = new Token($keyword, substr($buffer, 0, strlen($buffer) - strlen($char)), $tokenStartLine, $lastStartPosition, $lastToken);
               $i--;
               $position--;
               $addedToken();
@@ -145,7 +150,7 @@ class Tokenizer {
             }
           } else {
             if($char !== '=' && $char !== $singleToken) {
-              $lastToken = new Token(Tokenizer::SINGLE_TOKENS[$singleToken], $singleToken, $line, $lastStartPosition, $lastToken);
+              $lastToken = new Token(Tokenizer::SINGLE_TOKENS[$singleToken], $singleToken, $tokenStartLine, $lastStartPosition, $lastToken);
               $i--;
               $position--;
               $addedToken();
@@ -163,7 +168,7 @@ class Tokenizer {
           // check identifier
           if(ctype_alpha($buffer[0]) && strlen($buffer) > 1) {
             if(!static::isValidForIdentifier($char)) {
-              $lastToken = new Token(Token::IDENTIFIER, substr($buffer, 0, strlen($buffer) - strlen($char)), $line, $lastStartPosition, $lastToken);
+              $lastToken = new Token(Token::IDENTIFIER, substr($buffer, 0, strlen($buffer) - strlen($char)), $tokenStartLine, $lastStartPosition, $lastToken);
               $i--;
               $position--;
               $addedToken();
@@ -175,24 +180,29 @@ class Tokenizer {
             $mode = 'number';
             break;
           }
+          if($char === "\n") {
+            $tokenStartLine = $line;
+          }
           break;
         case 'lineComment':
-          if(strstr($char, PHP_EOL)) {
-            $lastToken = new Token(Token::LINE_COMMENT, $buffer, $line, $lastStartPosition, $lastToken);
+          if($char === "\n") {
+            $lastToken = new Token(Token::LINE_COMMENT, $buffer, $tokenStartLine, $lastStartPosition, $lastToken);
             $addedToken();
+            break;
           }
           $buffer .= $char;
           break;
         case 'multiComment':
           $buffer .= $char;
           if(str_ends_with($buffer, Tokenizer::MULTI_LINE_COMMENT_END)) {
-            $lastToken = new Token(Token::MULTI_LINE_COMMENT, $buffer, $line, $lastStartPosition, $lastToken);
+            $lastToken = new Token(Token::MULTI_LINE_COMMENT, $buffer, $tokenStartLine, $lastStartPosition, $lastToken);
             $addedToken();
+            break;
           }
           break;
         case 'string':
           if($char === $stringBoundry) {
-            $lastToken = new Token(Token::STRING_CONSTANT, $buffer, $line, $lastStartPosition, $lastToken);
+            $lastToken = new Token(Token::STRING_CONSTANT, $buffer, $tokenStartLine, $lastStartPosition, $lastToken);
             $addedToken();
             break;
           }
@@ -201,14 +211,14 @@ class Tokenizer {
         case 'number':
           if($char === '.') {
             if($numberHasDot) {
-              throw new TokenisationException('Number cant have two dots', $line, $lastStartPosition);
+              throw new TokenisationException('Number cant have two dots', $tokenStartLine, $lastStartPosition);
             }
             $numberHasDot = true;
           } else if(!ctype_digit($char)) {
             if(str_ends_with($buffer, '.')) {
-              throw new TokenisationException('Incomplete number', $line, $lastStartPosition);
+              throw new TokenisationException('Incomplete number', $tokenStartLine, $lastStartPosition);
             }
-            $lastToken = new Token($numberHasDot ? Token::FLOAT_CONSTANT : Token::INT_CONSTANT, $buffer, $line, $lastStartPosition, $lastToken);
+            $lastToken = new Token($numberHasDot ? Token::FLOAT_CONSTANT : Token::INT_CONSTANT, $buffer, $tokenStartLine, $lastStartPosition, $lastToken);
             $i--;
             $position--;
             $addedToken();
@@ -287,7 +297,8 @@ class Tokenizer {
     "do" => Token::KEYWORD_DO,
     "for" => Token::KEYWORD_FOR,
     "instanceof" => Token::KEYWORD_INSTANCEOF,
-    "Type" => Token::KEYWORD_TYPE
+    "Type" => Token::KEYWORD_TYPE,
+    "else" => Token::KEYWORD_ELSE
   ];
 
   private const SINGLE_TOKENS = [

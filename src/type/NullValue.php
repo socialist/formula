@@ -58,4 +58,8 @@ class NullValue extends Value {
   public function toPHPValue(): mixed {
     return null;
   }
+
+  public function toStringValue(): StringValue {
+    return new StringValue('null');
+  }
 }

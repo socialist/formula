@@ -19,7 +19,7 @@ class VariableDeclarationStatement implements Statement {
 
   private readonly string $identifier;
 
-  private readonly Expression $initilizer;
+  private Expression $initilizer;
 
   public function __construct(Type $type, string $identifier, Expression $initilizer) {
     $this->type = $type;
@@ -28,7 +28,6 @@ class VariableDeclarationStatement implements Statement {
   }
 
   public function validate(Scope $scope): StatementReturnType {
-    $this->type = $this->type->validate($scope);
     $initilizerType = $this->initilizer->validate($scope);
     if(!$initilizerType->equals($this->type)) {
       $this->initilizer = new OperatorExpression($this->initilizer, new TypeCastOperator(false, $this->type), new TypeExpression($this->type));
@@ -40,7 +39,7 @@ class VariableDeclarationStatement implements Statement {
 
   public function run(Scope $scope): StatementReturn {
     $value = $this->initilizer->run($scope);
-    $scope->define($this->identifier, $value);
+    $scope->define($this->identifier, $this->type, $value);
     return new StatementReturn($value, false, false, 0);
   }
 

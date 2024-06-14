@@ -141,6 +141,10 @@ class ArgumentListValue extends Value {
   }
 
   public function toPHPValue(): mixed {
-    throw new FormulaBugException('Argument list does not have a php representation');
+    throw new FormulaBugException('ArgumentListValue does not have a php representation');
+  }
+
+  public function toStringValue(): StringValue {
+    return new StringValue('ArgumentListValue');
   }
 }

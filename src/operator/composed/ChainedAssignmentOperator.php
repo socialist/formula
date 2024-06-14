@@ -49,4 +49,8 @@ class ChainedAssignmentOperator extends InfixOperator {
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return $this->identifier;
   }
+
+  public function getCompatibleOperands(Type $leftType): array {
+    return $leftType->getCompatibleOperands($this->chainedOperator);
+  }
 }

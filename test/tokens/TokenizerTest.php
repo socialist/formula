@@ -8,7 +8,7 @@ use TimoLehnertz\formula\tokens\Token;
 class TokenizerTest extends TestCase {
 
   // @formatter:off
-  public static function getTokens(): array {
+  public static function provideTokens(): array {
     return [
       [Token::KEYWORD_INT, 'int ', 'int'],
       [Token::KEYWORD_FLOAT, 'float ', 'float'],
@@ -58,8 +58,8 @@ class TokenizerTest extends TestCase {
       [Token::INT_CONSTANT, '123', '123'],
       [Token::FLOAT_CONSTANT, '1.23', '1.23'],
       [Token::NULLISH, '??', '??'],
-      [Token::LINE_COMMENT, '// abcd\n', '// abcd\n'],
-      [Token::MULTI_LINE_COMMENT, '/* abcd\nefg */', '/* abcd\nefg */'],
+      [Token::LINE_COMMENT, "// abcd\n abc", "// abcd"],
+      [Token::MULTI_LINE_COMMENT, "/* abcd\nefg */ abc", "/* abcd\nefg */"],
       [Token::CURLY_BRACKETS_OPEN, '{', '{'],
       [Token::CURLY_BRACKETS_CLOSED, '}', '}'],
       [Token::SQUARE_BRACKETS_OPEN, '[', '['],
@@ -75,19 +75,28 @@ class TokenizerTest extends TestCase {
       [Token::STRING_CONSTANT, '"ABC123!"', 'ABC123!'],
       [Token::IDENTIFIER, 'abc', 'abc'],
       [Token::MODULO, '% ', '%'],
+      [Token::KEYWORD_ELSE, 'else ', 'else'],
     ];
   }
   // @formatter:on
-  public function testTokens(): void {
-    $tokens = static::getTokens();
-    foreach($tokens as $token) {
-      $tokenized = Tokenizer::tokenize($token[1]);
-      $this->assertEquals($token[0], $tokenized->id);
-      $this->assertEquals(0, $tokenized->line);
-      $this->assertEquals(0, $tokenized->position);
-      $this->assertEquals($token[2], $tokenized->value);
-      $this->assertFalse($tokenized->hasNext());
-    }
+
+  /**
+   * @dataProvider provideTokens
+   */
+  public function testTokens(int $id, string $src, string $expected): void {
+    $tokenized = Tokenizer::tokenize($src);
+    $this->assertEquals($id, $tokenized->id);
+    $this->assertEquals(0, $tokenized->line);
+    $this->assertEquals(0, $tokenized->position);
+    $this->assertEquals($expected, $tokenized->value);
+  }
+
+  public function testLineComments(): void {
+    $tokenized = Tokenizer::tokenize("// abc\n// abc");
+    $this->assertNull($tokenized->skipComment());
+    $this->assertEquals('// abc', $tokenized->value);
+    $this->assertEquals(Token::LINE_COMMENT, $tokenized->id);
+    $this->assertEquals(Token::LINE_COMMENT, $tokenized->next(true)->id);
   }
 }
 

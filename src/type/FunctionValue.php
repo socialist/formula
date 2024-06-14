@@ -7,7 +7,6 @@ use TimoLehnertz\formula\FormulaRuntimeException;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\operator\Operator;
-use TimoLehnertz\formula\operator\TypeCastOperator;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\statement\CodeBlock;
 
@@ -49,7 +48,7 @@ class FunctionValue extends Value {
 
   protected function getValueExpectedOperands(ImplementableOperator $operator): array {
     if($operator->getID() === Operator::IMPLEMENTABLE_CALL) {
-      return [new ArgumentListType($this->type->arguments)];
+      return [$this->type->arguments];
     } else {
       return [];
     }
@@ -71,21 +70,12 @@ class FunctionValue extends Value {
         for($i = 0;$i < count($argValues);$i++) {
           /** @var Value $argValue */
           $argValue = $argValues[$i];
-          $expectedType = $this->type->arguments->arguments[$i]->type;
-          if($argValue->getType()->equals($expectedType)) {
-            $args[$i] = $argValue->toPHPValue();
-          } else {
-            $args[$i] = $argValue->operate(new TypeCastOperator(false, $expectedType), new TypeValue($expectedType))->toPHPValue();
-          }
+          $args[$i] = $argValue->toPHPValue();
         }
         $phpReturn = call_user_func_array($this->body, $args);
         $formulaReturn = Scope::valueByPHPVar($phpReturn);
-        if(!$formulaReturn->getType()->equals($this->type->returnType)) {
-          $castedReturnType = $formulaReturn->getOperatorResultType(new TypeCastOperator(false, $this->type->returnType), new TypeValue($this->type->returnType));
-          if($castedReturnType === null) {
-            throw new FormulaRuntimeException('PHP function returned invalid return value '.$formulaReturn->getType()->getIdentifier().'. Expected '.$this->type->returnType->getIdentifier());
-          }
-          $formulaReturn = $formulaReturn->operate(new TypeCastOperator(false, $this->type->returnType), new TypeValue($this->type->returnType));
+        if(!$this->type->returnType->assignableBy($formulaReturn->getType())) {
+          throw new FormulaRuntimeException('PHP function returned invalid return value '.$formulaReturn->getType()->getIdentifier().'. Expected '.$this->type->returnType->getIdentifier());
         }
         return $formulaReturn;
       }
@@ -111,6 +101,10 @@ class FunctionValue extends Value {
 
   public function toPHPValue(): mixed {
     throw new FormulaBugException('FunctionValue list does not have a php representation');
+  }
+
+  public function toStringValue(): StringValue {
+    return new StringValue('function');
   }
 }
 

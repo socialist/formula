@@ -11,6 +11,10 @@ use TimoLehnertz\formula\procedure\Scope;
  */
 class BooleanType implements Type {
 
+  public function assignableBy(Type $type): bool {
+    return $this->equals($type);
+  }
+
   public function equals(Type $type): bool {
     return $type instanceof BooleanType;
   }
