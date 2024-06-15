@@ -5,29 +5,44 @@ namespace TimoLehnertz\formula\statement;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\type\VoidValue;
 
 /**
  * @author Timo Lehnertz
  */
-class WhileStatement implements Statement {
+class ForStatement implements Statement {
 
-  private Expression $condition;
+  private ?VariableDeclarationStatement $declarationStatement;
+
+  private ?Expression $condition;
+
+  private ?Expression $incrementExpression;
 
   private CodeBlock $body;
 
-  public function __construct(Expression $condition, CodeBlock $body) {
+  public function __construct(?VariableDeclarationStatement $declarationStatement, ?Expression $condition, ?Expression $incrementExpression, CodeBlock $body) {
+    $this->declarationStatement = $declarationStatement;
     $this->condition = $condition;
+    $this->incrementExpression = $incrementExpression;
     $this->body = $body;
   }
 
   public function validate(Scope $scope): StatementReturnType {
-    $this->condition->validate($scope);
+    $scope = $scope->buildChild();
+    $this->declarationStatement?->validate($scope);
+    $this->condition?->validate($scope);
+    $this->incrementExpression?->validate($scope);
     $statementReturnType = new StatementReturnType(null, Frequency::NEVER, Frequency::NEVER);
     return $statementReturnType->concatOr($this->body->validate($scope));
   }
 
   public function run(Scope $scope): StatementReturn {
-    while($this->condition->run($scope)->isTruthy()) {
+    $scope = $scope->buildChild();
+
+    $this->declarationStatement?->run($scope);
+    $this->incrementExpression?->validate($scope);
+
+    while($this->condition === null || $this->condition->run($scope)->isTruthy()) {
       $return = $this->body->run($scope);
       if($return->returnValue !== null) {
         return new StatementReturn($return->returnValue, false, 0);
@@ -37,7 +52,7 @@ class WhileStatement implements Statement {
       }
       $continueCount = $return->continueCount;
       do {
-        $this->condition->run($scope);
+        $this->incrementExpression?->run($scope);
         $continueCount--;
       } while($continueCount > 0);
     }
@@ -45,7 +60,7 @@ class WhileStatement implements Statement {
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
-    return 'while ('.$this->condition->toString($prettyPrintOptions).') '.$this->body->toString($prettyPrintOptions);
+    return 'for ('.($this->declarationStatement?->toString($prettyPrintOptions) ?? '; ').($this->condition?->toString($prettyPrintOptions) ?? '').';'.($this->incrementExpression?->toString($prettyPrintOptions) ?? '').') '.$this->body->toString($prettyPrintOptions);
   }
 
   public function getCondition(): Expression {

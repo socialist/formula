@@ -8,6 +8,8 @@ use TimoLehnertz\formula\statement\CodeBlockOrExpression;
 use TimoLehnertz\formula\tokens\Tokenizer;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
+use TimoLehnertz\formula\type\VoidType;
+use TimoLehnertz\formula\type\VoidValue;
 
 /**
  * This class represents a formula session that can interpret/run code
@@ -42,9 +44,9 @@ class Formula {
     if($firstToken === null) {
       throw new FormulaValidationException();
     }
-    $parsedContent = (new CodeBlockOrExpressionParser(true))->parse($firstToken, true);
+    $parsedContent = (new CodeBlockOrExpressionParser(true))->parse($firstToken, true, true);
     $this->content = $parsedContent->parsed;
-    $this->returnType = $this->content->validate($this->buildDefaultScope())->returnType;
+    $this->returnType = $this->content->validate($this->buildDefaultScope())->returnType ?? new VoidType();
   }
 
   public function getNodeTree(): array {
@@ -111,15 +113,7 @@ class Formula {
    * Calculates and returnes the result of this formula
    */
   public function calculate(): Value {
-    return $this->content->run($this->buildDefaultScope())->returnValue;
-  }
-
-  private function parse(): void {
-    $index = 0;
-    $this->expression->parse($this->tokens, $index);
-    if($index != sizeof($this->tokens)) {
-      throw new ExpressionNotFoundException("Unexpected end of input", $this->source);
-    }
+    return $this->content->run($this->buildDefaultScope())->returnValue ?? new VoidValue();
   }
 
   /**
@@ -179,8 +173,8 @@ class Formula {
     echo $str;
   }
 
-  public static function printnlFunc(string $str): void {
-    echo $str."\r\n";
+  public static function printlnFunc(string $str): void {
+    self::printFunc($str.PHP_EOL);
   }
 
   /**
@@ -317,7 +311,7 @@ class Formula {
   private static function buildInbuiltScope(): Scope {
     $scope = new Scope();
     $scope->definePHPFunction('print', [Formula::class,'printFunc']);
-    $scope->definePHPFunction('printnl', [Formula::class,'printnlFunc']);
+    $scope->definePHPFunction('println', [Formula::class,'printlnFunc']);
     $scope->definePHPFunction('pow', [Formula::class,'powFunc']);
     $scope->definePHPFunction("min", [Formula::class,"minFunc"]);
     $scope->definePHPFunction("max", [Formula::class,"maxFunc"]);

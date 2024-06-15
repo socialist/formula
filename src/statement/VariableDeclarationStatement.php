@@ -34,16 +34,18 @@ class VariableDeclarationStatement implements Statement {
       $this->initilizer->validate($scope);
     }
     $scope->define($this->identifier, $this->type);
-    return new StatementReturnType($this->type, false, false);
+    return new StatementReturnType(null, Frequency::NEVER, Frequency::NEVER);
   }
 
   public function run(Scope $scope): StatementReturn {
     $value = $this->initilizer->run($scope);
     $scope->define($this->identifier, $this->type, $value);
-    return new StatementReturn($value, false, false, 0);
+    return new StatementReturn(null, false, 0);
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
     return $this->type->getIdentifier().' '.$this->identifier.' = '.$this->initilizer->toString($prettyPrintOptions).';';
   }
+
+  public function buildNode(Scope $scope): array {}
 }

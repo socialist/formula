@@ -4,9 +4,6 @@ namespace TimoLehnertz\formula\statement;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\CompoundType;
-use TimoLehnertz\formula\type\VoidType;
-use TimoLehnertz\formula\type\VoidValue;
 
 class CodeBlock implements Statement {
 
@@ -18,7 +15,7 @@ class CodeBlock implements Statement {
   private readonly bool $singleLine;
 
   /**
-   * @param Statement[] $statements
+   * @param array<Statement> $statements
    */
   public function __construct(array $statements, bool $singleLine) {
     $this->statements = $statements;
@@ -29,30 +26,11 @@ class CodeBlock implements Statement {
   }
 
   public function validate(Scope $scope): StatementReturnType {
-    $types = [];
-    $mayReturn = false;
-    $alwaysReturns = false;
-    /** @var Statement $expression */
+    $statementReturnType = new StatementReturnType(null, Frequency::NEVER, Frequency::NEVER);
     foreach($this->statements as $statement) {
-      $statementReturnType = $statement->validate($scope);
-      if($statementReturnType->returnType !== null && ($statementReturnType->alwaysReturns || $statementReturnType->mayReturn)) {
-        $types[] = $statementReturnType->returnType;
-      }
-      if($statementReturnType->alwaysReturns) {
-        $mayReturn = true;
-        $alwaysReturns = true;
-        break;
-      }
-      if($statementReturnType->mayReturn) {
-        $mayReturn = true;
-      }
+      $statementReturnType = $statementReturnType->concatSequential($statement->validate($scope));
     }
-    if(!$alwaysReturns) {
-
-      $types[] = new VoidType();
-    }
-    $returnType = CompoundType::buildFromTypes($types);
-    return new StatementReturnType($returnType, $mayReturn, $alwaysReturns);
+    return $statementReturnType;
   }
 
   public function run(Scope $scope): StatementReturn {
@@ -64,7 +42,7 @@ class CodeBlock implements Statement {
         return $statementReturn;
       }
     }
-    return new StatementReturn(new VoidValue(), false, false, 0);
+    return new StatementReturn(null, false, 0);
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {

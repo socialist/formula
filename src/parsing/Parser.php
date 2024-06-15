@@ -9,16 +9,30 @@ use TimoLehnertz\formula\tokens\Token;
  */
 abstract class Parser {
 
+  public readonly string $name;
+
+  public function __construct(string $name) {
+    $this->name = $name;
+  }
+
   /**
    * @throws ParsingException
    */
-  public function parse(?Token $firstToken, bool $expectEnd = false): ParserReturn {
+  public function parse(?Token $firstToken, bool $required = false, bool $expectEnd = false): ParserReturn {
     if($firstToken === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
     }
-    $parserReturn = $this->parsePart($firstToken);
+    try {
+      $parserReturn = $this->parsePart($firstToken);
+    } catch(ParsingSkippedException $e) {
+      if($required) {
+        throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $firstToken);
+      } else {
+        throw $e;
+      }
+    }
     if($expectEnd && $parserReturn->nextToken !== null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_EXPECTED_EOF, $parserReturn->nextToken);
+      throw new ParsingException($this, ParsingException::PARSING_ERROR_EXPECTED_EOF, $parserReturn->nextToken);
     }
     return $parserReturn;
   }

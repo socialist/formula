@@ -10,11 +10,15 @@ use TimoLehnertz\formula\tokens\Token;
  */
 class IdentifierParser extends Parser {
 
+  public function __construct() {
+    parent::__construct('identifier expression');
+  }
+
   protected function parsePart(Token $firstToken, bool $topLevel = true): ParserReturn {
     if($firstToken->id === Token::IDENTIFIER) {
       return new ParserReturn(new IdentifierExpression($firstToken->value), $firstToken->next());
     } else {
-      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
+      throw new ParsingSkippedException();
     }
   }
 }

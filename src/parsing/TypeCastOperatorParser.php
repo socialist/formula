@@ -10,21 +10,25 @@ use TimoLehnertz\formula\tokens\Token;
  */
 class TypeCastOperatorParser extends Parser {
 
+  public function __construct() {
+    parent::__construct('typecast operator');
+  }
+
   protected function parsePart(Token $firstToken): ParserReturn {
     if($firstToken->id != Token::BRACKETS_OPEN) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
+      throw new ParsingSkippedException();
     }
     if(!$firstToken->hasNext()) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
+      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
     }
     $token = $firstToken->next();
     $parsedType = (new TypeParser())->parse($token);
     $token = $parsedType->nextToken;
     if($token === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
+      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
     }
     if($token->id !== Token::BRACKETS_CLOSED) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $token);
+      throw new ParsingSkippedException();
     }
     return new ParserReturn(new TypeCastOperator(true, $parsedType->parsed), $token->next());
   }

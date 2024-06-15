@@ -6,6 +6,7 @@ use TimoLehnertz\formula\FormulaPart;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
+use TimoLehnertz\formula\FormulaValidationException;
 
 /**
  * An Expression is a executable piece of code that can exist anywhere.
@@ -18,9 +19,10 @@ interface Expression extends FormulaPart {
 
   /**
    * Must validate this and all contained Parts.
-   * Throws exceptions in case of invalidation.
+   * Can be called multiple times
    *
    * @return Type the implied return type of this expression
+   * @throws FormulaValidationException
    */
   public function validate(Scope $scope): Type;
 

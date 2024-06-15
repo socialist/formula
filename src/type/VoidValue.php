@@ -2,7 +2,6 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use SebastianBergmann\Type\VoidType;
 use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\InternalFormulaException;
 use TimoLehnertz\formula\PrettyPrintOptions;

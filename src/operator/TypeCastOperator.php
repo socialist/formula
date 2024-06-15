@@ -4,20 +4,20 @@ namespace TimoLehnertz\formula\operator;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
-use TimoLehnertz\formula\expression\TypeExpression;
 use TimoLehnertz\formula\type\Type;
+use TimoLehnertz\formula\expression\OperatorExpression;
+use TimoLehnertz\formula\expression\TypeExpression;
 
 /**
  * @author Timo Lehnertz
  */
-class TypeCastOperator extends ImplementableOperator implements CoupledOperator {
+class TypeCastOperator implements ParsedOperator {
 
   private readonly bool $explicit;
 
   private readonly Type $type;
 
   public function __construct(bool $explicit, Type $type) {
-    parent::__construct(Operator::IMPLEMENTABLE_TYPE_CAST);
     $this->explicit = $explicit;
     $this->type = $type;
   }
@@ -30,7 +30,12 @@ class TypeCastOperator extends ImplementableOperator implements CoupledOperator 
     }
   }
 
-  public function getCoupledExpression(): Expression {
-    return new TypeExpression($this->type);
+  public function transform(?Expression $leftExpression, ?Expression $rightExpression): Expression {
+    $typeCastOperator = new ImplementableOperator(ImplementableOperator::TYPE_TYPE_CAST);
+    return new OperatorExpression($rightExpression, $typeCastOperator, new TypeExpression($this->type));
   }
+
+  public function getOperatorType(): OperatorType {}
+
+  public function getPrecedence(): int {}
 }

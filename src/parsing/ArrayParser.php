@@ -15,7 +15,7 @@ use TimoLehnertz\formula\expression\ArrayExpression;
 class ArrayParser extends EnumeratedParser {
 
   public function __construct() {
-    parent::__construct(new ExpressionParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, true);
+    parent::__construct('array expression', new ExpressionParser(), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, true);
   }
 
   protected function parsePart(Token $firstToken): ParserReturn {

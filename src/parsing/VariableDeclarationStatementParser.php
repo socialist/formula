@@ -10,31 +10,35 @@ use TimoLehnertz\formula\tokens\Token;
  */
 class VariableDeclarationStatementParser extends Parser {
 
+  public function __construct() {
+    parent::__construct('variable declaration statement');
+  }
+
   protected function parsePart(Token $firstToken): ParserReturn {
     $parsedType = (new TypeParser())->parse($firstToken);
     $token = $parsedType->nextToken;
     if($token === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
+      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
     }
     if($token->id !== Token::IDENTIFIER) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $token);
+      throw new ParsingSkippedException();
     }
     $identifier = $token->value;
     if(!$token->hasNext()) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
+      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
     }
     $token = $token->next();
     if($token->id !== Token::ASSIGNMENT) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $token);
+      throw new ParsingSkippedException();
     }
-    $parsedInitilizer = (new ExpressionParser())->parse($token->next());
-    if($parsedInitilizer->nextToken === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
+    $parsedInitializer = (new ExpressionParser())->parse($token->next(), true);
+    if($parsedInitializer->nextToken === null) {
+      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
     }
-    $token = $parsedInitilizer->nextToken;
+    $token = $parsedInitializer->nextToken;
     if($token->id !== Token::SEMICOLON) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_EXPECTED_SEMICOLON, $token);
+      throw new ParsingException($this, ParsingException::PARSING_ERROR_EXPECTED_SEMICOLON, $token);
     }
-    return new ParserReturn(new VariableDeclarationStatement($parsedType->parsed, $identifier, $parsedInitilizer->parsed), $token->next());
+    return new ParserReturn(new VariableDeclarationStatement($parsedType->parsed, $identifier, $parsedInitializer->parsed), $token->next());
   }
 }

@@ -29,7 +29,7 @@ class CodeBlockOrExpression implements Statement {
     if($this->content instanceof CodeBlock) {
       return $this->content->run($scope);
     } else if($this->content instanceof Expression) {
-      return new StatementReturn($this->content->run($scope), true, false, 0);
+      return new StatementReturn($this->content->run($scope), false, 0);
     }
   }
 

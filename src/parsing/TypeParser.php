@@ -22,17 +22,21 @@ use TimoLehnertz\formula\type\Type;
  */
 class TypeParser extends Parser {
 
+  public function __construct() {
+    parent::__construct('type');
+  }
+
   private function parseArrayDimension(Token $firstToken, Type $type): ParserReturn {
     $arrayDimension = 0;
     $token = $firstToken;
     while($token !== null) {
       if($token->id === Token::SQUARE_BRACKETS_OPEN) {
         if(!$token->hasNext()) {
-          throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
+          throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
         }
         $token = $token->next();
         if($token->id !== Token::SQUARE_BRACKETS_CLOSED) {
-          throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
+          throw new ParsingSkippedException();
         }
         $arrayDimension++;
       } else {
@@ -58,7 +62,7 @@ class TypeParser extends Parser {
     } else if($firstToken->id === Token::KEYWORD_STRING) {
       $type = new StringType();
     } else {
-      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
+      throw new ParsingSkippedException();
     }
     if(!$firstToken->hasNext()) {
       return new ParserReturn($type, $firstToken->next());
@@ -74,7 +78,7 @@ class TypeParser extends Parser {
       $inBrackets = true;
       $token = $token->next();
       if($token === null) {
-        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
+        throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
       }
     }
     $types = [];
@@ -102,15 +106,15 @@ class TypeParser extends Parser {
       }
     }
     if(count($types) === 0) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_INVALID_TYPE, $firstToken);
+      throw new ParsingException($this, ParsingException::PARSING_ERROR_INVALID_TYPE, $firstToken);
     }
     $type = CompoundType::buildFromTypes($types);
     if($type === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_INVALID_TYPE, $firstToken);
+      throw new ParsingException($this, ParsingException::PARSING_ERROR_INVALID_TYPE, $firstToken);
     }
     if($inBrackets) {
       if($token === null || $token->id !== Token::BRACKETS_CLOSED) {
-        throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
+        throw new ParsingSkippedException();
       }
       $token = $token->next();
       if($token->hasNext()) {

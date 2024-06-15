@@ -17,24 +17,18 @@ class VariantParser extends Parser {
   /**
    * @param array<Parser> $parsers
    */
-  public function __construct(array $parsers) {
+  public function __construct(string $name, array $parsers) {
+    parent::__construct($name);
     $this->parsers = $parsers;
   }
 
   protected function parsePart(Token $firstToken): ParserReturn {
-    $exception = null;
     /** @var Parser $parser */
     foreach($this->parsers as $parser) {
       try {
         return $parser->parse($firstToken);
-      } catch(ParsingException $e) {
-        $exception = $e;
-      } // try the next one
+      } catch(ParsingSkippedException $e) {} // try the next one
     }
-    if($exception !== null) {
-      throw $exception;
-    } else {
-      throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
-    }
+    throw new ParsingSkippedException();
   }
 }

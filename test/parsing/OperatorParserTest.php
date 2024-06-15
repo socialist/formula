@@ -68,7 +68,7 @@ class OperatorParserTest extends TestCase {
     $parser = new OperatorParser();
     $parsed = $parser->parse($token);
     if(is_int($parsed)) {
-      throw new ParsingException($parsed, $token);
+      throw new ParsingException($this, $parsed, $token);
     }
     $this->assertInstanceOf(Operator::class, $parsed->parsed);
     $this->assertEquals($expectedOperator, $parsed->parsed->toString(PrettyPrintOptions::buildDefault()));

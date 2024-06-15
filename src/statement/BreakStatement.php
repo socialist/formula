@@ -4,8 +4,6 @@ namespace TimoLehnertz\formula\statement;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\VoidType;
-use TimoLehnertz\formula\type\VoidValue;
 
 /**
  * @author Timo Lehnertz
@@ -13,11 +11,11 @@ use TimoLehnertz\formula\type\VoidValue;
 class BreakStatement implements Statement {
 
   public function validate(Scope $scope): StatementReturnType {
-    return new StatementReturnType(new VoidType(), false, false);
+    return new StatementReturnType(null, Frequency::ALWAYS, Frequency::NEVER);
   }
 
   public function run(Scope $scope): StatementReturn {
-    return new StatementReturn(new VoidValue(), false, true, 0);
+    return new StatementReturn(null, true, 0);
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {

@@ -5,7 +5,6 @@ namespace TimoLehnertz\formula\statement;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\VoidValue;
 
 /**
  * @author Timo Lehnertz
@@ -25,9 +24,13 @@ class IfStatement implements Statement {
   }
 
   public function validate(Scope $scope): StatementReturnType {
-    $this->condition->validate($scope);
-    $bodyReturn = $this->body->validate($scope);
-    return new StatementReturnType($bodyReturn->returnType, $bodyReturn->mayReturn, false);
+    $this->condition?->validate($scope);
+    $statementReturnType = new StatementReturnType(null, Frequency::NEVER, Frequency::NEVER);
+    $statementReturnType = $statementReturnType->concatOr($this->body->validate($scope));
+    if($this->else !== null) {
+      $statementReturnType = $statementReturnType->concatOr($this->else->validate($scope));
+    }
+    return $statementReturnType;
   }
 
   public function run(Scope $scope): StatementReturn {
@@ -36,7 +39,7 @@ class IfStatement implements Statement {
     } else if($this->else !== null) {
       return $this->else->run($scope);
     } else {
-      return new StatementReturn(new VoidValue(), false, false, 0);
+      return new StatementReturn(null, false, 0);
     }
   }
 

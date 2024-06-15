@@ -12,7 +12,7 @@ use TimoLehnertz\formula\tokens\Token;
 class CallOperatorParser extends EnumeratedParser {
 
   public function __construct() {
-    parent::__construct(new ExpressionParser(), Token::BRACKETS_OPEN, Token::COMMA, Token::BRACKETS_CLOSED, false, true);
+    parent::__construct('call operator', new ExpressionParser(), Token::BRACKETS_OPEN, Token::COMMA, Token::BRACKETS_CLOSED, false, true);
   }
 
   protected function parsePart(Token $firstToken): ParserReturn {

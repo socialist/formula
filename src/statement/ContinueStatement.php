@@ -2,16 +2,16 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\statement;
 
+use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\VoidType;
-use TimoLehnertz\formula\type\VoidValue;
+use TimoLehnertz\formula\type\IntegerType;
 
 /**
  * @author Timo Lehnertz
  */
-class ReturnStatement implements Statement {
+class ContinueStatement implements Statement {
 
   private ?Expression $expression;
 
@@ -20,18 +20,24 @@ class ReturnStatement implements Statement {
   }
 
   public function validate(Scope $scope): StatementReturnType {
-    return new StatementReturnType($this->expression?->validate($scope) ?? new VoidType(), Frequency::ALWAYS, Frequency::ALWAYS);
+    if($this->expression !== null) {
+      $expressionType = $this->expression->validate($scope);
+      if(!($expressionType instanceof IntegerType)) {
+        throw new FormulaValidationException('Continue expression can only be followed by integer expression');
+      }
+    }
+    return new StatementReturnType(null, Frequency::ALWAYS, Frequency::NEVER);
   }
 
   public function run(Scope $scope): StatementReturn {
-    return new StatementReturn($this->expression?->run($scope) ?? new VoidValue(), false, 0);
+    return new StatementReturn(null, false, $this->expression?->run($scope)->toPHPValue() ?? 1);
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
     if($this->expression === null) {
-      return 'return;';
+      return 'continue;';
     }
-    return 'return '.$this->expression->toString($prettyPrintOptions).';';
+    return 'continue '.$this->expression->toString($prettyPrintOptions).';';
   }
 
   public function getExpression(): ?Expression {

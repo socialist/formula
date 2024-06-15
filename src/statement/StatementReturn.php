@@ -11,22 +11,19 @@ use TimoLehnertz\formula\type\Value;
  */
 class StatementReturn {
 
-  public readonly Value $returnValue;
-
-  public readonly bool $returnFlag;
+  public readonly ?Value $returnValue;
 
   public readonly bool $breakFlag;
 
   public readonly int $continueCount;
 
-  public function __construct(Value $returnValue, bool $returnFlag, bool $breakFlag, int $continueCount) {
+  public function __construct(?Value $returnValue, bool $breakFlag, int $continueCount) {
     $this->returnValue = $returnValue;
-    $this->returnFlag = $returnFlag;
     $this->breakFlag = $breakFlag;
     $this->continueCount = $continueCount;
   }
 
   public function isTerminating(): bool {
-    return $this->returnFlag || $this->breakFlag || $this->continueCount > 0;
+    return $this->returnValue !== null || $this->breakFlag || $this->continueCount > 0;
   }
 }

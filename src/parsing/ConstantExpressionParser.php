@@ -15,6 +15,10 @@ use TimoLehnertz\formula\type\StringValue;
  */
 class ConstantExpressionParser extends Parser {
 
+  public function __construct() {
+    parent::__construct('constant expression');
+  }
+
   protected function parsePart(Token $firstToken): ParserReturn {
     switch($firstToken->id) {
       case Token::FLOAT_CONSTANT:
@@ -30,6 +34,6 @@ class ConstantExpressionParser extends Parser {
       case Token::KEYWORD_NULL:
         return new ParserReturn(new ConstantExpression(new NullValue()), $firstToken->next());
     }
-    throw new ParsingException(ParsingException::PARSING_ERROR_GENERIC, $firstToken);
+    throw new ParsingSkippedException();
   }
 }

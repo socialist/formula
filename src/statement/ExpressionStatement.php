@@ -18,11 +18,13 @@ class ExpressionStatement implements Statement {
   }
 
   public function validate(Scope $scope): StatementReturnType {
-    return new StatementReturnType($this->expression->validate($scope), false, false);
+    $this->expression->validate($scope);
+    return new StatementReturnType(null, Frequency::NEVER, Frequency::NEVER);
   }
 
   public function run(Scope $scope): StatementReturn {
-    return new StatementReturn($this->expression->run($scope), false, false, 0);
+    $this->expression->run($scope);
+    return new StatementReturn(null, false, 0);
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {

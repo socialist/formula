@@ -10,19 +10,20 @@ use TimoLehnertz\formula\tokens\Token;
  */
 class ExpressionStatementParser extends Parser {
 
+  public function __construct() {
+    parent::__construct('expression statement');
+  }
+
   /**
    * @param Token[] $tokens
    */
   protected function parsePart(Token $firstToken): ParserReturn {
     $parsedExpression = (new ExpressionParser())->parse($firstToken);
-    if(is_int($parsedExpression)) {
-      return $parsedExpression;
-    }
     if($parsedExpression->nextToken === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, null);
+      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
     }
     if($parsedExpression->nextToken->id !== Token::SEMICOLON) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_EXPECTED_SEMICOLON, $parsedExpression->nextToken);
+      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $parsedExpression->nextToken, 'Expected ;');
     }
     return new ParserReturn(new ExpressionStatement($parsedExpression->parsed), $parsedExpression->nextToken->next());
   }

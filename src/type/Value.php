@@ -14,13 +14,14 @@ abstract class Value implements OperatorHandler {
   public function getCompatibleOperands(ImplementableOperator $operator): array {
     $array = $this->getValueExpectedOperands($operator);
     switch($operator->getID()) {
-      case Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT:
+      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT:
+      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL:
         $array[] = $this->getType();
         break;
-      case Operator::IMPLEMENTABLE_EQUALS:
+      case ImplementableOperator::TYPE_EQUALS:
         $array[] = $this->getType();
         break;
-      case Operator::IMPLEMENTABLE_TYPE_CAST:
+      case ImplementableOperator::TYPE_TYPE_CAST:
         $array[] = new TypeType(new BooleanType());
         $array[] = new TypeType($this->getType());
         $array[] = new TypeType(new StringType());
@@ -35,17 +36,18 @@ abstract class Value implements OperatorHandler {
     }
     // default operators
     switch($operator->getID()) {
-      case Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT:
+      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT:
+      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL:
         if($otherType === null || !$this->getType()->equals($otherType)) {
           return null;
         }
         return $this->getType();
-      case Operator::IMPLEMENTABLE_EQUALS:
+      case ImplementableOperator::TYPE_EQUALS:
         if($otherType === null || !$this->getType()->equals($otherType)) {
           return null;
         }
         return new BooleanType();
-      case Operator::IMPLEMENTABLE_TYPE_CAST:
+      case ImplementableOperator::TYPE_TYPE_CAST:
         if($otherType instanceof TypeType) {
           if($otherType->getType() instanceof BooleanType) {
             return new BooleanType();
@@ -66,18 +68,21 @@ abstract class Value implements OperatorHandler {
   public function operate(ImplementableOperator $operator, ?Value $other): Value {
     // default operators
     switch($operator->getID()) {
-      case Operator::IMPLEMENTABLE_DIRECT_ASSIGNMENT:
-        if($this->getType()->equals($other->getType())) {
-          $this->assign($other);
-          return $this->copy();
-        }
+      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT:
+        $this->assign($other);
+        return $this->copy();
         break;
-      case Operator::IMPLEMENTABLE_EQUALS:
+      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL:
+        $return = $this->copy();
+        $this->assign($other);
+        return $return;
+        break;
+      case ImplementableOperator::TYPE_EQUALS:
         if($this->getType()->equals($other->getType())) {
           return new BooleanValue($this->valueEquals($other));
         }
         break;
-      case Operator::IMPLEMENTABLE_TYPE_CAST:
+      case ImplementableOperator::TYPE_TYPE_CAST:
         if($other instanceof TypeValue) {
           if($other->getValue() instanceof BooleanType) {
             return new BooleanValue($this->isTruthy());
