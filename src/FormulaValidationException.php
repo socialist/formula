@@ -5,9 +5,9 @@ namespace TimoLehnertz\formula;
 /**
  * @author Timo Lehnertz
  */
-class FormulaValidationException extends \Exception {
+class FormulaValidationException extends FormulaPartException {
 
-  public function __construc(string $message) {
-    parent::__construct($message);
+  public function __construct(FormulaPart $formulaPart, string $message) {
+    parent::__construct($formulaPart, 'Validation error', $message);
   }
 }

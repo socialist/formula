@@ -81,7 +81,7 @@ class Scope {
       }
       return CompoundType::buildFromTypes($types);
     }
-    throw new FormulaValidationException('PHP type '.$reflectionType.' is not supported');
+    throw new FormulaValidationException($this, 'PHP type '.$reflectionType.' is not supported');
   }
 
   public function definePHPFunction(string $identifier, callable $callable): void {
@@ -116,7 +116,7 @@ class Scope {
       }
       $reflectionArgumentType = $reflectionArgument->getType();
       if($reflectionArgumentType === null) {
-        throw new FormulaValidationException('Parameter '.$reflectionArgument->name.' has no php type. Only typed parameters are supported');
+        throw new FormulaValidationException($this, 'Parameter '.$reflectionArgument->name.' has no php type. Only typed parameters are supported');
       }
       $arguments[] = new FunctionArgument(Scope::reflectionTypeToFormulaType($reflectionArgumentType), $reflectionArgument->isOptional());
     }

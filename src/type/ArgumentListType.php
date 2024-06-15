@@ -8,7 +8,7 @@ use TimoLehnertz\formula\operator\ImplementableOperator;
 /**
  * @author Timo Lehnertz
  */
-class ArgumentListType implements Type {
+class ArgumentListType extends Type {
 
   /**
    * @var array<FunctionArgument>
@@ -21,6 +21,7 @@ class ArgumentListType implements Type {
    * @var array<FunctionArgument>
    */
   public function __construct(array $arguments, bool $isVArgs) {
+    parent::__construct();
     $this->arguments = $arguments;
     $this->isVArgs = $isVArgs;
     // check that optional parameters are at the end
@@ -29,15 +30,15 @@ class ArgumentListType implements Type {
       /** @var FunctionArgument $argument */
       $argument = $arguments[$i];
       if($optional && !$argument->optional) {
-        throw new FormulaValidationException('Not optional parameter cannot follow optional parameter');
+        throw new FormulaValidationException($this, 'Not optional parameter cannot follow optional parameter');
       }
       if($argument->optional) {
         if($isVArgs && $i < count($arguments) - 1) {
-          throw new FormulaValidationException('Optional parameter can\'t be followed by VArgs');
+          throw new FormulaValidationException($this, 'Optional parameter can\'t be followed by VArgs');
         }
         $optional = true;
         if($i === count($arguments) - 1 && $isVArgs && !$argument->optional) {
-          throw new FormulaValidationException('VArg parameter must be optional');
+          throw new FormulaValidationException($this, 'VArg parameter must be optional');
         }
       }
     }

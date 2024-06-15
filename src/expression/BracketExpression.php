@@ -10,11 +10,12 @@ use TimoLehnertz\formula\type\Value;
 /**
  * @author Timo Lehnertz
  */
-class BracketExpression implements Expression {
+class BracketExpression extends Expression {
 
   public readonly Expression $expression;
 
   public function __construct(Expression $expression) {
+    parent::__construct();
     $this->expression = $expression;
   }
 

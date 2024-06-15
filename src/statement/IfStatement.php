@@ -9,7 +9,7 @@ use TimoLehnertz\formula\procedure\Scope;
 /**
  * @author Timo Lehnertz
  */
-class IfStatement implements Statement {
+class IfStatement extends Statement {
 
   private readonly ?Expression $condition;
 
@@ -18,6 +18,7 @@ class IfStatement implements Statement {
   private readonly ?IfStatement $else;
 
   public function __construct(?Expression $condition, CodeBlock $body, ?IfStatement $else) {
+    parent::__construct();
     $this->condition = $condition;
     $this->body = $body;
     $this->else = $else;

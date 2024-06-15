@@ -51,6 +51,9 @@ class OperatorParser extends Parser {
     Token::ASSIGNMENT_PLUS => true,
     Token::ASSIGNMENT_MINUS => true,
     Token::ASSIGNMENT_XOR => true,
+    Token::LOGICAL_XOR => true,
+    Token::LOGICAL_AND => true,
+    Token::LOGICAL_OR => true,
   ];
 
   // @formatter:on

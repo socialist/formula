@@ -13,9 +13,9 @@ use TimoLehnertz\formula\type\Type;
 class ParserReturn {
 
   /**
-   * @var FormulaPart|array<ParsedPart>|Type
+   * @var FormulaPart|array<ParsedPart>
    */
-  public readonly FormulaPart|array|Type|ParsedOperator $parsed;
+  public readonly FormulaPart|array $parsed;
 
   public readonly ?Token $nextToken;
 

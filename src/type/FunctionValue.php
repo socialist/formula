@@ -47,7 +47,7 @@ class FunctionValue extends Value {
   }
 
   protected function getValueExpectedOperands(ImplementableOperator $operator): array {
-    if($operator->getID() === Operator::IMPLEMENTABLE_CALL) {
+    if($operator->getID() === ImplementableOperator::TYPE_CALL) {
       return [$this->type->arguments];
     } else {
       return [];
@@ -55,7 +55,7 @@ class FunctionValue extends Value {
   }
 
   protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    if($operator->getID() === Operator::IMPLEMENTABLE_CALL) {
+    if($operator->getID() === ImplementableOperator::TYPE_CALL) {
       return $this->type->returnType;
     } else {
       return [];
@@ -63,7 +63,7 @@ class FunctionValue extends Value {
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
-    if($operator->getID() === Operator::IMPLEMENTABLE_CALL && $other !== null && $other instanceof ArgumentListValue) {
+    if($operator->getID() === ImplementableOperator::TYPE_CALL && $other !== null && $other instanceof ArgumentListValue) {
       if(is_callable($this->body)) {
         $args = [];
         $argValues = $other->getValues();

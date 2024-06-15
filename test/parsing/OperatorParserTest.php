@@ -2,12 +2,13 @@
 namespace test\parsing;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Constraint\Operator;
 use TimoLehnertz\formula\PrettyPrintOptions;
-use TimoLehnertz\formula\operator\Operator;
 use TimoLehnertz\formula\operator\OperatorType;
 use TimoLehnertz\formula\parsing\OperatorParser;
 use TimoLehnertz\formula\parsing\ParsingException;
 use TimoLehnertz\formula\tokens\Tokenizer;
+use TimoLehnertz\formula\operator\ParsedOperator;
 
 class OperatorParserTest extends TestCase {
 
@@ -53,7 +54,6 @@ class OperatorParserTest extends TestCase {
       ['a instanceof b', 'instanceof', 1, OperatorType::InfixOperator],
     ];
   // @formatter:on
-    $this->assertCount(Operator::OPERATORS_COUNT, $dataset); // Assert that no operators are missed
     return $dataset;
   }
 
@@ -70,7 +70,7 @@ class OperatorParserTest extends TestCase {
     if(is_int($parsed)) {
       throw new ParsingException($this, $parsed, $token);
     }
-    $this->assertInstanceOf(Operator::class, $parsed->parsed);
+    $this->assertInstanceOf(ParsedOperator::class, $parsed->parsed);
     $this->assertEquals($expectedOperator, $parsed->parsed->toString(PrettyPrintOptions::buildDefault()));
     $this->assertEquals($operatorType, $parsed->parsed->getOperatorType());
   }

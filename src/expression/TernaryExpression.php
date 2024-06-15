@@ -11,7 +11,7 @@ use TimoLehnertz\formula\type\CompoundType;
 /**
  * @author Timo Lehnertz
  */
-class TernaryExpression implements Expression {
+class TernaryExpression extends Expression {
 
   private readonly Expression $condition;
 
@@ -20,6 +20,7 @@ class TernaryExpression implements Expression {
   private readonly Expression $rightExpression;
 
   public function __construct(Expression $condition, Expression $leftExpression, Expression $rightExpression) {
+    parent::__construct();
     $this->condition = $condition;
     $this->leftExpression = $leftExpression;
     $this->rightExpression = $rightExpression;

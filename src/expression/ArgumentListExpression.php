@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\expression;
 
+use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\ArgumentListType;
@@ -9,12 +10,11 @@ use TimoLehnertz\formula\type\ArgumentListValue;
 use TimoLehnertz\formula\type\FunctionArgument;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
-use TimoLehnertz\formula\FormulaValidationException;
 
 /**
  * @author Timo Lehnertz
  */
-class ArgumentListExpression implements Expression, CastableExpression {
+class ArgumentListExpression extends Expression implements CastableExpression {
 
   /**
    * @var array<Expression>
@@ -24,6 +24,7 @@ class ArgumentListExpression implements Expression, CastableExpression {
   private ArgumentListType $type;
 
   public function __construct(array $expressions) {
+    parent::__construct();
     $this->expressions = $expressions;
   }
 
@@ -35,12 +36,12 @@ class ArgumentListExpression implements Expression, CastableExpression {
     for($i = 0;$i < count($this->expressions);$i++) {
       $targetType = $type->getArgumentType($i);
       $actualType = $this->expressions[$i]->validate($scope);
-      $newExpressions[] = OperatorExpression::castExpression($this->expressions[$i], $actualType, $targetType, $scope);
+      $newExpressions[] = OperatorExpression::castExpression($this->expressions[$i], $actualType, $targetType, $scope, $this);
     }
     $castedExpression = new ArgumentListExpression($newExpressions);
     $castedType = $castedExpression->validate($scope);
     if(!$type->assignableBy($castedType)) {
-      throw new FormulaValidationException('Could not cast function arguments from '.$this->type->getIdentifier().' to '.$type->getIdentifier());
+      throw new FormulaValidationException($this, 'Could not cast function arguments from '.$this->type->getIdentifier().' to '.$type->getIdentifier());
     }
     return $castedExpression;
   }

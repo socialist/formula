@@ -15,7 +15,7 @@ use TimoLehnertz\formula\FormulaValidationException;
  *
  * @author Timo Lehnertz
  */
-interface Expression extends FormulaPart {
+abstract class Expression extends FormulaPart {
 
   /**
    * Must validate this and all contained Parts.
@@ -24,9 +24,9 @@ interface Expression extends FormulaPart {
    * @return Type the implied return type of this expression
    * @throws FormulaValidationException
    */
-  public function validate(Scope $scope): Type;
+  public abstract function validate(Scope $scope): Type;
 
-  public function run(Scope $scope): Value;
+  public abstract function run(Scope $scope): Value;
 
-  public function buildNode(Scope $scope): array;
+  public abstract function buildNode(Scope $scope): array;
 }

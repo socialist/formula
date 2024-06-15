@@ -9,11 +9,12 @@ use TimoLehnertz\formula\procedure\Scope;
 /**
  * @author Timo Lehnertz
  */
-class CodeBlockOrExpression implements Statement {
+class CodeBlockOrExpression extends Statement {
 
   private readonly CodeBlock|Expression $content;
 
   public function __construct(CodeBlock|Expression $content) {
+    parent::__construct();
     $this->content = $content;
   }
 

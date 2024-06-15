@@ -16,6 +16,10 @@ class CallOperatorParser extends EnumeratedParser {
   }
 
   protected function parsePart(Token $firstToken): ParserReturn {
+    $prev = $firstToken->prev();
+    if($prev === null || $prev->id !== Token::IDENTIFIER) {
+      throw new ParsingSkippedException();
+    }
     $result = parent::parsePart($firstToken);
     return new ParserReturn(new CallOperator(new ArgumentListExpression($result->parsed)), $result->nextToken);
   }

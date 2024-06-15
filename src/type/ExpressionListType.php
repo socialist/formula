@@ -8,7 +8,7 @@ use TimoLehnertz\formula\procedure\Scope;
 /**
  * @author Timo Lehnertz
  */
-class ExpressionListType implements Type {
+class ExpressionListType extends Type {
 
   /**
    * @var array<Type>

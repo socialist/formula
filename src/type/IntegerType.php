@@ -3,12 +3,15 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\procedure\Scope;
 
 /**
  * @author Timo Lehnertz
  */
-class IntegerType implements Type {
+class IntegerType extends Type {
+
+  public function __construct() {
+    parent::__construct();
+  }
 
   public function assignableBy(Type $type): bool {
     return $this->equals($type);

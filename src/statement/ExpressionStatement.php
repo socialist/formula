@@ -9,11 +9,12 @@ use TimoLehnertz\formula\procedure\Scope;
 /**
  * @author Timo Lehnertz
  */
-class ExpressionStatement implements Statement {
+class ExpressionStatement extends Statement {
 
   private Expression $expression;
 
   public function __construct(Expression $expression) {
+    parent::__construct();
     $this->expression = $expression;
   }
 

@@ -9,13 +9,14 @@ use TimoLehnertz\formula\procedure\Scope;
 /**
  * @author Timo Lehnertz
  */
-class WhileStatement implements Statement {
+class WhileStatement extends Statement {
 
   private Expression $condition;
 
   private CodeBlock $body;
 
   public function __construct(Expression $condition, CodeBlock $body) {
+    parent::__construct();
     $this->condition = $condition;
     $this->body = $body;
   }

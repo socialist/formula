@@ -11,15 +11,15 @@ use TimoLehnertz\formula\expression\TypeExpression;
 /**
  * @author Timo Lehnertz
  */
-class TypeCastOperator implements ParsedOperator {
+class TypeCastOperator extends ParsedOperator {
 
   private readonly bool $explicit;
 
   private readonly Type $type;
 
   public function __construct(bool $explicit, Type $type) {
+    parent::__construct();
     $this->explicit = $explicit;
-    $this->type = $type;
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
@@ -35,7 +35,11 @@ class TypeCastOperator implements ParsedOperator {
     return new OperatorExpression($rightExpression, $typeCastOperator, new TypeExpression($this->type));
   }
 
-  public function getOperatorType(): OperatorType {}
+  public function getOperatorType(): OperatorType {
+    return OperatorType::InfixOperator;
+  }
 
-  public function getPrecedence(): int {}
+  public function getPrecedence(): int {
+    return 3;
+  }
 }

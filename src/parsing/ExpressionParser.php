@@ -2,22 +2,24 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\expression\BracketExpression;
 use TimoLehnertz\formula\expression\Expression;
-use TimoLehnertz\formula\expression\OperatorExpression;
 use TimoLehnertz\formula\expression\TernaryExpression;
 use TimoLehnertz\formula\operator\OperatorType;
 use TimoLehnertz\formula\operator\ParsedOperator;
 use TimoLehnertz\formula\tokens\Token;
+use TimoLehnertz\formula\PrettyPrintOptions;
 
 /**
  * @author Timo Lehnertz
  */
 class ExpressionParser extends Parser {
 
-  public function __construct() {
+  private readonly bool $forceBrackets;
+
+  public function __construct(bool $forceBrackets = false) {
     parent::__construct('expression');
+    $this->forceBrackets = $forceBrackets;
   }
 
   // @formatter:off
@@ -32,12 +34,12 @@ class ExpressionParser extends Parser {
   ];
 
   // @formatter:on
-  protected function parsePart(Token $firstToken, bool $topLevel = true): ParserReturn {
-    $token = $firstToken;
-    $inBrackets = false;
-    if(!$topLevel) {
-      $inBrackets = $token->id === Token::BRACKETS_OPEN;
+  protected function parsePart(Token $firstToken): ParserReturn {
+    if($this->forceBrackets && $firstToken->id !== Token::BRACKETS_OPEN) {
+      throw new ParsingSkippedException();
     }
+    $token = $firstToken;
+    $inBrackets = $token->id === Token::BRACKETS_OPEN;
     if($inBrackets) {
       $token = $token->next();
     }
@@ -47,8 +49,9 @@ class ExpressionParser extends Parser {
     $ternaryCondition = null;
     $ternaryLeftExpression = null;
     $expressionsAndOperators = [];
-    $variantParser = new VariantParser($this->name, [new OperatorParser(),new ConstantExpressionParser(),new ArrayParser(),new IdentifierParser()]);
+    $variantParser = new VariantParser($this->name, [new OperatorParser(),new ConstantExpressionParser(),new ArrayParser(),new IdentifierParser(),new ExpressionParser(true)]);
     while($token !== null) {
+      // Ternary
       if($ternaryCondition === null && $token->id === Token::QUESTIONMARK) {
         $ternaryCondition = $this->transform($expressionsAndOperators, $token);
         $expressionsAndOperators = [];
@@ -57,6 +60,7 @@ class ExpressionParser extends Parser {
         }
         $token = $token->next();
       }
+      // Still ternary
       if($ternaryCondition !== null && $ternaryLeftExpression === null && $token->id === Token::COlON) {
         $ternaryLeftExpression = $this->transform($expressionsAndOperators, $token);
         $expressionsAndOperators = [];
@@ -68,19 +72,9 @@ class ExpressionParser extends Parser {
       if(isset(ExpressionParser::$expressionEndingTokens[$token->id])) {
         break;
       }
-      try {
-        $result = $variantParser->parse($token);
-        $expressionsAndOperators[] = $result->parsed;
-        $token = $result->nextToken;
-      } catch(ParsingSkippedException $e) {
-        if($token->id === Token::BRACKETS_OPEN) {
-          $result = $this->parsePart($token, false);
-          $token = $result->nextToken;
-          $expressionsAndOperators[] = $result->parsed;
-        } else {
-          throw $e;
-        }
-      }
+      $result = $variantParser->parse($token);
+      $expressionsAndOperators[] = $result->parsed;
+      $token = $result->nextToken;
     }
     if($inBrackets) {
       if($token === null) {
@@ -150,7 +144,7 @@ class ExpressionParser extends Parser {
           break;
         case OperatorType::PostfixOperator:
           if($leftExpression === null) {
-            throw new ParsingException($this, ParsingException::PARSING_ERROR_INVALID_OPERATOR_USE, $nextToken);
+            throw new ParsingException($this, ParsingException::PARSING_ERROR_INVALID_OPERATOR_USE, $nextToken, 'Missing left expression of postfix operator '.$operator->toString(PrettyPrintOptions::buildDefault()));
           }
           $startingIndex = $index - 1;
           $size = 2;

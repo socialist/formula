@@ -11,9 +11,8 @@ use TimoLehnertz\formula\procedure\Scope;
  * E.g. a loop, class, ff statement, assignment or similar
  *
  * @author Timo Lehnertz
- *
  */
-interface Statement extends FormulaPart {
+abstract class Statement extends FormulaPart {
 
   /**
    * MUST validate this and all contained Parts.
@@ -22,12 +21,7 @@ interface Statement extends FormulaPart {
    * @return StatementReturnType the implied return type of this expression
    * @throws FormulaValidationException
    */
-  public function validate(Scope $scope): StatementReturnType;
+  public abstract function validate(Scope $scope): StatementReturnType;
 
-  /**
-   * Run this Statement
-   */
-  public function run(Scope $scope): StatementReturn;
-
-  public function buildNode(Scope $scope): array;
+  public abstract function run(Scope $scope): StatementReturn;
 }

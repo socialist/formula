@@ -2,18 +2,15 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\operator;
 
-use PHPUnit\Framework\Constraint\Operator;
-use TimoLehnertz\formula\FormulaValidationException;
+use TimoLehnertz\formula\FormulaPart;
 use TimoLehnertz\formula\PrettyPrintOptions;
-use TimoLehnertz\formula\type\Type;
-use TimoLehnertz\formula\type\Value;
 
 /**
  * @author Timo Lehnertz
  *
  *         Represents an operators that can be implemented by values
  */
-class ImplementableOperator {
+class ImplementableOperator extends FormulaPart {
 
   // @formatter:off
   public const TYPE_ADDITION = 0;
@@ -48,189 +45,100 @@ class ImplementableOperator {
 
   private readonly OperatorType $operatorType;
 
+  private readonly string $identifier;
+
   /**
    * @param ImplementableOperator::TYPE_*
    */
   public function __construct(int $id) {
+    parent::__construct();
     $this->id = $id;
     $this->operatorType = self::idToOperatorType($id);
-    //     $this->precedence = self::idToPrecedence($id);
-    //     $this->identifier = self::idToIdentifier($id);
+    $this->identifier = self::idToIdentifier($id);
   }
 
   private static function idToOperatorType(int $id): OperatorType {
     switch($id) {
-      case Operator::TYPE_ADDITION:
-      case Operator::TYPE_SUBTRACTION:
-      case Operator::TYPE_MULTIPLICATION:
-      case Operator::TYPE_DIVISION:
-      case Operator::TYPE_MODULO:
-      case Operator::TYPE_EQUALS:
-      case Operator::TYPE_GREATER:
-      case Operator::TYPE_LESS:
-      case Operator::TYPE_LOGICAL_AND:
-      case Operator::TYPE_DIRECT_ASSIGNMENT:
-      case Operator::TYPE_MEMBER_ACCESS:
-      case Operator::TYPE_SCOPE_RESOLUTION:
-      case Operator::TYPE_LOGICAL_XOR:
-      case Operator::TYPE_INSTANCEOF:
-      case Operator::TYPE_LOGICAL_OR:
-      case Operator::TYPE_CALL:
-      case Operator::TYPE_TYPE_CAST:
-      case Operator::TYPE_ARRAY_ACCESS:
+      case ImplementableOperator::TYPE_ADDITION:
+      case ImplementableOperator::TYPE_SUBTRACTION:
+      case ImplementableOperator::TYPE_MULTIPLICATION:
+      case ImplementableOperator::TYPE_DIVISION:
+      case ImplementableOperator::TYPE_MODULO:
+      case ImplementableOperator::TYPE_EQUALS:
+      case ImplementableOperator::TYPE_GREATER:
+      case ImplementableOperator::TYPE_LESS:
+      case ImplementableOperator::TYPE_LOGICAL_AND:
+      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT:
+      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL:
+      case ImplementableOperator::TYPE_MEMBER_ACCESS:
+      case ImplementableOperator::TYPE_SCOPE_RESOLUTION:
+      case ImplementableOperator::TYPE_LOGICAL_XOR:
+      case ImplementableOperator::TYPE_INSTANCEOF:
+      case ImplementableOperator::TYPE_LOGICAL_OR:
+      case ImplementableOperator::TYPE_CALL:
+      case ImplementableOperator::TYPE_TYPE_CAST:
+      case ImplementableOperator::TYPE_ARRAY_ACCESS:
         return OperatorType::InfixOperator;
-      case Operator::TYPE_NEW:
-      case Operator::TYPE_UNARY_PLUS:
-      case Operator::TYPE_UNARY_MINUS:
-      case Operator::TYPE_LOGICAL_NOT:
+      case ImplementableOperator::TYPE_NEW:
+      case ImplementableOperator::TYPE_UNARY_PLUS:
+      case ImplementableOperator::TYPE_UNARY_MINUS:
+      case ImplementableOperator::TYPE_LOGICAL_NOT:
         return OperatorType::PrefixOperator;
       default:
-        throw new \UnexpectedValueException('invalid ImplementableOperator ID '.$id);
+        throw new \UnexpectedValueException('Invalid ImplementableOperator ID '.$id);
     }
   }
 
-  //   private static function idToPrecedence(int $id): int {
-  //     switch($id) {
-  //       case Operator::TYPE_SCOPE_RESOLUTION:
-  //         return 1;
-  //       case Operator::TYPE_MEMBER_ACCESS:
-  //       case Operator::TYPE_ARRAY_ACCESS:
-  //       case Operator::TYPE_CALL:
-  //         return 2;
-  //       case Operator::TYPE_UNARY_PLUS:
-  //       case Operator::TYPE_UNARY_MINUS:
-  //       case Operator::TYPE_LOGICAL_NOT:
-  //       case Operator::TYPE_NEW:
-  //       case Operator::TYPE_INSTANCEOF:
-  //       case Operator::TYPE_TYPE_CAST:
-  //         return 3;
-  //       case Operator::TYPE_MULTIPLICATION:
-  //       case Operator::TYPE_DIVISION:
-  //       case Operator::TYPE_MODULO:
-  //         return 5;
-  //       case Operator::TYPE_ADDITION:
-  //       case Operator::TYPE_SUBTRACTION:
-  //         return 6;
-  //       case Operator::TYPE_GREATER:
-  //       case Operator::TYPE_LESS:
-  //         return 9;
-  //       case Operator::TYPE_EQUALS:
-  //         return 10;
-  //       case Operator::TYPE_LOGICAL_AND:
-  //         return 14;
-  //       case Operator::TYPE_LOGICAL_OR:
-  //       case Operator::TYPE_LOGICAL_XOR:
-  //         return 15;
-  //       case Operator::TYPE_DIRECT_ASSIGNMENT:
-  //         return 16;
-  //       default:
-  //         throw new \UnexpectedValueException('invalid ImplementableOperator ID '.$id);
-  //     }
-  //   }
-
-  //   private static function idToIdentifier(int $id): string {
-  //     switch($id) {
-  //       case Operator::TYPE_SCOPE_RESOLUTION:
-  //         return '::';
-  //       case Operator::TYPE_MEMBER_ACCESS:
-  //         return '.';
-  //       case Operator::TYPE_UNARY_PLUS:
-  //         return '+';
-  //       case Operator::TYPE_UNARY_MINUS:
-  //         return '-';
-  //       case Operator::TYPE_LOGICAL_NOT:
-  //         return '!';
-  //       case Operator::TYPE_NEW:
-  //         return 'new';
-  //       case Operator::TYPE_INSTANCEOF:
-  //         return 'instanceof';
-  //       case Operator::TYPE_MULTIPLICATION:
-  //         return '*';
-  //       case Operator::TYPE_DIVISION:
-  //         return '/';
-  //       case Operator::TYPE_MODULO:
-  //         return '%';
-  //       case Operator::TYPE_ADDITION:
-  //         return '+';
-  //       case Operator::TYPE_SUBTRACTION:
-  //         return '-';
-  //       case Operator::TYPE_GREATER:
-  //         return '>';
-  //       case Operator::TYPE_LESS:
-  //         return '<';
-  //       case Operator::TYPE_EQUALS:
-  //         return '==';
-  //       case Operator::TYPE_LOGICAL_AND:
-  //         return '&&';
-  //       case Operator::TYPE_LOGICAL_OR:
-  //         return '||';
-  //       case Operator::TYPE_LOGICAL_XOR:
-  //         return '^';
-  //       case Operator::TYPE_DIRECT_ASSIGNMENT:
-  //         return '=';
-  //       case Operator::TYPE_TYPE_CAST:
-  //         return 'typecast';
-  //       case Operator::TYPE_ARRAY_ACCESS:
-  //         return '[]';
-  //       case Operator::TYPE_CALL:
-  //         return '()';
-  //       default:
-  //         throw new \UnexpectedValueException('invalid ImplementableOperator ID '.$id);
-  //     }
-  //   }
-  public function validateOperation(?Type $leftType, ?Type $rigthType): Type {
-    switch($this->operatorType) {
-      case OperatorType::PrefixOperator:
-        if($leftType !== null || $rigthType === null) {
-          throw new \UnexpectedValueException('Invalid operands for operator #'.$this->id);
-        }
-        $resultType = $rigthType->getOperatorResultType($this, null);
-        if($resultType === null) {
-          throw new FormulaValidationException('Invalid prefix operation '.$this->toString(PrettyPrintOptions::buildDefault()).$rigthType->getIdentifier());
-        }
-        return $resultType;
-      case OperatorType::InfixOperator:
-        if($leftType === null || $rigthType === null) {
-          throw new \UnexpectedValueException('Invalid operands for operator #'.$this->id);
-        }
-        $resultType = $leftType->getOperatorResultType($this, $rigthType);
-        if($resultType === null) {
-          throw new FormulaValidationException('Invalid infix operation '.$leftType->getIdentifier().' '.$this->toString(PrettyPrintOptions::buildDefault()).' '.$rigthType->getIdentifier());
-        }
-        return $resultType;
-      case OperatorType::PostOperator:
-        if($leftType === null || $rigthType !== null) {
-          throw new \UnexpectedValueException('Invalid operands for operator #'.$this->id);
-        }
-        $resultType = $leftType->getOperatorResultType($this, null);
-        if($resultType === null) {
-          throw new FormulaValidationException('Invalid postfix operation '.$leftType->getIdentifier().' '.$this->toString(PrettyPrintOptions::buildDefault()));
-        }
-        return $resultType;
+  private static function idToIdentifier(int $id): string {
+    switch($id) {
+      case ImplementableOperator::TYPE_SCOPE_RESOLUTION:
+        return '::';
+      case ImplementableOperator::TYPE_MEMBER_ACCESS:
+        return '.';
+      case ImplementableOperator::TYPE_UNARY_PLUS:
+        return '+';
+      case ImplementableOperator::TYPE_UNARY_MINUS:
+        return '-';
+      case ImplementableOperator::TYPE_LOGICAL_NOT:
+        return '!';
+      case ImplementableOperator::TYPE_NEW:
+        return 'new';
+      case ImplementableOperator::TYPE_INSTANCEOF:
+        return 'instanceof';
+      case ImplementableOperator::TYPE_MULTIPLICATION:
+        return '*';
+      case ImplementableOperator::TYPE_DIVISION:
+        return '/';
+      case ImplementableOperator::TYPE_MODULO:
+        return '%';
+      case ImplementableOperator::TYPE_ADDITION:
+        return '+';
+      case ImplementableOperator::TYPE_SUBTRACTION:
+        return '-';
+      case ImplementableOperator::TYPE_GREATER:
+        return '>';
+      case ImplementableOperator::TYPE_LESS:
+        return '<';
+      case ImplementableOperator::TYPE_EQUALS:
+        return '==';
+      case ImplementableOperator::TYPE_LOGICAL_AND:
+        return '&&';
+      case ImplementableOperator::TYPE_LOGICAL_OR:
+        return '||';
+      case ImplementableOperator::TYPE_LOGICAL_XOR:
+        return '^';
+      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT:
+        return '=';
+      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL:
+        return '=';
+      case ImplementableOperator::TYPE_TYPE_CAST:
+        return 'typecast';
+      case ImplementableOperator::TYPE_ARRAY_ACCESS:
+        return '[]';
+      case ImplementableOperator::TYPE_CALL:
+        return '()';
       default:
-        throw new \UnexpectedValueException('Invalid operatorType');
-    }
-  }
-
-  public function operate(?Value $leftValue, ?Value $rightValue): Value {
-    switch($this->operatorType) {
-      case OperatorType::PrefixOperator:
-        if($leftValue !== null || $rightValue === null) {
-          throw new \UnexpectedValueException('Invalid operands for operator #'.$this->id);
-        }
-        return $rightValue->operate($this, $rightValue);
-      case OperatorType::InfixOperator:
-        if($leftValue === null || $rightValue === null) {
-          throw new \UnexpectedValueException('Invalid operands for operator #'.$this->id);
-        }
-        return $leftValue->operate($this, $rightValue);
-      case OperatorType::PostOperator:
-        if($leftValue === null || $rightValue !== null) {
-          throw new \UnexpectedValueException('Invalid operands for operator #'.$this->id);
-        }
-        return $leftValue->operate($this, null);
-      default:
-        throw new \UnexpectedValueException('Invalid operatorType');
+        throw new \UnexpectedValueException('Invalid ImplementableOperator ID '.$id);
     }
   }
 

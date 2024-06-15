@@ -11,11 +11,12 @@ use TimoLehnertz\formula\type\VoidValue;
 /**
  * @author Timo Lehnertz
  */
-class ReturnStatement implements Statement {
+class ReturnStatement extends Statement {
 
   private ?Expression $expression;
 
   public function __construct(?Expression $expression) {
+    parent::__construct();
     $this->expression = $expression;
   }
 

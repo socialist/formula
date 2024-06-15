@@ -7,7 +7,11 @@ use TimoLehnertz\formula\operator\ImplementableOperator;
 /**
  * @author Timo Lehnertz
  */
-class VoidType implements Type {
+class VoidType extends Type {
+
+  public function __construct() {
+    parent::__construct();
+  }
 
   public function getIdentifier(bool $nested = false): string {
     return 'void';

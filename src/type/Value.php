@@ -4,7 +4,7 @@ namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\operator\Operator;
+use TimoLehnertz\formula\FormulaBugException;
 
 /**
  * @author Timo Lehnertz
@@ -22,9 +22,21 @@ abstract class Value implements OperatorHandler {
         $array[] = $this->getType();
         break;
       case ImplementableOperator::TYPE_TYPE_CAST:
+        foreach($array as $type) {
+          if(!($type instanceof TypeType)) {
+            throw new FormulaBugException('Cast operator has to expect TypeType');
+          }
+        }
         $array[] = new TypeType(new BooleanType());
         $array[] = new TypeType($this->getType());
         $array[] = new TypeType(new StringType());
+        break;
+      case ImplementableOperator::TYPE_LOGICAL_AND:
+        return [new BooleanType()];
+      case ImplementableOperator::TYPE_LOGICAL_OR:
+        return [new BooleanType()];
+      case ImplementableOperator::TYPE_LOGICAL_XOR:
+        return [new BooleanType()];
     }
     return $array;
   }
@@ -60,9 +72,14 @@ abstract class Value implements OperatorHandler {
           }
         }
         return null;
-      default:
-        return null;
+      case ImplementableOperator::TYPE_LOGICAL_AND:
+      case ImplementableOperator::TYPE_LOGICAL_OR:
+      case ImplementableOperator::TYPE_LOGICAL_XOR:
+        if($otherType !== null) {
+          return new BooleanType();
+        }
     }
+    return null;
   }
 
   public function operate(ImplementableOperator $operator, ?Value $other): Value {
@@ -94,6 +111,15 @@ abstract class Value implements OperatorHandler {
             return $this->toStringValue();
           }
         }
+        break;
+      case ImplementableOperator::TYPE_LOGICAL_AND:
+        return new BooleanValue($this->isTruthy() && $other->isTruthy());
+      case ImplementableOperator::TYPE_LOGICAL_OR:
+        return new BooleanValue($this->isTruthy() || $other->isTruthy());
+      case ImplementableOperator::TYPE_LOGICAL_XOR:
+        return new BooleanValue($this->isTruthy() xor $other->isTruthy());
+      case ImplementableOperator::TYPE_EQUALS:
+        return new BooleanValue($this->isTruthy() === $other->isTruthy());
     }
     return $this->valueOperate($operator, $other);
   }

@@ -8,13 +8,14 @@ use TimoLehnertz\formula\procedure\Scope;
 /**
  * @author Timo Lehnertz
  */
-class FunctionType implements Type {
+class FunctionType extends Type {
 
   public readonly ArgumentListType $arguments;
 
   public readonly Type $returnType;
 
   public function __construct(ArgumentListType $arguments, Type $returnType) {
+    parent::__construct();
     $this->arguments = $arguments;
     $this->returnType = $returnType;
   }

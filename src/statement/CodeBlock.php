@@ -5,7 +5,7 @@ namespace TimoLehnertz\formula\statement;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\procedure\Scope;
 
-class CodeBlock implements Statement {
+class CodeBlock extends Statement {
 
   /**
    * @var Statement[]
@@ -18,6 +18,7 @@ class CodeBlock implements Statement {
    * @param array<Statement> $statements
    */
   public function __construct(array $statements, bool $singleLine) {
+    parent::__construct();
     $this->statements = $statements;
     $this->singleLine = $singleLine;
     if($singleLine && count($statements) !== 1) {

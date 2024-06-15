@@ -5,12 +5,11 @@ namespace TimoLehnertz\formula\statement;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\VoidValue;
 
 /**
  * @author Timo Lehnertz
  */
-class ForStatement implements Statement {
+class ForStatement extends Statement {
 
   private ?VariableDeclarationStatement $declarationStatement;
 
@@ -21,6 +20,7 @@ class ForStatement implements Statement {
   private CodeBlock $body;
 
   public function __construct(?VariableDeclarationStatement $declarationStatement, ?Expression $condition, ?Expression $incrementExpression, CodeBlock $body) {
+    parent::__construct();
     $this->declarationStatement = $declarationStatement;
     $this->condition = $condition;
     $this->incrementExpression = $incrementExpression;

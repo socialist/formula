@@ -4,7 +4,7 @@ namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\operator\Operator;
+use TimoLehnertz\formula\FormulaBugException;
 
 /**
  * @author Timo Lehnertz
@@ -38,53 +38,15 @@ class BooleanValue extends Value {
   }
 
   protected function getValueExpectedOperands(ImplementableOperator $operator): array {
-    switch($operator->getID()) {
-      case Operator::IMPLEMENTABLE_LOGICAL_AND:
-        return [new BooleanType()];
-      case Operator::IMPLEMENTABLE_LOGICAL_OR:
-        return [new BooleanType()];
-      case Operator::IMPLEMENTABLE_LOGICAL_XOR:
-        return [new BooleanType()];
-    }
     return [];
   }
 
   protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    if($operator->getID() === Operator::IMPLEMENTABLE_LOGICAL_NOT) {
-      return new BooleanType();
-    }
-    if($otherType === null || !($otherType instanceof BooleanType)) {
-      return null;
-    }
-    switch($operator->getID()) {
-      case Operator::IMPLEMENTABLE_LOGICAL_AND:
-      case Operator::IMPLEMENTABLE_LOGICAL_OR:
-      case Operator::IMPLEMENTABLE_LOGICAL_XOR:
-        return new BooleanType();
-      default:
-        return null;
-    }
+    return null;
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
-    if($operator->getID() === Operator::IMPLEMENTABLE_LOGICAL_NOT) {
-      return new BooleanValue(!$this->value);
-    }
-    if($other === null || !($other instanceof BooleanValue)) {
-      throw new \BadFunctionCallException('Invalid value');
-    }
-    switch($operator->getID()) {
-      case Operator::IMPLEMENTABLE_LOGICAL_AND:
-        return new BooleanValue($other->value && $this->value);
-      case Operator::IMPLEMENTABLE_LOGICAL_OR:
-        return new BooleanValue($other->value || $this->value);
-      case Operator::IMPLEMENTABLE_LOGICAL_XOR:
-        return new BooleanValue($other->value xor $this->value);
-      case Operator::IMPLEMENTABLE_EQUALS:
-        return new BooleanValue($other->value === $this->value);
-      default:
-        throw new \BadFunctionCallException('Invalid operation');
-    }
+    throw new FormulaBugException('Invalid operation');
   }
 
   public function assign(Value $value): void {

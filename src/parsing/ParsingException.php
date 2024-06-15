@@ -37,7 +37,6 @@ class ParsingException extends \Exception {
 
   /**
    * @param ParsingException::PARSING_ERROR_* $code
-   * @param ParsingException::LEVEL_* $level
    */
   public function __construct(Parser $parser, int $parsingErrorCode, ?Token $token = null, ?string $additionalInfo = null) {
     $this->parser = $parser;
@@ -45,12 +44,12 @@ class ParsingException extends \Exception {
     $this->token = $token;
     $this->additionalInfo = $additionalInfo;
     if($token !== null) {
-      $message = 'Syntax error in '.$parser->name.': '.$token->line.':'.$token->position.' "'.($token->prev()?->value ?? '').' '.$token->value.' '.($token->next()?->value ?? '').'" Message: '.static::codeToMessage($parsingErrorCode);
+      $message = 'Syntax error in '.$parser->name.': '.($token->line + 1).':'.($token->position + 1).' "'.($token->prev()?->value ?? '').' '.$token->value.' '.($token->next()?->value ?? '').'". Message: '.static::codeToMessage($parsingErrorCode);
     } else {
       $message = 'Syntax error in: '.$parser->name.': '.static::codeToMessage($parsingErrorCode);
     }
     if($additionalInfo !== null) {
-      $message .= ' Message: '.$additionalInfo;
+      $message .= '. '.$additionalInfo;
     }
     parent::__construct($message);
   }

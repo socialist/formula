@@ -9,7 +9,7 @@ use TimoLehnertz\formula\expression\OperatorExpression;
 /**
  * @author Timo Lehnertz
  */
-class ImplementableParsedOperator implements ParsedOperator {
+class ImplementableParsedOperator extends ParsedOperator {
 
   /**
    * @var ImplementableOperator::TYPE_*
@@ -26,6 +26,7 @@ class ImplementableParsedOperator implements ParsedOperator {
    * @param ImplementableOperator::TYPE_* $implementableID
    */
   public function __construct(int $implementableID, string $identifier, OperatorType $operatorType, int $precedence) {
+    parent::__construct();
     $this->implementableID = $implementableID;
     $this->identifier = $identifier;
     $this->operatorType = $operatorType;

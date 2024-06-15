@@ -9,11 +9,12 @@ use TimoLehnertz\formula\expression\Expression;
 /**
  * @author Timo Lehnertz
  */
-class ArrayAccessOperator implements ParsedOperator {
+class ArrayAccessOperator extends ParsedOperator {
 
   private Expression $indexExpression;
 
   public function __construct(Expression $indexExpression) {
+    parent::__construct();
     $this->indexExpression = $indexExpression;
   }
 

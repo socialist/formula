@@ -3,16 +3,16 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\procedure\Scope;
 
 /**
  * @author Timo Lehnertz
  */
-class TypeType implements Type {
+class TypeType extends Type {
 
   private readonly Type $type;
 
   public function __construct(Type $type) {
+    parent::__construct();
     $this->type = $type;
   }
 

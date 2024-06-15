@@ -7,7 +7,11 @@ use TimoLehnertz\formula\operator\ImplementableOperator;
 /**
  * @author Timo Lehnertz
  */
-class FloatType implements Type {
+class FloatType extends Type {
+
+  public function __construct() {
+    parent::__construct();
+  }
 
   public function assignableBy(Type $type): bool {
     return $this->equals($type);

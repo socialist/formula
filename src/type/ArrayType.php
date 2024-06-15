@@ -2,19 +2,20 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use PHPUnit\Framework\Constraint\Operator;
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\operator\Operator;
 
 /**
  * @author Timo Lehnertz
  */
-class ArrayType implements Type {
+class ArrayType extends Type {
 
   private Type $keyType;
 
   private Type $elementsType;
 
   public function __construct(Type $keyType, Type $elementsType) {
+    parent::__construct();
     $this->keyType = $keyType;
     $this->elementsType = $elementsType;
   }

@@ -2,13 +2,17 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\FormulaValidationException;
+use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
  * @author Timo Lehnertz
  */
-class MixedType implements Type {
+class MixedType extends Type {
+
+  public function __construct() {
+    parent::__construct();
+  }
 
   public function getIdentifier(bool $nested = false): string {
     return 'mixed';
@@ -27,7 +31,7 @@ class MixedType implements Type {
   }
 
   public function getCompatibleOperands(ImplementableOperator $operator): array {
-    throw new FormulaValidationException('Mixed does not have any operators');
+    throw new FormulaValidationException($this, 'Mixed does not have any operators');
   }
 
   public function buildNode(): array {

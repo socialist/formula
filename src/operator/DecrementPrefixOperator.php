@@ -12,7 +12,11 @@ use TimoLehnertz\formula\type\IntegerValue;
 /**
  * @author Timo Lehnertz
  */
-class DecrementPrefixOperator implements ParsedOperator {
+class DecrementPrefixOperator extends ParsedOperator {
+
+  public function __construct() {
+    parent::__construct();
+  }
 
   public function transform(?Expression $leftExpression, ?Expression $rightExpression): Expression {
     $subtractionOperator = new ImplementableOperator(ImplementableOperator::TYPE_SUBTRACTION);

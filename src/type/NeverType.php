@@ -7,9 +7,11 @@ use TimoLehnertz\formula\operator\ImplementableOperator;
 /**
  * @author Timo Lehnertz
  */
-class NeverType implements Type {
+class NeverType extends Type {
 
-  public function __construct() {}
+  public function __construct() {
+    parent::__construct();
+  }
 
   public function assignableBy(Type $type): bool {
     return $this->equals($type);

@@ -8,7 +8,11 @@ use TimoLehnertz\formula\procedure\Scope;
 /**
  * @author Timo Lehnertz
  */
-class BreakStatement implements Statement {
+class BreakStatement extends Statement {
+
+  public function __construct() {
+    parent::__construct();
+  }
 
   public function validate(Scope $scope): StatementReturnType {
     return new StatementReturnType(null, Frequency::ALWAYS, Frequency::NEVER);

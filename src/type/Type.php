@@ -2,20 +2,27 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\FormulaPart;
+use TimoLehnertz\formula\PrettyPrintOptions;
+
 /**
  * Must be immutable
  * @author Timo Lehnertz
  */
-interface Type extends OperatorMeta {
+abstract class Type extends FormulaPart implements OperatorMeta {
 
   /**
    * @return string a unique identifier for this type. Equal identifier => equal type
    */
-  public function getIdentifier(bool $nested = false): string;
+  public abstract function getIdentifier(bool $nested = false): string;
 
-  public function equals(Type $type): bool;
+  public abstract function equals(Type $type): bool;
 
-  public function assignableBy(Type $type): bool;
+  public abstract function assignableBy(Type $type): bool;
 
-  public function buildNode(): array;
+  public abstract function buildNode(): array;
+
+  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
+    return $this->getIdentifier();
+  }
 }

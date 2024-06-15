@@ -15,16 +15,19 @@ class Token {
 
   public readonly int $position;
 
+  public readonly string $source;
+
   private ?Token $prev = null;
 
   private ?Token $next = null;
 
-  public function __construct(int $id, string $value, int $line, int $position, ?Token $prev) {
+  public function __construct(int $id, string $value, int $line, int $position, string $source, ?Token $prev) {
     $this->id = $id;
     $this->value = $value;
     $this->line = $line;
     $this->position = $position;
     $this->prev = $prev;
+    $this->source = $source;
     if($prev !== null) {
       $prev->next = $this;
     }
@@ -70,6 +73,15 @@ class Token {
       }
     }
     return null;
+  }
+
+  public function last(bool $includeComments = false): Token {
+    $next = $this->next($includeComments);
+    if($next === null) {
+      return $this;
+    } else {
+      return $next->last($includeComments);
+    }
   }
 
   // @formatter:off

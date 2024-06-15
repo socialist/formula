@@ -14,13 +14,14 @@ use TimoLehnertz\formula\type\Value;
 /**
  * @author Timo Lehnertz
  */
-class ArrayExpression implements Expression {
+class ArrayExpression extends Expression {
 
   private readonly array $expressions;
 
   private ArrayType $arrayType;
 
   public function __construct(array $expressions) {
+    parent::__construct();
     $this->expressions = $expressions;
   }
 

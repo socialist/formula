@@ -12,11 +12,12 @@ use TimoLehnertz\formula\type\Value;
 /**
  * @author Timo Lehnertz
  */
-class TypeExpression implements Expression {
+class TypeExpression extends Expression {
 
   private Type $type;
 
   public function __construct(Type $type) {
+    parent::__construct();
     $this->type = $type;
   }
 

@@ -22,11 +22,11 @@ class TypeValue extends Value {
   }
 
   public function getType(): Type {
-    throw new \BadFunctionCallException();
+    throw new FormulaBugException('Invalid call to TypeValue');
   }
 
   public function isTruthy(): bool {
-    throw new \BadFunctionCallException();
+    throw new FormulaBugException('Invalid call to TypeValue');
   }
 
   public function copy(): ArrayValue {
@@ -34,35 +34,35 @@ class TypeValue extends Value {
   }
 
   public function valueEquals(Value $other): bool {
-    throw new \BadFunctionCallException();
+    throw new FormulaBugException('Invalid call to TypeValue');
   }
 
   protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    throw new \BadFunctionCallException();
+    throw new FormulaBugException('Invalid call to TypeValue');
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
-    throw new \BadFunctionCallException();
+    throw new FormulaBugException('Invalid call to TypeValue');
   }
 
   public function assign(Value $value): void {
-    throw new \BadFunctionCallException();
+    throw new FormulaBugException('Invalid call to TypeValue');
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    throw new \BadFunctionCallException();
+    throw new FormulaBugException('Invalid call to TypeValue');
   }
 
   public function getCompatibleOperands(ImplementableOperator $operator): array {
-    throw new \BadFunctionCallException();
+    throw new FormulaBugException('Invalid call to TypeValue');
   }
 
   protected function getValueExpectedOperands(ImplementableOperator $operator): array {
-    throw new \BadFunctionCallException();
+    throw new FormulaBugException('Invalid call to TypeValue');
   }
 
   public function buildNode(): array {
-    throw new \BadFunctionCallException();
+    throw new FormulaBugException('Invalid call to TypeValue');
   }
 
   public function toPHPValue(): mixed {

@@ -11,11 +11,12 @@ use TimoLehnertz\formula\type\IntegerType;
 /**
  * @author Timo Lehnertz
  */
-class ContinueStatement implements Statement {
+class ContinueStatement extends Statement {
 
   private ?Expression $expression;
 
   public function __construct(?Expression $expression) {
+    parent::__construct();
     $this->expression = $expression;
   }
 
@@ -23,7 +24,7 @@ class ContinueStatement implements Statement {
     if($this->expression !== null) {
       $expressionType = $this->expression->validate($scope);
       if(!($expressionType instanceof IntegerType)) {
-        throw new FormulaValidationException('Continue expression can only be followed by integer expression');
+        throw new FormulaValidationException($this, 'Continue expression can only be followed by integer expression');
       }
     }
     return new StatementReturnType(null, Frequency::ALWAYS, Frequency::NEVER);

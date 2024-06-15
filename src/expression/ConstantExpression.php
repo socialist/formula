@@ -10,11 +10,12 @@ use TimoLehnertz\formula\type\Value;
 /**
  * @author Timo Lehnertz
  */
-class ConstantExpression implements Expression {
+class ConstantExpression extends Expression {
 
   private readonly Value $value;
 
   public function __construct(Value $value) {
+    parent::__construct();
     $this->value = $value;
   }
 

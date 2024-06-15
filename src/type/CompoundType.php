@@ -7,11 +7,12 @@ use TimoLehnertz\formula\operator\ImplementableOperator;
 /**
  * @author Timo Lehnertz
  */
-class CompoundType implements Type {
+class CompoundType extends Type {
 
   private readonly array $types;
 
   private function __construct(array $types) {
+    parent::__construct();
     $this->types = $types;
   }
 

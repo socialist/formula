@@ -1,16 +1,29 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula;
 
 /**
- * Superclass for all parsed components of a formula program
- *
  * @author Timo Lehnertz
- *
  */
-interface FormulaPart extends Identifiable {
+abstract class FormulaPart implements Identifiable {
+
+  private readonly int $identificationID;
+
+  private static $identifiableCount = 0;
+
+  public function __construct() {
+    $this->identificationID = FormulaPart::$identifiableCount++;
+  }
+
+  public function getIdentificationID(): int {
+    //     if(!isset($this->identificationID)) {
+    //       var_dump($this);
+    //     }
+    return $this->identificationID;
+  }
 
   /**
    * @return string Converts this expression back to code using PrettyPrintOptions
    */
-  public function toString(PrettyPrintOptions $prettyPrintOptions): string;
+  public abstract function toString(PrettyPrintOptions $prettyPrintOptions): string;
 }

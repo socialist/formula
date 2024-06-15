@@ -10,6 +10,7 @@ use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 use TimoLehnertz\formula\type\VoidType;
 use TimoLehnertz\formula\type\VoidValue;
+use src\tokens\TokenisationException;
 
 /**
  * This class represents a formula session that can interpret/run code
@@ -42,7 +43,7 @@ class Formula {
     $this->parentScope = $parentScope ?? new Scope();
     $firstToken = Tokenizer::tokenize($source)->skipComment();
     if($firstToken === null) {
-      throw new FormulaValidationException();
+      throw new TokenisationException('Invalid formula', 0, 0);
     }
     $parsedContent = (new CodeBlockOrExpressionParser(true))->parse($firstToken, true, true);
     $this->content = $parsedContent->parsed;
