@@ -2,14 +2,14 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\expression;
 
-use TimoLehnertz\formula\FormulaValidationException;
+use TimoLehnertz\formula\FormulaPartMetadate;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\ArgumentListType;
-use TimoLehnertz\formula\type\ArgumentListValue;
-use TimoLehnertz\formula\type\FunctionArgument;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
+use TimoLehnertz\formula\type\functions\OuterFunctionArgument;
+use TimoLehnertz\formula\type\functions\OuterFunctionArgumentListType;
+use TimoLehnertz\formula\type\functions\OuterFunctionArgumentListValue;
 
 /**
  * @author Timo Lehnertz
@@ -21,38 +21,35 @@ class ArgumentListExpression extends Expression implements CastableExpression {
    */
   private readonly array $expressions;
 
-  private ArgumentListType $type;
-
   public function __construct(array $expressions) {
     parent::__construct();
     $this->expressions = $expressions;
   }
 
   public function getCastedExpression(Type $type, Scope $scope): ArgumentListExpression {
-    if(!($type instanceof ArgumentListType)) {
+    if(!($type instanceof OuterFunctionArgumentListType)) {
       throw new \BadMethodCallException('ArgumentListExpression can only be casted to ArgumentList! Got '.$type::class);
     }
     $newExpressions = [];
     for($i = 0;$i < count($this->expressions);$i++) {
       $targetType = $type->getArgumentType($i);
       $actualType = $this->expressions[$i]->validate($scope);
-      $newExpressions[] = OperatorExpression::castExpression($this->expressions[$i], $actualType, $targetType, $scope, $this);
+      $expression = OperatorExpression::castExpression($this->expressions[$i], $actualType, $targetType, $scope, $this->expressions[$i]);
+      FormulaPartMetadate::copy($this->expressions[$i], $expression);
+      $newExpressions[] = $expression;
     }
     $castedExpression = new ArgumentListExpression($newExpressions);
-    $castedType = $castedExpression->validate($scope);
-    if(!$type->assignableBy($castedType)) {
-      throw new FormulaValidationException($this, 'Could not cast function arguments from '.$this->type->getIdentifier().' to '.$type->getIdentifier());
-    }
+    $castedExpression->validate($scope);
+    FormulaPartMetadate::copy($this, $castedExpression);
     return $castedExpression;
   }
 
-  public function validate(Scope $scope): Type {
+  public function validateStatement(Scope $scope): Type {
     $arguments = [];
     foreach($this->expressions as $expression) {
-      $arguments[] = new FunctionArgument($expression->validate($scope), false);
+      $arguments[] = new OuterFunctionArgument($expression->validate($scope), false);
     }
-    $this->type = new ArgumentListType($arguments, false);
-    return $this->type;
+    return new OuterFunctionArgumentListType($arguments, false);
   }
 
   public function run(Scope $scope): Value {
@@ -60,7 +57,7 @@ class ArgumentListExpression extends Expression implements CastableExpression {
     foreach($this->expressions as $expression) {
       $values[] = $expression->run($scope);
     }
-    return new ArgumentListValue($values, $this->type);
+    return new OuterFunctionArgumentListValue($values);
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {

@@ -5,9 +5,9 @@ namespace TimoLehnertz\formula;
 /**
  * @author Timo Lehnertz
  */
-class FormulaRuntimeException extends FormulaPartException {
+class FormulaRuntimeException extends FormulaStatementException {
 
-  public function __construc(FormulaPart $formulaPart, string $message) {
-    parent::__construct($formulaPart, 'Runtime error', $message);
+  public function __construct(string $message) {
+    parent::__construct($message);
   }
 }

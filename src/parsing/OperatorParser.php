@@ -54,6 +54,7 @@ class OperatorParser extends Parser {
     Token::LOGICAL_XOR => true,
     Token::LOGICAL_AND => true,
     Token::LOGICAL_OR => true,
+    Token::KEYWORD_RETURN => true,
   ];
 
   // @formatter:on
@@ -134,17 +135,17 @@ class OperatorParser extends Parser {
       case Token::ASSIGNMENT_AND:
         return new ParserReturn(new ChainedAssignmentOperator(new ImplementableOperator(ImplementableOperator::TYPE_LOGICAL_AND), 16, '&='), $firstToken->next());
       case Token::ASSIGNMENT_DIVIDE:
-        return new ParserReturn(new ChainedAssignmentOperator(new ImplementableOperator(ImplementableOperator::TYPE_DIVISION), 16, '&='), $firstToken->next());
+        return new ParserReturn(new ChainedAssignmentOperator(new ImplementableOperator(ImplementableOperator::TYPE_DIVISION), 16, '/='), $firstToken->next());
       case Token::ASSIGNMENT_MINUS:
-        return new ParserReturn(new ChainedAssignmentOperator(new ImplementableOperator(ImplementableOperator::TYPE_SUBTRACTION), 16, '&='), $firstToken->next());
+        return new ParserReturn(new ChainedAssignmentOperator(new ImplementableOperator(ImplementableOperator::TYPE_SUBTRACTION), 16, '-='), $firstToken->next());
       case Token::ASSIGNMENT_MULTIPLY:
-        return new ParserReturn(new ChainedAssignmentOperator(new ImplementableOperator(ImplementableOperator::TYPE_MULTIPLICATION), 16, '&='), $firstToken->next());
+        return new ParserReturn(new ChainedAssignmentOperator(new ImplementableOperator(ImplementableOperator::TYPE_MULTIPLICATION), 16, '*='), $firstToken->next());
       case Token::ASSIGNMENT_OR:
-        return new ParserReturn(new ChainedAssignmentOperator(new ImplementableOperator(ImplementableOperator::TYPE_LOGICAL_OR), 16, '&='), $firstToken->next());
+        return new ParserReturn(new ChainedAssignmentOperator(new ImplementableOperator(ImplementableOperator::TYPE_LOGICAL_OR), 16, '|='), $firstToken->next());
       case Token::ASSIGNMENT_PLUS:
-        return new ParserReturn(new ChainedAssignmentOperator(new ImplementableOperator(ImplementableOperator::TYPE_ADDITION), 16, '&='), $firstToken->next());
+        return new ParserReturn(new ChainedAssignmentOperator(new ImplementableOperator(ImplementableOperator::TYPE_ADDITION), 16, '+='), $firstToken->next());
       case Token::ASSIGNMENT_XOR:
-        return new ParserReturn(new ChainedAssignmentOperator(new ImplementableOperator(ImplementableOperator::TYPE_LOGICAL_XOR), 16, '&='), $firstToken->next());
+        return new ParserReturn(new ChainedAssignmentOperator(new ImplementableOperator(ImplementableOperator::TYPE_LOGICAL_XOR), 16, '^='), $firstToken->next());
       case Token::KEYWORD_INSTANCEOF:
         return new ParserReturn(new ImplementableParsedOperator(ImplementableOperator::TYPE_INSTANCEOF, 'instanceof', OperatorType::InfixOperator, 3), $firstToken->next());
       default:

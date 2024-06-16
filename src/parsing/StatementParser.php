@@ -17,7 +17,9 @@ class StatementParser extends VariantParser {
       new IfStatementParser(),
       new BreakStatementParser(),
       new ForStatementParser(),
-      new ContinueStatementParser()
+      new ContinueStatementParser(),
+      new DoWhileStatementParser(),
+      new FunctionParser(true),
     ]);
     // @formatter:on
   }

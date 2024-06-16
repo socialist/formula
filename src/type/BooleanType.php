@@ -13,7 +13,7 @@ class BooleanType extends Type {
     parent::__construct();
   }
 
-  public function assignableBy(Type $type): bool {
+  protected function typeAssignableBy(Type $type): bool {
     return $this->equals($type);
   }
 
@@ -22,15 +22,15 @@ class BooleanType extends Type {
   }
 
   public function getIdentifier(bool $nested = false): string {
-    return 'bool';
+    return 'boolean';
   }
 
-  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    return (new BooleanValue(false))->getOperatorResultType($operator, $otherType);
+  public function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+    return null;
   }
 
-  public function getCompatibleOperands(ImplementableOperator $operator): array {
-    return (new BooleanValue(false))->getCompatibleOperands($operator);
+  public function getTypeCompatibleOperands(ImplementableOperator $operator): array {
+    return [];
   }
 
   public function buildNode(): array {

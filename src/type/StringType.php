@@ -3,6 +3,7 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\FormulaPart;
 
 /**
  * @author Timo Lehnertz
@@ -13,7 +14,7 @@ class StringType extends Type {
     parent::__construct();
   }
 
-  public function assignableBy(Type $type): bool {
+  protected function typeAssignableBy(Type $type): bool {
     return $this->equals($type);
   }
 
@@ -25,12 +26,20 @@ class StringType extends Type {
     return 'string';
   }
 
-  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    return (new StringValue(''))->getOperatorResultType($operator, $otherType);
+  protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {
+    if($operator->getID() === ImplementableOperator::TYPE_ADDITION) {
+      return [new StringType(false)];
+    } else {
+      return [];
+    }
   }
 
-  public function getCompatibleOperands(ImplementableOperator $operator): array {
-    return (new StringValue(''))->getCompatibleOperands($operator);
+  protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+    if($operator->getID() === ImplementableOperator::TYPE_ADDITION && $otherType instanceof StringType) {
+      return new StringType(false);
+    } else {
+      return null;
+    }
   }
 
   public function buildNode(): array {

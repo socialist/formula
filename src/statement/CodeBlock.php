@@ -2,8 +2,10 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\statement;
 
+use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\type\Type;
 
 class CodeBlock extends Statement {
 
@@ -22,19 +24,19 @@ class CodeBlock extends Statement {
     $this->statements = $statements;
     $this->singleLine = $singleLine;
     if($singleLine && count($statements) !== 1) {
-      throw new \UnexpectedValueException('Single line codeblock must contain exactly one statement');
+      throw new FormulaBugException('Single line codeblock must contain exactly one statement');
     }
   }
 
-  public function validate(Scope $scope): StatementReturnType {
+  public function validateStatement(Scope $scope, ?Type $allowedReturnType = null): StatementReturnType {
     $statementReturnType = new StatementReturnType(null, Frequency::NEVER, Frequency::NEVER);
     foreach($this->statements as $statement) {
-      $statementReturnType = $statementReturnType->concatSequential($statement->validate($scope));
+      $statementReturnType = $statementReturnType->concatSequential($statement->validate($scope, $allowedReturnType));
     }
     return $statementReturnType;
   }
 
-  public function run(Scope $scope): StatementReturn {
+  public function runStatement(Scope $scope): StatementReturn {
     $scope = $scope->buildChild();
     $statementReturn = null;
     foreach($this->statements as $statement) {
@@ -43,7 +45,7 @@ class CodeBlock extends Statement {
         return $statementReturn;
       }
     }
-    return new StatementReturn(null, false, 0);
+    return new StatementReturn(null, false, false);
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
@@ -55,8 +57,8 @@ class CodeBlock extends Statement {
     }
     $string = '{';
     $prettyPrintOptions->indent();
-    foreach($this->expressions as $expression) {
-      $string .= $prettyPrintOptions->newLine.$prettyPrintOptions->getIndentStr().$expression->toString($prettyPrintOptions);
+    foreach($this->statements as $statement) {
+      $string .= $prettyPrintOptions->newLine.$prettyPrintOptions->getIndentStr().$statement->toString($prettyPrintOptions);
     }
     $prettyPrintOptions->outdent();
     return $string.$prettyPrintOptions->newLine.$prettyPrintOptions->getIndentStr().'}';

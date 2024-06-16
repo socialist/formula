@@ -31,7 +31,7 @@ class CodeBlockParser extends Parser {
         throw new ParsingSkippedException();
       }
       if(!$token->hasNext()) {
-        throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
       }
       $token = $token->next();
     }
@@ -43,10 +43,10 @@ class CodeBlockParser extends Parser {
     }
     if(!$this->root) {
       if($token === null) {
-        throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
       }
       if($token->id !== Token::CURLY_BRACKETS_CLOSED) {
-        throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $token, 'Expected }');
+        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $token, 'Expected }');
       }
       $token = $token->next();
     }

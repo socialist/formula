@@ -28,7 +28,7 @@ abstract class NumberValueHelper {
     }
   }
 
-  public static function getValueExpectedOperands(IntegerValue|FloatValue $self, ImplementableOperator $operator): array {
+  public static function getTypeCompatibleOperands(IntegerType|FloatType $self, ImplementableOperator $operator): array {
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_ADDITION:
       case ImplementableOperator::TYPE_SUBTRACTION:
@@ -37,21 +37,21 @@ abstract class NumberValueHelper {
       case ImplementableOperator::TYPE_LESS:
       case ImplementableOperator::TYPE_GREATER:
       case ImplementableOperator::TYPE_EQUALS:
-        return [new IntegerType(),new FloatType()];
+        return [new IntegerType(false),new FloatType(false)];
       case ImplementableOperator::TYPE_MODULO:
-        return [new IntegerType()];
+        return [new IntegerType(false)];
       case ImplementableOperator::TYPE_TYPE_CAST:
-        if($self instanceof IntegerValue) {
-          return [new TypeType(new FloatType())];
+        if($self instanceof IntegerType) {
+          return [new TypeType(new FloatType(false), false)];
         } else {
-          return [new TypeType(new IntegerType())];
+          return [new TypeType(new IntegerType(false), false)];
         }
       default:
         return [];
     }
   }
 
-  public static function getNumberOperatorResultType(IntegerType|FloatType $typeA, ImplementableOperator $operator, ?Type $typeB): ?Type {
+  public static function getTypeOperatorResultType(IntegerType|FloatType $typeA, ImplementableOperator $operator, ?Type $typeB): ?Type {
     // unary operations
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_UNARY_MINUS:
@@ -65,10 +65,10 @@ abstract class NumberValueHelper {
     if($operator->getID() === ImplementableOperator::TYPE_TYPE_CAST) {
       if($typeB instanceof TypeType) {
         if($typeB->getType() instanceof FloatType) {
-          return new FloatType();
+          return new FloatType(false);
         }
         if($typeB->getType() instanceof IntegerType) {
-          return new IntegerType();
+          return new IntegerType(false);
         }
       }
       return null;
@@ -83,13 +83,13 @@ abstract class NumberValueHelper {
       case ImplementableOperator::TYPE_MULTIPLICATION:
         return self::getMostPreciseNumberType($typeA, $typeB);
       case ImplementableOperator::TYPE_DIVISION:
-        return new FloatType();
+        return new FloatType(false);
       case ImplementableOperator::TYPE_MODULO:
-        return new IntegerType();
+        return new IntegerType(false);
       case ImplementableOperator::TYPE_GREATER:
       case ImplementableOperator::TYPE_LESS:
       case ImplementableOperator::TYPE_EQUALS:
-        return new BooleanType();
+        return new BooleanType(false);
       default:
         return null;
     }
@@ -99,9 +99,9 @@ abstract class NumberValueHelper {
     // unary operations
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_UNARY_MINUS:
-        return new IntegerValue(-$self->getValue());
+        return new IntegerValue(-$self->toPHPValue());
       case ImplementableOperator::TYPE_UNARY_PLUS:
-        return new IntegerValue($self->getValue());
+        return new IntegerValue($self->toPHPValue());
     }
     // binary operations
     if($other === null) {
@@ -111,10 +111,10 @@ abstract class NumberValueHelper {
     if($operator->getID() === ImplementableOperator::TYPE_TYPE_CAST) {
       if($other instanceof TypeValue) {
         if($other->getValue() instanceof FloatType) {
-          return new FloatValue($self->getValue());
+          return new FloatValue($self->toPHPValue());
         }
         if($other->getValue() instanceof IntegerType) {
-          return new IntegerValue((int) $self->getValue());
+          return new IntegerValue((int) $self->toPHPValue());
         }
       }
       throw new \BadFunctionCallException('Invalid operation');
@@ -124,21 +124,21 @@ abstract class NumberValueHelper {
     }
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_ADDITION:
-        return new (static::getMostPreciseNumberValueClass($self, $other))($self->getValue() + $other->getValue());
+        return new (static::getMostPreciseNumberValueClass($self, $other))($self->toPHPValue() + $other->toPHPValue());
       case ImplementableOperator::TYPE_SUBTRACTION:
-        return new (static::getMostPreciseNumberValueClass($self, $other))($self->getValue() - $other->getValue());
+        return new (static::getMostPreciseNumberValueClass($self, $other))($self->toPHPValue() - $other->toPHPValue());
       case ImplementableOperator::TYPE_MULTIPLICATION:
-        return new (static::getMostPreciseNumberValueClass($self, $other))($self->getValue() * $other->getValue());
+        return new (static::getMostPreciseNumberValueClass($self, $other))($self->toPHPValue() * $other->toPHPValue());
       case ImplementableOperator::TYPE_DIVISION:
-        return new FloatValue($self->getValue() / $other->getValue());
+        return new FloatValue($self->toPHPValue() / $other->toPHPValue());
       case ImplementableOperator::TYPE_MODULO:
-        return new IntegerValue($self->getValue() % $other->getValue());
+        return new IntegerValue($self->toPHPValue() % $other->toPHPValue());
       case ImplementableOperator::TYPE_GREATER:
-        return new BooleanValue($self->getValue() > $other->getValue());
+        return new BooleanValue($self->toPHPValue() > $other->toPHPValue());
       case ImplementableOperator::TYPE_LESS:
-        return new BooleanValue($self->getValue() < $other->getValue());
+        return new BooleanValue($self->toPHPValue() < $other->toPHPValue());
       case ImplementableOperator::TYPE_EQUALS:
-        return new BooleanValue($self->getValue() == $other->getValue());
+        return new BooleanValue($self->toPHPValue() == $other->toPHPValue());
       default:
         throw new \BadFunctionCallException('Invalid operation '.$self->getType()->getIdentifier().' '.$operator->toString(PrettyPrintOptions::buildDefault()).' '.$other?->getType()->getIdentifier());
     }

@@ -2,112 +2,41 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\PrettyPrintOptions;
-use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\FormulaBugException;
+use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\procedure\ValueContainer;
 
 /**
  * @author Timo Lehnertz
  */
 abstract class Value implements OperatorHandler {
 
-  public function getCompatibleOperands(ImplementableOperator $operator): array {
-    $array = $this->getValueExpectedOperands($operator);
-    switch($operator->getID()) {
-      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT:
-      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL:
-        $array[] = $this->getType();
-        break;
-      case ImplementableOperator::TYPE_EQUALS:
-        $array[] = $this->getType();
-        break;
-      case ImplementableOperator::TYPE_TYPE_CAST:
-        foreach($array as $type) {
-          if(!($type instanceof TypeType)) {
-            throw new FormulaBugException('Cast operator has to expect TypeType');
-          }
-        }
-        $array[] = new TypeType(new BooleanType());
-        $array[] = new TypeType($this->getType());
-        $array[] = new TypeType(new StringType());
-        break;
-      case ImplementableOperator::TYPE_LOGICAL_AND:
-        return [new BooleanType()];
-      case ImplementableOperator::TYPE_LOGICAL_OR:
-        return [new BooleanType()];
-      case ImplementableOperator::TYPE_LOGICAL_XOR:
-        return [new BooleanType()];
-    }
-    return $array;
-  }
-
-  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    $type = $this->getValueOperatorResultType($operator, $otherType);
-    if($type !== null) {
-      return $type;
-    }
-    // default operators
-    switch($operator->getID()) {
-      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT:
-      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL:
-        if($otherType === null || !$this->getType()->equals($otherType)) {
-          return null;
-        }
-        return $this->getType();
-      case ImplementableOperator::TYPE_EQUALS:
-        if($otherType === null || !$this->getType()->equals($otherType)) {
-          return null;
-        }
-        return new BooleanType();
-      case ImplementableOperator::TYPE_TYPE_CAST:
-        if($otherType instanceof TypeType) {
-          if($otherType->getType() instanceof BooleanType) {
-            return new BooleanType();
-          }
-          if($otherType->getType()->equals($this->getType())) {
-            return $this->getType();
-          }
-          if($otherType->getType()->equals(new StringType())) {
-            return new StringType();
-          }
-        }
-        return null;
-      case ImplementableOperator::TYPE_LOGICAL_AND:
-      case ImplementableOperator::TYPE_LOGICAL_OR:
-      case ImplementableOperator::TYPE_LOGICAL_XOR:
-        if($otherType !== null) {
-          return new BooleanType();
-        }
-    }
-    return null;
-  }
+  private ?ValueContainer $container = null;
 
   public function operate(ImplementableOperator $operator, ?Value $other): Value {
     // default operators
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT:
-        $this->assign($other);
-        return $this->copy();
-        break;
-      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL:
-        $return = $this->copy();
-        $this->assign($other);
-        return $return;
-        break;
-      case ImplementableOperator::TYPE_EQUALS:
-        if($this->getType()->equals($other->getType())) {
-          return new BooleanValue($this->valueEquals($other));
+        if($this->container === null) {
+          throw new FormulaBugException('Can not mutate immutable value');
         }
-        break;
+        $this->container->assign($other);
+        return $other;
+      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL:
+        if($this->container === null) {
+          throw new FormulaBugException('Can not mutate immutable value');
+        }
+        $return = $this->copy();
+        $this->container->assign($other);
+        return $return;
+      case ImplementableOperator::TYPE_EQUALS:
+        return new BooleanValue($this->valueEquals($other));
       case ImplementableOperator::TYPE_TYPE_CAST:
         if($other instanceof TypeValue) {
           if($other->getValue() instanceof BooleanType) {
             return new BooleanValue($this->isTruthy());
           }
-          if($other->getValue()->equals($this->getType())) {
-            return $this;
-          }
-          if($other->getValue()->equals(new StringType())) {
+          if($other->getValue()->equals(new StringType(false))) {
             return $this->toStringValue();
           }
         }
@@ -124,12 +53,9 @@ abstract class Value implements OperatorHandler {
     return $this->valueOperate($operator, $other);
   }
 
-  /**
-   * @param Value $value guaranteed to be assignable
-   */
-  public abstract function assign(Value $value): void;
-
-  public abstract function getType(): Type;
+  public function setContainer(?ValueContainer $container): void {
+    $this->container = $container;
+  }
 
   /**
    * Everything should be truthy except for false and nullish values
@@ -138,25 +64,12 @@ abstract class Value implements OperatorHandler {
 
   public abstract function copy(): Value;
 
-  public abstract function toString(PrettyPrintOptions $prettyPrintOptions): string;
-
-  protected abstract function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type;
-
   protected abstract function valueOperate(ImplementableOperator $operator, ?Value $other): Value;
-
-  /**
-   * Returns the expected types for the operator or an empty array if the operator doesnt exist
-   * @param ImplementableOperator $operator
-   * @return array<Type>
-   */
-  protected abstract function getValueExpectedOperands(ImplementableOperator $operator): array;
 
   /**
    * @param Value $other guaranteed to be assignable
    */
   protected abstract function valueEquals(Value $other): bool;
-
-  public abstract function buildNode(): array;
 
   /**
    * @return mixed the php representation of this Value

@@ -13,7 +13,7 @@ class NeverType extends Type {
     parent::__construct();
   }
 
-  public function assignableBy(Type $type): bool {
+  protected function typeAssignableBy(Type $type): bool {
     return $this->equals($type);
   }
 
@@ -25,11 +25,11 @@ class NeverType extends Type {
     return 'never';
   }
 
-  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+  protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     return null;
   }
 
-  public function getCompatibleOperands(ImplementableOperator $operator): array {
+  protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {
     return [];
   }
 

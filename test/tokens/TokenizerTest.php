@@ -12,8 +12,8 @@ class TokenizerTest extends TestCase {
     return [
       [Token::KEYWORD_INT, 'int ', 'int'],
       [Token::KEYWORD_FLOAT, 'float ', 'float'],
-      [Token::KEYWORD_STRING, 'string ', 'string'],
-      [Token::KEYWORD_BOOL, 'bool ', 'bool'],
+      [Token::KEYWORD_STRING, 'String ', 'String'],
+      [Token::KEYWORD_BOOL, 'boolean ', 'boolean'],
       [Token::KEYWORD_CHAR, 'char ', 'char'],
       [Token::KEYWORD_NEW, 'new ', 'new'],
       [Token::KEYWORD_RETURN, 'return ', 'return'],
@@ -76,6 +76,8 @@ class TokenizerTest extends TestCase {
       [Token::IDENTIFIER, 'abc', 'abc'],
       [Token::MODULO, '% ', '%'],
       [Token::KEYWORD_ELSE, 'else ', 'else'],
+      [Token::KEYWORD_FINAL, 'final ', 'final'],
+      [Token::KEYWORD_VAR, 'var ', 'var'],
     ];
   }
   // @formatter:on

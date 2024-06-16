@@ -4,29 +4,31 @@ namespace TimoLehnertz\formula\procedure;
 
 use TimoLehnertz\formula\FormulaRuntimeException;
 use TimoLehnertz\formula\FormulaValidationException;
-use TimoLehnertz\formula\type\ArgumentListType;
 use TimoLehnertz\formula\type\ArrayType;
 use TimoLehnertz\formula\type\BooleanType;
 use TimoLehnertz\formula\type\BooleanValue;
 use TimoLehnertz\formula\type\CompoundType;
 use TimoLehnertz\formula\type\FloatType;
 use TimoLehnertz\formula\type\FloatValue;
-use TimoLehnertz\formula\type\FunctionArgument;
-use TimoLehnertz\formula\type\FunctionType;
-use TimoLehnertz\formula\type\FunctionValue;
 use TimoLehnertz\formula\type\IntegerType;
 use TimoLehnertz\formula\type\IntegerValue;
 use TimoLehnertz\formula\type\MixedType;
+use TimoLehnertz\formula\type\NullValue;
 use TimoLehnertz\formula\type\StringType;
 use TimoLehnertz\formula\type\StringValue;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 use TimoLehnertz\formula\type\VoidType;
+use TimoLehnertz\formula\type\functions\FunctionType;
+use TimoLehnertz\formula\type\functions\FunctionValue;
+use TimoLehnertz\formula\type\functions\OuterFunctionArgument;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionType;
-use TimoLehnertz\formula\type\NullValue;
+use TimoLehnertz\formula\type\functions\OuterFunctionArgumentListType;
+use TimoLehnertz\formula\type\functions\PHPFunctionBody;
+use TimoLehnertz\formula\type\ArrayValue;
 
 /**
  * @author Timo Lehnertz
@@ -56,32 +58,32 @@ class Scope {
     }
   }
 
-  public static function reflectionTypeToFormulaType(ReflectionType $reflectionType): Type {
+  public static function reflectionTypeToFormulaType(ReflectionType $reflectionType, bool $final): Type {
     if($reflectionType instanceof ReflectionNamedType) {
       switch($reflectionType->getName()) {
         case 'string':
-          return new StringType();
+          return new StringType($final);
         case 'int':
-          return new IntegerType();
+          return new IntegerType($final);
         case 'float':
-          return new FloatType();
+          return new FloatType($final);
         case 'bool':
-          return new BooleanType();
+          return new BooleanType($final);
         case 'array':
-          return new ArrayType(new MixedType(), new MixedType());
+          return new ArrayType(new MixedType($final), new MixedType($final), $final);
         case 'mixed':
-          return new MixedType();
+          return new MixedType($final);
         case 'void':
-          return new VoidType();
+          return new VoidType($final);
       }
     } else if($reflectionType instanceof \ReflectionUnionType) {
       $types = [];
       foreach($reflectionType->getTypes() as $type) {
-        $types[] = self::reflectionTypeToFormulaType($type);
+        $types[] = self::reflectionTypeToFormulaType($type, $final);
       }
-      return CompoundType::buildFromTypes($types);
+      return CompoundType::buildFromTypes($types, $final);
     }
-    throw new FormulaValidationException($this, 'PHP type '.$reflectionType.' is not supported');
+    throw new \BadMethodCallException('PHP type '.$reflectionType.' is not supported');
   }
 
   public function definePHPFunction(string $identifier, callable $callable): void {
@@ -102,7 +104,7 @@ class Scope {
     /** @var \ReflectionFunctionAbstract $reflection */
     $reflectionReturnType = $reflection->getReturnType();
     if($reflectionReturnType !== null) {
-      $returnType = Scope::reflectionTypeToFormulaType($reflectionReturnType);
+      $returnType = Scope::reflectionTypeToFormulaType($reflectionReturnType, false);
     } else {
       $returnType = new VoidType();
     }
@@ -116,22 +118,20 @@ class Scope {
       }
       $reflectionArgumentType = $reflectionArgument->getType();
       if($reflectionArgumentType === null) {
-        throw new FormulaValidationException($this, 'Parameter '.$reflectionArgument->name.' has no php type. Only typed parameters are supported');
+        throw new FormulaValidationException('Parameter '.$reflectionArgument->name.' has no php type. Only typed parameters are supported');
       }
-      $arguments[] = new FunctionArgument(Scope::reflectionTypeToFormulaType($reflectionArgumentType), $reflectionArgument->isOptional());
+      $arguments[] = new OuterFunctionArgument(Scope::reflectionTypeToFormulaType($reflectionArgumentType, false), $reflectionArgument->isOptional());
     }
-    $functionType = new FunctionType(new ArgumentListType($arguments, $vargs), $returnType);
-    $this->define($identifier, $functionType, new FunctionValue($callable, $functionType, $this));
+    $functionType = new FunctionType(new OuterFunctionArgumentListType($arguments, $vargs), $returnType, false);
+    $functionBody = new PHPFunctionBody($callable, $returnType);
+    $this->define(true, $functionType, $identifier, new FunctionValue($functionBody, $this));
   }
 
-  public function define(string $identifier, Type $type, ?Value $value = null): void {
+  public function define(bool $final, Type $type, string $identifier, ?Value $value = null): void {
     if(isset($this->defined[$identifier])) {
       throw new FormulaRuntimeException('Can\'t redefine '.$identifier);
     }
-    $this->defined[$identifier] = new DefinedValue($type);
-    if($value !== null) {
-      $this->assign($identifier, $value);
-    }
+    $this->defined[$identifier] = new DefinedValue($final, $type, $value);
   }
 
   public function get(string $identifier): Value {
@@ -175,6 +175,12 @@ class Scope {
       return new StringValue($value);
     } else if($value === null) {
       return new NullValue();
+    } else if(is_array($value)) {
+      $values = [];
+      foreach($value as $element) {
+        $values[] = Scope::valueByPHPVar($element);
+      }
+      return new ArrayValue($values);
     }
     throw new FormulaRuntimeException($value.' has no supported php type');
   }
@@ -190,15 +196,6 @@ class Scope {
     } else {
       throw new FormulaRuntimeException($identifier.' is not defined');
     }
-  }
-
-  public function copy(): Scope {
-    $copy = new Scope();
-    $copy->parent = $this->parent;
-    foreach($this->defined as $identifier => $defined) {
-      $copy->defined[$identifier] = $defined->copy();
-    }
-    return $copy;
   }
 
   public function setParent(Scope $parent): void {

@@ -15,17 +15,28 @@ class VariableDeclarationStatementParser extends Parser {
   }
 
   protected function parsePart(Token $firstToken): ParserReturn {
-    $parsedType = (new TypeParser())->parse($firstToken);
-    $token = $parsedType->nextToken;
+    $token = $firstToken;
+    $final = $token->id === Token::KEYWORD_FINAL;
+    if($final) {
+      $token = $token->requireNext();
+    }
+    $isAutoType = $token->id === Token::KEYWORD_VAR;
+    $parsedType = null;
+    if($isAutoType) {
+      $token = $token->next();
+    } else {
+      $parsedType = (new TypeParser(false))->parse($token);
+      $token = $parsedType->nextToken;
+    }
     if($token === null) {
-      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
     }
     if($token->id !== Token::IDENTIFIER) {
       throw new ParsingSkippedException();
     }
     $identifier = $token->value;
     if(!$token->hasNext()) {
-      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
     }
     $token = $token->next();
     if($token->id !== Token::ASSIGNMENT) {
@@ -33,12 +44,12 @@ class VariableDeclarationStatementParser extends Parser {
     }
     $parsedInitializer = (new ExpressionParser())->parse($token->next(), true);
     if($parsedInitializer->nextToken === null) {
-      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
     }
     $token = $parsedInitializer->nextToken;
     if($token->id !== Token::SEMICOLON) {
-      throw new ParsingException($this, ParsingException::PARSING_ERROR_EXPECTED_SEMICOLON, $token);
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $token, 'Expected ;');
     }
-    return new ParserReturn(new VariableDeclarationStatement($parsedType->parsed, $identifier, $parsedInitializer->parsed), $token->next());
+    return new ParserReturn(new VariableDeclarationStatement($final, $parsedType?->parsed ?? null, $identifier, $parsedInitializer->parsed), $token->next());
   }
 }

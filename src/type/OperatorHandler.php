@@ -7,7 +7,7 @@ use TimoLehnertz\formula\operator\ImplementableOperator;
 /**
  * @author Timo Lehnertz
  */
-interface OperatorHandler extends OperatorMeta {
+interface OperatorHandler {
 
   /**
    * Must have been validated previously

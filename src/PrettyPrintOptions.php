@@ -13,7 +13,7 @@ class PrettyPrintOptions {
 
   public bool $indentationMethodSpaces = true;
 
-  public string $newLine = '\r\n';
+  public string $newLine = "\r\n";
 
   public function __construct() {}
 
@@ -35,9 +35,9 @@ class PrettyPrintOptions {
     $str = '';
     for($i = 0;$i < $this->indentations * $this->charsPerIndent;$i++) {
       if($this->indentationMethodSpaces) {
-        $str += ' ';
+        $str .= ' ';
       } else {
-        $str += "\t";
+        $str .= "\t";
       }
     }
     return $str;

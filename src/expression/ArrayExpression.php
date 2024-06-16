@@ -43,13 +43,13 @@ class ArrayExpression extends Expression {
     return '{'.$str.'}';
   }
 
-  public function validate(Scope $scope): Type {
+  public function validateStatement(Scope $scope): Type {
     $types = [];
     foreach($this->expressions as $expression) {
       $types[] = $expression->validate($scope);
     }
-    $elementType = CompoundType::buildFromTypes($types);
-    $this->arrayType = new ArrayType(new IntegerType(), $elementType);
+    $elementType = CompoundType::buildFromTypes($types, true);
+    $this->arrayType = new ArrayType(new IntegerType(true), $elementType, true);
     return $this->arrayType;
   }
 

@@ -15,15 +15,15 @@ class StatementReturn {
 
   public readonly bool $breakFlag;
 
-  public readonly int $continueCount;
+  public readonly bool $continueFlag;
 
-  public function __construct(?Value $returnValue, bool $breakFlag, int $continueCount) {
+  public function __construct(?Value $returnValue, bool $breakFlag, bool $continueFlag) {
     $this->returnValue = $returnValue;
     $this->breakFlag = $breakFlag;
-    $this->continueCount = $continueCount;
+    $this->continueFlag = $continueFlag;
   }
 
   public function isTerminating(): bool {
-    return $this->returnValue !== null || $this->breakFlag || $this->continueCount > 0;
+    return $this->returnValue !== null || $this->breakFlag || $this->continueFlag;
   }
 }

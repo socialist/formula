@@ -10,7 +10,7 @@ use TimoLehnertz\formula\operator\ImplementableOperator;
  */
 class IntegerValue extends Value {
 
-  private int $value;
+  private readonly int $value;
 
   public function __construct(int $value) {
     $this->value = $value;
@@ -18,14 +18,6 @@ class IntegerValue extends Value {
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return ''.$this->value;
-  }
-
-  public function assign(Value $value): void {
-    $this->value = $value->value;
-  }
-
-  public function getType(): Type {
-    return new IntegerType();
   }
 
   public function copy(): IntegerValue {
@@ -36,34 +28,18 @@ class IntegerValue extends Value {
     return $this->value !== 0;
   }
 
-  public function getValue(): int {
-    return $this->value;
-  }
-
   public function valueEquals(Value $other): bool {
     if($other instanceof IntegerValue) {
-      return $other->getValue() === $this->getValue();
+      return $other->toPHPValue() === $this->toPHPValue();
     } else if($other instanceof FloatValue) {
-      return $other->getValue() == $this->getValue();
+      return $other->toPHPValue() == $this->toPHPValue();
     } else {
       return false;
     }
   }
 
-  protected function getValueExpectedOperands(ImplementableOperator $operator): array {
-    return NumberValueHelper::getValueExpectedOperands($this, $operator);
-  }
-
-  protected function getValueOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    return NumberValueHelper::getNumberOperatorResultType($this->getType(), $operator, $otherType);
-  }
-
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
     return NumberValueHelper::numberOperate($this, $operator, $other);
-  }
-
-  public function buildNode(): array {
-    return ['type' => 'IntegerValue','value' => $this->value];
   }
 
   public function toPHPValue(): mixed {

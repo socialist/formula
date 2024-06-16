@@ -20,9 +20,9 @@ class IdentifierExpression extends Expression {
     $this->identifier = $identifier;
   }
 
-  public function validate(Scope $scope): Type {
+  public function validateStatement(Scope $scope): Type {
     if(!$scope->isDefined($this->identifier)) {
-      throw new FormulaValidationException($this, $this->identifier.' is not defined');
+      throw new FormulaValidationException($this->identifier.' is not defined');
     }
     return $scope->getType($this->identifier);
   }

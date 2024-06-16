@@ -17,20 +17,20 @@ class VoidType extends Type {
     return 'void';
   }
 
-  public function assignableBy(Type $type): bool {
-    return true;
+  protected function typeAssignableBy(Type $type): bool {
+    return $type instanceof VoidType;
   }
 
   public function equals(Type $type): bool {
     return $type instanceof VoidType;
   }
 
-  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    return (new VoidValue())->getOperatorResultType($operator, $otherType);
+  protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+    return null;
   }
 
-  public function getCompatibleOperands(ImplementableOperator $operator): array {
-    return (new VoidValue())->getCompatibleOperands($operator);
+  protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {
+    return [];
   }
 
   public function buildNode(): array {

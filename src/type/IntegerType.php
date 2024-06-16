@@ -13,7 +13,7 @@ class IntegerType extends Type {
     parent::__construct();
   }
 
-  public function assignableBy(Type $type): bool {
+  protected function typeAssignableBy(Type $type): bool {
     return $this->equals($type);
   }
 
@@ -25,12 +25,12 @@ class IntegerType extends Type {
     return 'int';
   }
 
-  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    return (new IntegerValue(0))->getOperatorResultType($operator, $otherType);
+  protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {
+    return NumberValueHelper::getTypeCompatibleOperands($this, $operator);
   }
 
-  public function getCompatibleOperands(ImplementableOperator $operator): array {
-    return (new IntegerValue(0))->getCompatibleOperands($operator);
+  protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+    return NumberValueHelper::getTypeOperatorResultType($this, $operator, $otherType);
   }
 
   public function buildNode(): array {

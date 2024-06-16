@@ -22,6 +22,7 @@ class ChainedAssignmentOperator extends ParsedOperator {
     parent::__construct();
     $this->chainedOperator = $chainedOperator;
     $this->precedence = $precedence;
+    $this->identifier = $identifier;
   }
 
   public function transform(?Expression $leftExpression, ?Expression $rightExpression): Expression {

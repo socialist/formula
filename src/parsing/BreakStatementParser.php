@@ -20,10 +20,10 @@ class BreakStatementParser extends Parser {
     }
     $token = $firstToken->next();
     if($token === null) {
-      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
     }
     if($token->id !== Token::SEMICOLON) {
-      throw new ParsingException($this, ParsingException::PARSING_ERROR_EXPECTED_SEMICOLON, $token);
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $token, 'Expected ;');
     }
     return new ParserReturn(new BreakStatement(), $token->next());
   }

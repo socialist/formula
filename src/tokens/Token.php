@@ -2,6 +2,9 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\tokens;
 
+use TimoLehnertz\formula\parsing\ParsingException;
+use TimoLehnertz\formula\parsing\IdentifierParser;
+
 /**
  * @author Timo Lehnertz
  */
@@ -73,6 +76,15 @@ class Token {
       }
     }
     return null;
+  }
+
+  public function requireNext(bool $includeComments = false): Token {
+    $next = $this->next($includeComments);
+    if($next === null) {
+      throw new ParsingException(new IdentifierParser(), ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+    } else {
+      return $next;
+    }
   }
 
   public function last(bool $includeComments = false): Token {
@@ -151,5 +163,7 @@ class Token {
   public const KEYWORD_INSTANCEOF = 64;
   public const KEYWORD_TYPE = 65;
   public const KEYWORD_ELSE = 66;
+  public const KEYWORD_FINAL = 67;
+  public const KEYWORD_VAR = 68;
   // @formatter:on
 }

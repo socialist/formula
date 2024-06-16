@@ -250,7 +250,7 @@ class Formula {
     return $values;
   }
 
-  public static function sizeofFunc(array|float ...$values): int {
+  public static function sizeofFunc(mixed ...$values): int {
     $count = 0;
     foreach($values as $value) {
       if(is_array($value)) {
@@ -342,6 +342,6 @@ class Formula {
   }
 
   public function getFormula(): string {
-    return $this->expression->toString();
+    return $this->content->toString(PrettyPrintOptions::buildDefault());
   }
 }

@@ -7,6 +7,7 @@ use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 use TimoLehnertz\formula\FormulaValidationException;
+use TimoLehnertz\formula\NodesNotSupportedException;
 
 /**
  * An Expression is a executable piece of code that can exist anywhere.
@@ -15,7 +16,7 @@ use TimoLehnertz\formula\FormulaValidationException;
  *
  * @author Timo Lehnertz
  */
-abstract class Expression extends FormulaPart {
+abstract class Expression implements FormulaPart {
 
   /**
    * Must validate this and all contained Parts.
@@ -28,5 +29,8 @@ abstract class Expression extends FormulaPart {
 
   public abstract function run(Scope $scope): Value;
 
+  /**
+   * @throws NodesNotSupportedException
+   */
   public abstract function buildNode(Scope $scope): array;
 }

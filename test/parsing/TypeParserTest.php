@@ -14,62 +14,62 @@ class TypeParserTest extends TestCase {
 
   public function testInt(): void {
     $firstToken = Tokenizer::tokenize("int");
-    $type = (new TypeParser())->parse($firstToken);
+    $type = (new TypeParser(false))->parse($firstToken);
     $this->assertNull($type->nextToken);
     $this->assertInstanceOf(IntegerType::class, $type->parsed);
   }
 
   public function testBool(): void {
-    $firstToken = Tokenizer::tokenize("bool");
-    $type = (new TypeParser())->parse($firstToken);
+    $firstToken = Tokenizer::tokenize("boolean");
+    $type = (new TypeParser(false))->parse($firstToken);
     $this->assertNull($type->nextToken);
     $this->assertInstanceOf(BooleanType::class, $type->parsed);
   }
 
   public function testString(): void {
-    $firstToken = Tokenizer::tokenize("string");
-    $type = (new TypeParser())->parse($firstToken);
+    $firstToken = Tokenizer::tokenize("String");
+    $type = (new TypeParser(false))->parse($firstToken);
     $this->assertNull($type->nextToken);
     $this->assertInstanceOf(StringType::class, $type->parsed);
   }
 
   public function testArray(): void {
     $firstToken = Tokenizer::tokenize("int[]");
-    $type = (new TypeParser())->parse($firstToken);
+    $type = (new TypeParser(false))->parse($firstToken);
     $this->assertNull($type->nextToken);
     $this->assertInstanceOf(ArrayType::class, $type->parsed);
     $this->assertEquals('int[]', $type->parsed->getIdentifier());
   }
 
   public function testCompound(): void {
-    $firstToken = Tokenizer::tokenize("int|bool");
-    $type = (new TypeParser())->parse($firstToken);
+    $firstToken = Tokenizer::tokenize("int|boolean");
+    $type = (new TypeParser(false))->parse($firstToken);
     $this->assertNull($type->nextToken);
     $this->assertInstanceOf(CompoundType::class, $type->parsed);
-    $this->assertEquals('int|bool', $type->parsed->getIdentifier());
+    $this->assertEquals('int|boolean', $type->parsed->getIdentifier());
   }
 
   public function testCompoundArray(): void {
-    $firstToken = Tokenizer::tokenize("int|bool[]");
-    $type = (new TypeParser())->parse($firstToken);
+    $firstToken = Tokenizer::tokenize("int|boolean[]");
+    $type = (new TypeParser(false))->parse($firstToken);
     $this->assertNull($type->nextToken);
     $this->assertInstanceOf(CompoundType::class, $type->parsed);
-    $this->assertEquals('int|bool[]', $type->parsed->getIdentifier());
+    $this->assertEquals('int|boolean[]', $type->parsed->getIdentifier());
   }
 
   public function testNestedCompoundArray(): void {
-    $firstToken = Tokenizer::tokenize("(int|bool)[]");
-    $type = (new TypeParser())->parse($firstToken);
+    $firstToken = Tokenizer::tokenize("(int|boolean)[]");
+    $type = (new TypeParser(false))->parse($firstToken);
     $this->assertNull($type->nextToken);
     $this->assertInstanceOf(ArrayType::class, $type->parsed);
-    $this->assertEquals('(int|bool)[]', $type->parsed->getIdentifier());
+    $this->assertEquals('(int|boolean)[]', $type->parsed->getIdentifier());
   }
 
   public function testDeeplyNestedCompound(): void {
-    $firstToken = Tokenizer::tokenize("int|(bool|(int|int))[]");
-    $type = (new TypeParser())->parse($firstToken);
+    $firstToken = Tokenizer::tokenize("int|(boolean|(int|int))[]");
+    $type = (new TypeParser(false))->parse($firstToken);
     $this->assertNull($type->nextToken);
     $this->assertInstanceOf(CompoundType::class, $type->parsed);
-    $this->assertEquals('int|(bool|int)[]', $type->parsed->getIdentifier());
+    $this->assertEquals('int|(boolean|int)[]', $type->parsed->getIdentifier());
   }
 }

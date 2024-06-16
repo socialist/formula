@@ -27,31 +27,38 @@ class ParsingException extends \Exception {
 
   public const PARSING_ERROR_TOO_MANY_ELSE = 11;
 
+  public const PARSING_ERROR_VARG_NOT_LAST = 12;
+
   public readonly Parser $parser;
 
   public readonly int $parsingErrorCode;
 
-  public readonly ?Token $token;
+  public readonly Token $token;
 
   public readonly ?string $additionalInfo;
+
+  private static Parser $currentParser;
+
+  private static Token $currentToken;
 
   /**
    * @param ParsingException::PARSING_ERROR_* $code
    */
-  public function __construct(Parser $parser, int $parsingErrorCode, ?Token $token = null, ?string $additionalInfo = null) {
-    $this->parser = $parser;
+  public function __construct(int $parsingErrorCode, ?Token $token = null, ?string $additionalInfo = null) {
     $this->parsingErrorCode = $parsingErrorCode;
-    $this->token = $token;
+    $this->token = $token ?? ParsingException::$currentToken;
     $this->additionalInfo = $additionalInfo;
-    if($token !== null) {
-      $message = 'Syntax error in '.$parser->name.': '.($token->line + 1).':'.($token->position + 1).' "'.($token->prev()?->value ?? '').' '.$token->value.' '.($token->next()?->value ?? '').'". Message: '.static::codeToMessage($parsingErrorCode);
-    } else {
-      $message = 'Syntax error in: '.$parser->name.': '.static::codeToMessage($parsingErrorCode);
-    }
+    $this->parser = ParsingException::$currentParser;
+    $message = 'Syntax error in '.$this->parser->name.': '.($this->token->line + 1).':'.($this->token->position + 1).' '.$this->token->value.' . Message: '.static::codeToMessage($parsingErrorCode);
     if($additionalInfo !== null) {
       $message .= '. '.$additionalInfo;
     }
     parent::__construct($message);
+  }
+
+  public static function setParser(Parser $currentParser, Token $currentToken) {
+    ParsingException::$currentParser = $currentParser;
+    ParsingException::$currentToken = $currentToken;
   }
 
   private static function codeToMessage(int $parsingErrorCode): string {
@@ -74,6 +81,8 @@ class ParsingException extends \Exception {
         return 'Unexpected token';
       case static::PARSING_ERROR_TOO_MANY_ELSE:
         return 'Else block can\'t follow else block';
+      case static::PARSING_ERROR_VARG_NOT_LAST:
+        return 'Varg argument must be last';
       default:
         throw new \UnexpectedValueException($parsingErrorCode.' is no valid ParsingErrorCode');
     }

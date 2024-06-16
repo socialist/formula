@@ -13,33 +13,38 @@ use TimoLehnertz\formula\type\Type;
  */
 class VariableDeclarationStatement extends Statement {
 
-  private Type $type;
+  private readonly bool $final;
+
+  private ?Type $type;
 
   private readonly string $identifier;
 
   private Expression $initializer;
 
-  public function __construct(Type $type, string $identifier, Expression $initializer) {
+  public function __construct(bool $final, ?Type $type, string $identifier, Expression $initializer) {
     parent::__construct();
+    $this->final = $final;
     $this->type = $type;
     $this->identifier = $identifier;
     $this->initializer = $initializer;
   }
 
-  public function validate(Scope $scope): StatementReturnType {
-    $initializerType = $this->initializer->validate($scope);
-    if(!$initializerType->equals($this->type)) {
-      $this->initializer = OperatorExpression::castExpression($this->initializer, $this->initializer->validate($scope), $this->type, $scope, $this);
+  public function validateStatement(Scope $scope, ?Type $allowedReturnType = null): StatementReturnType {
+    $implicitType = $this->initializer->validate($scope);
+    if($this->type !== null) {
+      $this->initializer = OperatorExpression::castExpression($this->initializer, $implicitType, $this->type, $scope, $this);
       $this->initializer->validate($scope);
+    } else {
+      $this->type = $implicitType;
     }
-    $scope->define($this->identifier, $this->type);
+    $scope->define($this->final, $this->type, $this->identifier);
     return new StatementReturnType(null, Frequency::NEVER, Frequency::NEVER);
   }
 
-  public function run(Scope $scope): StatementReturn {
+  public function runStatement(Scope $scope): StatementReturn {
     $value = $this->initializer->run($scope);
-    $scope->define($this->identifier, $this->type, $value);
-    return new StatementReturn(null, false, 0);
+    $scope->define($this->final, $this->type, $this->identifier, $value);
+    return new StatementReturn(null, false, false);
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {

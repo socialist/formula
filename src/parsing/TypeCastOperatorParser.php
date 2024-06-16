@@ -19,13 +19,13 @@ class TypeCastOperatorParser extends Parser {
       throw new ParsingSkippedException();
     }
     if(!$firstToken->hasNext()) {
-      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
     }
     $token = $firstToken->next();
-    $parsedType = (new TypeParser())->parse($token);
+    $parsedType = (new TypeParser(false))->parse($token);
     $token = $parsedType->nextToken;
     if($token === null) {
-      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
     }
     if($token->id !== Token::BRACKETS_CLOSED) {
       throw new ParsingSkippedException();

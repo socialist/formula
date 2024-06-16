@@ -3,6 +3,7 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\FormulaPart;
 
 /**
  * @author Timo Lehnertz
@@ -41,7 +42,37 @@ class CompoundType extends Type {
     }
   }
 
-  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+  protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {
+    $operandLists = [];
+    /** @var Type $type */
+    foreach($this->types as $type) {
+      $operandLists[] = $type->getCompatibleOperands($operator);
+    }
+    $joinedOperands = [];
+    foreach($operandLists[0] as $testType) {
+      $foundAll = true;
+      for($i = 1;$i < count($operandLists);$i++) {
+        $operandList = $operandLists[$i];
+        $foundInList = false;
+        foreach($operandList as $compType) {
+          if($testType->equals($compType)) {
+            $foundInList = true;
+            break;
+          }
+        }
+        if(!$foundInList) {
+          $foundAll = false;
+          break;
+        }
+      }
+      if($foundAll) {
+        $joinedOperands[] = $type;
+      }
+    }
+    return $joinedOperands;
+  }
+
+  protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     $resultTypes = [];
     foreach($this->types as $type) {
       $resultTypes[] = $type->getOperatorResultType($operator, $otherType);
@@ -63,12 +94,12 @@ class CompoundType extends Type {
     }
   }
 
-  public function assignableBy(Type $type): bool {
+  protected function typeAssignableBy(Type $type): bool {
     if($type instanceof CompoundType) {
       return $this->equals($type);
     } else {
       foreach($this->types as $ownType) {
-        if($ownType->assignableBy($type)) {
+        if($ownType->assignableBy($type, true)) {
           return true;
         }
       }
@@ -97,20 +128,6 @@ class CompoundType extends Type {
     } else {
       return false;
     }
-  }
-
-  public function getCompatibleOperands(ImplementableOperator $operator): array {
-    throw new \BadFunctionCallException("Not yet implemented");
-    $operandTypes = $this->types[0]->getCompatibleOperands($operator);
-    for($i = 1;$i < count($this->types);$i++) {
-      $type = $this->types[$i];
-      foreach($type->getCompatibleOperands() as $otherOperandTypes) {
-      /**
-       * @todo
-       */
-      }
-    }
-    return $operandTypes;
   }
 
   public function buildNode(): array {

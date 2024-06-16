@@ -2,7 +2,8 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
-use TimoLehnertz\formula\FormulaPartMetadate;
+use TimoLehnertz\formula\FormulaParentPart;
+use TimoLehnertz\formula\statement\Statement;
 use TimoLehnertz\formula\tokens\Token;
 
 /**
@@ -21,20 +22,24 @@ abstract class Parser {
    * @throws ParsingSkippedException
    */
   public function parse(?Token $firstToken, bool $required = false, bool $expectEnd = false): ParserReturn {
+    ParsingException::setParser($this, $firstToken);
     if($firstToken === null) {
-      throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
     }
     try {
       $parserReturn = $this->parsePart($firstToken);
+      if($parserReturn->parsed instanceof Statement) {
+        $parserReturn->parsed->setFirstToken($firstToken);
+      }
     } catch(ParsingSkippedException $e) {
       if($required) {
-        throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $firstToken);
+        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $firstToken);
       } else {
         throw $e;
       }
     }
     if($expectEnd && $parserReturn->nextToken !== null) {
-      throw new ParsingException($this, ParsingException::PARSING_ERROR_EXPECTED_EOF, $parserReturn->nextToken);
+      throw new ParsingException(ParsingException::PARSING_ERROR_EXPECTED_EOF, $parserReturn->nextToken);
     }
     // Attatch metadata (optional, will improve exceptions)
     $this->attatchMetadata($firstToken, $parserReturn);
@@ -51,6 +56,11 @@ abstract class Parser {
       $lastToken = $firstToken->last();
     }
     new FormulaPartMetadate($parserReturn->parsed, $firstToken, $lastToken, $this->name);
+    if($parserReturn->parsed instanceof FormulaParentPart) {
+      foreach($parserReturn->parsed->getSubParts() as $formulaPart) {
+        new FormulaPartMetadate($formulaPart, $firstToken, $lastToken, $this->name);
+      }
+    }
   }
 
   /**

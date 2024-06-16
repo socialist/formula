@@ -2,7 +2,6 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
@@ -18,7 +17,7 @@ class MixedType extends Type {
     return 'mixed';
   }
 
-  public function assignableBy(Type $type): bool {
+  protected function typeAssignableBy(Type $type): bool {
     return true;
   }
 
@@ -26,12 +25,12 @@ class MixedType extends Type {
     return $type instanceof MixedType;
   }
 
-  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+  protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     return null;
   }
 
-  public function getCompatibleOperands(ImplementableOperator $operator): array {
-    throw new FormulaValidationException($this, 'Mixed does not have any operators');
+  protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {
+    return [];
   }
 
   public function buildNode(): array {

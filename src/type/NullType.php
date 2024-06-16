@@ -13,7 +13,7 @@ class NullType extends Type {
     parent::__construct();
   }
 
-  public function assignableBy(Type $type): bool {
+  protected function typeAssignableBy(Type $type): bool {
     return $this->equals($type);
   }
 
@@ -25,12 +25,12 @@ class NullType extends Type {
     return 'null';
   }
 
-  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    return (new NullValue())->getOperatorResultType($operator, $otherType);
+  protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+    return null;
   }
 
-  public function getCompatibleOperands(ImplementableOperator $operator): array {
-    return (new NullValue())->getCompatibleOperands($operator);
+  protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {
+    return [];
   }
 
   public function buildNode(): array {

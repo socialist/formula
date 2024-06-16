@@ -5,6 +5,7 @@ namespace TimoLehnertz\formula\statement;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\type\Type;
 
 /**
  * @author Timo Lehnertz
@@ -24,23 +25,23 @@ class IfStatement extends Statement {
     $this->else = $else;
   }
 
-  public function validate(Scope $scope): StatementReturnType {
+  public function validateStatement(Scope $scope, ?Type $allowedReturnType = null): StatementReturnType {
     $this->condition?->validate($scope);
     $statementReturnType = new StatementReturnType(null, Frequency::NEVER, Frequency::NEVER);
-    $statementReturnType = $statementReturnType->concatOr($this->body->validate($scope));
+    $statementReturnType = $statementReturnType->concatOr($this->body->validate($scope, $allowedReturnType));
     if($this->else !== null) {
-      $statementReturnType = $statementReturnType->concatOr($this->else->validate($scope));
+      $statementReturnType = $statementReturnType->concatOr($this->else->validate($scope, $allowedReturnType));
     }
     return $statementReturnType;
   }
 
-  public function run(Scope $scope): StatementReturn {
+  public function runStatement(Scope $scope): StatementReturn {
     if($this->condition === null || $this->condition->run($scope)->isTruthy()) {
       return $this->body->run($scope);
     } else if($this->else !== null) {
       return $this->else->run($scope);
     } else {
-      return new StatementReturn(null, false, 0);
+      return new StatementReturn(null, false, false);
     }
   }
 

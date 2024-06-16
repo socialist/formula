@@ -5,6 +5,7 @@ namespace TimoLehnertz\formula\statement;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\type\Type;
 
 /**
  * @author Timo Lehnertz
@@ -27,16 +28,16 @@ class ForStatement extends Statement {
     $this->body = $body;
   }
 
-  public function validate(Scope $scope): StatementReturnType {
+  public function validateStatement(Scope $scope, ?Type $allowedReturnType = null): StatementReturnType {
     $scope = $scope->buildChild();
     $this->declarationStatement?->validate($scope);
     $this->condition?->validate($scope);
     $this->incrementExpression?->validate($scope);
     $statementReturnType = new StatementReturnType(null, Frequency::NEVER, Frequency::NEVER);
-    return $statementReturnType->concatOr($this->body->validate($scope));
+    return $statementReturnType->concatOr($this->body->validate($scope, $allowedReturnType));
   }
 
-  public function run(Scope $scope): StatementReturn {
+  public function runStatement(Scope $scope): StatementReturn {
     $scope = $scope->buildChild();
 
     $this->declarationStatement?->run($scope);
@@ -45,18 +46,14 @@ class ForStatement extends Statement {
     while($this->condition === null || $this->condition->run($scope)->isTruthy()) {
       $return = $this->body->run($scope);
       if($return->returnValue !== null) {
-        return new StatementReturn($return->returnValue, false, 0);
+        return new StatementReturn($return->returnValue, false, false);
       }
       if($return->breakFlag) {
         break;
       }
-      $continueCount = $return->continueCount;
-      do {
-        $this->incrementExpression?->run($scope);
-        $continueCount--;
-      } while($continueCount > 0);
+      $this->incrementExpression?->run($scope);
     }
-    return new StatementReturn(null, false, 0);
+    return new StatementReturn(null, false, false);
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {

@@ -3,8 +3,11 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\statement;
 
 use TimoLehnertz\formula\FormulaPart;
+use TimoLehnertz\formula\FormulaStatementException;
 use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\tokens\Token;
+use TimoLehnertz\formula\type\Type;
 
 /**
  * A statement is an executable piece of code.
@@ -12,7 +15,16 @@ use TimoLehnertz\formula\procedure\Scope;
  *
  * @author Timo Lehnertz
  */
-abstract class Statement extends FormulaPart {
+abstract class Statement implements FormulaPart {
+
+  public readonly Token $firstToken;
+
+  public function __construct() {}
+
+  public function validate(Scope $scope, ?Type $allowedReturnType = null): StatementReturnType {
+    FormulaStatementException::setCurrentStatement($this);
+    return $this->validateStatement($scope, $allowedReturnType);
+  }
 
   /**
    * MUST validate this and all contained Parts.
@@ -21,7 +33,16 @@ abstract class Statement extends FormulaPart {
    * @return StatementReturnType the implied return type of this expression
    * @throws FormulaValidationException
    */
-  public abstract function validate(Scope $scope): StatementReturnType;
+  public abstract function validateStatement(Scope $scope, ?Type $allowedReturnType = null): StatementReturnType;
 
-  public abstract function run(Scope $scope): StatementReturn;
+  public function run(Scope $scope): StatementReturn {
+    FormulaStatementException::setCurrentStatement($this);
+    $this->runStatement($scope);
+  }
+
+  public abstract function runStatement(Scope $scope): StatementReturn;
+
+  public function setFirstToken(Token $firstToken): void {
+    $this->firstToken = $firstToken;
+  }
 }

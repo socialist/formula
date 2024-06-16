@@ -28,7 +28,7 @@ class ArrayAccessOperator extends ParsedOperator {
 
   public function transform(?Expression $leftExpression, ?Expression $rightExpression): Expression {
     $arrayAccsessOperator = new ImplementableOperator(ImplementableOperator::TYPE_ARRAY_ACCESS);
-    return new ComplexOperatorExpression($leftExpression, $arrayAccsessOperator, $rightExpression, $leftExpression, $this, $rightExpression);
+    return new ComplexOperatorExpression($leftExpression, $arrayAccsessOperator, $this->indexExpression, $leftExpression, $this, $rightExpression);
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {

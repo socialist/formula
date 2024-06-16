@@ -15,7 +15,7 @@ use TimoLehnertz\formula\type\CompoundType;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\TypeType;
 use TimoLehnertz\formula\type\Value;
-use TimoLehnertz\formula\type\TypeValue;
+use TimoLehnertz\formula\FormulaPartMetadate;
 
 /**
  * @author Timo Lehnertz
@@ -28,11 +28,18 @@ class OperatorExpression extends Expression {
 
   public ?Expression $rightExpression;
 
+  //   private readonly \Exception $e;
   public function __construct(?Expression $leftExpression, ImplementableOperator $operator, ?Expression $rightExpression) {
     parent::__construct();
     $this->leftExpression = $leftExpression;
     $this->operator = $operator;
     $this->rightExpression = $rightExpression;
+
+    //     try {
+    //       throw new \Exception("Moin");
+    //     } catch(\Exception $e) {
+    //       $this->e = $e;
+    //     }
 
     switch($operator->getOperatorType()) {
       case OperatorType::PrefixOperator:
@@ -44,13 +51,16 @@ class OperatorExpression extends Expression {
         assertNotNull($rightExpression, 'InfixOperator requires a right expression');
         break;
       case OperatorType::PostfixOperator:
-        assertNotNull($leftExpression, 'InfixOperator requires a left expression');
-        assertNull($rightExpression, 'InfixOperator can\'t have a right expression');
+        assertNotNull($leftExpression, 'PostfixOperator requires a left expression');
+        assertNull($rightExpression, 'PostfixOperator can\'t have a right expression');
         break;
     }
   }
 
-  public function validate(Scope $scope): Type {
+  public function validateStatement(Scope $scope): Type {
+    //     if(FormulaPartMetadate::get($this) === null) {
+    //       throw $this->e;
+    //     }
     $leftType = $this->leftExpression?->validate($scope) ?? null;
     $rightType = $this->rightExpression?->validate($scope) ?? null;
     switch($this->operator->getOperatorType()) {
@@ -60,9 +70,9 @@ class OperatorExpression extends Expression {
       case OperatorType::InfixOperator:
         $operands = $leftType->getCompatibleOperands($this->operator);
         if(count($operands) === 0) {
-          throw new FormulaValidationException($this, $leftType->toString(PrettyPrintOptions::buildDefault()).' does not implement operator '.$this->operator->toString(PrettyPrintOptions::buildDefault()));
+          throw new FormulaValidationException($leftType->toString(PrettyPrintOptions::buildDefault()).' does not implement operator '.$this->operator->toString(PrettyPrintOptions::buildDefault()));
         }
-        $this->rightExpression = OperatorExpression::castExpression($this->rightExpression, $rightType, CompoundType::buildFromTypes($operands), $scope, $this);
+        $this->rightExpression = OperatorExpression::castExpression($this->rightExpression, $rightType, CompoundType::buildFromTypes($operands, false), $scope, $this);
         $rightType = $this->rightExpression->validate($scope);
         $returnType = $leftType->getOperatorResultType($this->operator, $rightType);
         break;
@@ -73,7 +83,7 @@ class OperatorExpression extends Expression {
         throw new FormulaBugException('Invalid operatorType');
     }
     if($returnType === null) {
-      throw new FormulaValidationException($this, 'Invalid operation');
+      throw new FormulaValidationException('Invalid operation '.($leftType?->getIdentifier() ?? '').' '.$this->operator->toString(PrettyPrintOptions::buildDefault()).' '.($rightType?->getIdentifier() ?? ''));
     }
     return $returnType;
   }
@@ -95,7 +105,7 @@ class OperatorExpression extends Expression {
   }
 
   public static function castExpression(Expression $source, Type $sourceType, Type $targetType, Scope $scope, FormulaPart $context): Expression {
-    if($targetType->assignableBy($sourceType)) {
+    if($targetType->assignableBy($sourceType, true)) {
       return $source;
     } else {
       if($source instanceof CastableExpression) {
@@ -105,8 +115,10 @@ class OperatorExpression extends Expression {
       /** @var TypeType $castableType */
       foreach($castableTypes as $castableType) {
         $castableType = $castableType->getType();
-        if($targetType->assignableBy($castableType)) {
-          return new OperatorExpression($source, new ImplementableOperator(ImplementableOperator::TYPE_TYPE_CAST), new TypeExpression($castableType));
+        if($targetType->assignableBy($castableType, true)) {
+          $expression = new OperatorExpression($source, new ImplementableOperator(ImplementableOperator::TYPE_TYPE_CAST), new TypeExpression($castableType));
+          FormulaPartMetadate::copy($context, $expression);
+          return $expression;
         }
       }
       throw new FormulaValidationException($context, 'Unable to convert '.$sourceType->getIdentifier().' to '.$targetType->getIdentifier());

@@ -20,7 +20,7 @@ class TypeType extends Type {
     return $this->type;
   }
 
-  public function assignableBy(Type $type): bool {
+  protected function typeAssignableBy(Type $type): bool {
     return $this->equals($type);
   }
 
@@ -32,12 +32,12 @@ class TypeType extends Type {
     return 'Type';
   }
 
-  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    return null;
+  protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {
+    return [];
   }
 
-  public function getCompatibleOperands(ImplementableOperator $operator): array {
-    return [];
+  protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+    return null;
   }
 
   public function buildNode(): array {

@@ -5,6 +5,7 @@ namespace TimoLehnertz\formula\statement;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\type\Type;
 
 /**
  * @author Timo Lehnertz
@@ -18,14 +19,14 @@ class ExpressionStatement extends Statement {
     $this->expression = $expression;
   }
 
-  public function validate(Scope $scope): StatementReturnType {
+  public function validateStatement(Scope $scope, ?Type $allowedReturnType = null): StatementReturnType {
     $this->expression->validate($scope);
     return new StatementReturnType(null, Frequency::NEVER, Frequency::NEVER);
   }
 
-  public function run(Scope $scope): StatementReturn {
+  public function runStatement(Scope $scope): StatementReturn {
     $this->expression->run($scope);
-    return new StatementReturn(null, false, 0);
+    return new StatementReturn(null, false, false);
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {

@@ -7,6 +7,7 @@ use TimoLehnertz\formula\expression\ComplexOperatorExpression;
 use TimoLehnertz\formula\expression\ConstantExpression;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\expression\OperatorExpression;
+use TimoLehnertz\formula\type\IntegerType;
 use TimoLehnertz\formula\type\IntegerValue;
 
 /**
@@ -20,7 +21,7 @@ class DecrementPrefixOperator extends ParsedOperator {
 
   public function transform(?Expression $leftExpression, ?Expression $rightExpression): Expression {
     $subtractionOperator = new ImplementableOperator(ImplementableOperator::TYPE_SUBTRACTION);
-    $subtractionExpression = new OperatorExpression($rightExpression, $subtractionOperator, new ConstantExpression(new IntegerValue(1)));
+    $subtractionExpression = new OperatorExpression($rightExpression, $subtractionOperator, new ConstantExpression(new IntegerType(true), new IntegerValue(1)));
     $assignmentOperator = new ImplementableOperator(ImplementableOperator::TYPE_DIRECT_ASSIGNMENT);
     return new ComplexOperatorExpression($rightExpression, $assignmentOperator, $subtractionExpression, $leftExpression, $this, $rightExpression);
   }

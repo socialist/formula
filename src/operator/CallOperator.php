@@ -2,15 +2,16 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\operator;
 
+use TimoLehnertz\formula\FormulaParentPart;
 use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\expression\ArgumentListExpression;
 use TimoLehnertz\formula\expression\ComplexOperatorExpression;
 use TimoLehnertz\formula\expression\Expression;
-use TimoLehnertz\formula\expression\ArgumentListExpression;
 
 /**
  * @author Timo Lehnertz
  */
-class CallOperator extends ParsedOperator {
+class CallOperator extends ParsedOperator implements FormulaParentPart {
 
   private ArgumentListExpression $arguments;
 
@@ -34,5 +35,9 @@ class CallOperator extends ParsedOperator {
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return '('.$this->arguments->toString($prettyPrintOptions).')';
+  }
+
+  public function getSubParts(): array {
+    return [$this->arguments];
   }
 }

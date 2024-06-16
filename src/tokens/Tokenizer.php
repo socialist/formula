@@ -287,8 +287,8 @@ class Tokenizer {
     "false" => Token::KEYWORD_FALSE,
     "int" => Token::KEYWORD_INT,
     "float" => Token::KEYWORD_FLOAT,
-    "string" => Token::KEYWORD_STRING,
-    "bool" => Token::KEYWORD_BOOL,
+    "String" => Token::KEYWORD_STRING,
+    "boolean" => Token::KEYWORD_BOOL,
     "new" => Token::KEYWORD_NEW,
     "char" => Token::KEYWORD_CHAR,
     "new" => Token::KEYWORD_NEW,
@@ -303,23 +303,12 @@ class Tokenizer {
     "for" => Token::KEYWORD_FOR,
     "instanceof" => Token::KEYWORD_INSTANCEOF,
     "Type" => Token::KEYWORD_TYPE,
-    "else" => Token::KEYWORD_ELSE
+    "else" => Token::KEYWORD_ELSE,
+    "final" => Token::KEYWORD_FINAL,
+    "var" => Token::KEYWORD_VAR,
   ];
 
-  private const SINGLE_TOKENS = [
-    "+" => Token::PLUS,
-    "-" => Token::MINUS,
-    "*" => Token::MULTIPLY,
-    "/" => Token::DIVIDE,
-    "|" => Token::INTL_BACKSLASH,
-    "?" => Token::QUESTIONMARK,
-    "." => Token::DOT,
-    "=" => Token::ASSIGNMENT,
-    ":" => Token::COlON,
-    "^" => Token::LOGICAL_XOR,
-    "<" => Token::COMPARISON_SMALLER,
-    ">" => Token::COMPARISON_GREATER,
-    "!" => Token::EXCLAMATION_MARK,
-  ];
+  private
+const SINGLE_TOKENS = ["+" => Token::PLUS,"-" => Token::MINUS,"*" => Token::MULTIPLY,"/" => Token::DIVIDE,"|" => Token::INTL_BACKSLASH,"?" => Token::QUESTIONMARK,"." => Token::DOT,"=" => Token::ASSIGNMENT,":" => Token::COlON,"^" => Token::LOGICAL_XOR,"<" => Token::COMPARISON_SMALLER,">" => Token::COMPARISON_GREATER,"!" => Token::EXCLAMATION_MARK];
   // @formatter:on
 }

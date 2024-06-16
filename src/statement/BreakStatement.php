@@ -4,6 +4,7 @@ namespace TimoLehnertz\formula\statement;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\type\Type;
 
 /**
  * @author Timo Lehnertz
@@ -14,12 +15,12 @@ class BreakStatement extends Statement {
     parent::__construct();
   }
 
-  public function validate(Scope $scope): StatementReturnType {
+  public function validateStatement(Scope $scope, ?Type $allowedReturnType = null): StatementReturnType {
     return new StatementReturnType(null, Frequency::ALWAYS, Frequency::NEVER);
   }
 
-  public function run(Scope $scope): StatementReturn {
-    return new StatementReturn(null, true, 0);
+  public function runStatement(Scope $scope): StatementReturn {
+    return new StatementReturn(null, true, false);
   }
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {

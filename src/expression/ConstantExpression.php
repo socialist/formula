@@ -12,15 +12,18 @@ use TimoLehnertz\formula\type\Value;
  */
 class ConstantExpression extends Expression {
 
+  private readonly Type $type;
+
   private readonly Value $value;
 
-  public function __construct(Value $value) {
+  public function __construct(Type $type, Value $value) {
     parent::__construct();
+    $this->type = $type;
     $this->value = $value;
   }
 
-  public function validate(Scope $scope): Type {
-    return $this->value->getType();
+  public function validateStatement(Scope $scope): Type {
+    return $this->type;
   }
 
   public function run(Scope $scope): Value {

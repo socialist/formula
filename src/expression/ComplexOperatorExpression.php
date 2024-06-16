@@ -29,11 +29,11 @@ class ComplexOperatorExpression extends OperatorExpression {
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     $str = '';
     if($this->outerLeftExpression !== null) {
-      $str .= $this->outerLeftExpression->toString($prettyPrintOptions).' ';
+      $str .= $this->outerLeftExpression->toString($prettyPrintOptions);
     }
     $str .= $this->outerOperator->toString($prettyPrintOptions);
     if($this->outerRightExpression !== null) {
-      $str .= ' '.$this->outerRightExpression->toString($prettyPrintOptions);
+      $str .= $this->outerRightExpression->toString($prettyPrintOptions);
     }
     return $str;
   }

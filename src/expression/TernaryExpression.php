@@ -26,11 +26,11 @@ class TernaryExpression extends Expression {
     $this->rightExpression = $rightExpression;
   }
 
-  public function validate(Scope $scope): Type {
+  public function validateStatement(Scope $scope): Type {
     $this->condition->validate($scope);
     $leftType = $this->leftExpression->validate($scope);
     $rightType = $this->rightExpression->validate($scope);
-    return CompoundType::buildFromTypes([$leftType,$rightType]);
+    return CompoundType::buildFromTypes([$leftType,$rightType], true);
   }
 
   public function run(Scope $scope): Value {

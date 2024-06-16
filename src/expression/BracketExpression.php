@@ -19,7 +19,7 @@ class BracketExpression extends Expression {
     $this->expression = $expression;
   }
 
-  public function validate(Scope $scope): Type {
+  public function validateStatement(Scope $scope): Type {
     return $this->expression->validate($scope);
   }
 

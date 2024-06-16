@@ -21,8 +21,8 @@ class TypeExpression extends Expression {
     $this->type = $type;
   }
 
-  public function validate(Scope $scope): Type {
-    return new TypeType($this->type);
+  public function validateStatement(Scope $scope): Type {
+    return new TypeType($this->type, true);
   }
 
   public function run(Scope $scope): Value {

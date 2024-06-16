@@ -2,13 +2,12 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use PHPUnit\Framework\Constraint\Operator;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
  * @author Timo Lehnertz
  */
-class ArrayType extends Type {
+class ArrayType extends Type implements IteratableType {
 
   private Type $keyType;
 
@@ -20,11 +19,13 @@ class ArrayType extends Type {
     $this->elementsType = $elementsType;
   }
 
-  public function assignableBy(Type $type): bool {
+  protected function typeAssignableBy(Type $type): bool {
     if(!($type instanceof ArrayType)) {
       return false;
     }
-    return $this->keyType->assignableBy($type->keyType) && $this->elementsType->assignableBy($type->elementsType);
+    $keysCompatible = $this->keyType->assignableBy($type->keyType, true) || ($type->keyType instanceof NeverType);
+    $elementsCompatible = $this->elementsType->assignableBy($type->elementsType, true) || ($type->elementsType instanceof NeverType);
+    return $keysCompatible && $elementsCompatible;
   }
 
   public function equals(Type $type): bool {
@@ -42,13 +43,15 @@ class ArrayType extends Type {
     }
   }
 
-  public function getOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    $arrayValue = new ArrayValue([], $this);
-    return $arrayValue->getOperatorResultType($operator, $otherType);
+  protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+    if(!$this->keyType->assignableBy($otherType)) {
+      return null;
+    }
+    return $this->elementsType;
   }
 
-  public function getCompatibleOperands(ImplementableOperator $operator): array {
-    if($operator->getID() === Operator::IMPLEMENTABLE_ARRAY_ACCESS) {
+  protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {
+    if($operator->getID() === ImplementableOperator::TYPE_ARRAY_ACCESS) {
       return [$this->keyType];
     }
     return [];
@@ -56,5 +59,9 @@ class ArrayType extends Type {
 
   public function buildNode(): array {
     return ['type' => 'ArrayType','keyType' => $this->keyType->buildNode(),'elementsType' => $this->elementsType->buildNode()];
+  }
+
+  public function getElementsType(): Type {
+    return $this->elementsType;
   }
 }

@@ -43,7 +43,7 @@ class EnumeratedParser extends Parser {
     while($token !== null) {
       if($token->id === $this->lastToken) {
         if($lastWasDelimiter && !$this->allowLastDelimiter) {
-          throw new ParsingException($this, ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS, $token);
+          throw new ParsingException(ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS, $token);
         }
         return new ParserReturn($parsed, $token->next());
       }
@@ -55,11 +55,11 @@ class EnumeratedParser extends Parser {
           $token = $token->next();
           continue;
         } else {
-          throw new ParsingException($this, ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS, $token);
+          throw new ParsingException(ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS, $token);
         }
       }
       if($requireDelimiter) {
-        throw new ParsingException($this, ParsingException::PARSING_ERROR_MISSING_DELIMITERS, $token);
+        throw new ParsingException(ParsingException::PARSING_ERROR_MISSING_DELIMITERS, $token);
       }
 
       $result = $this->elementParser->parse($token);
@@ -69,6 +69,6 @@ class EnumeratedParser extends Parser {
       $lastWasDelimiter = false;
       $token = $result->nextToken;
     }
-    throw new ParsingException($this, ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+    throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
   }
 }
