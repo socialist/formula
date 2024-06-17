@@ -8,6 +8,7 @@ use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\FormulaPart;
 use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\nodes\Node;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\operator\OperatorType;
 use TimoLehnertz\formula\procedure\Scope;
@@ -15,12 +16,12 @@ use TimoLehnertz\formula\type\CompoundType;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\TypeType;
 use TimoLehnertz\formula\type\Value;
-use TimoLehnertz\formula\FormulaPartMetadate;
+use TimoLehnertz\formula\operator\TypeCastOperator;
 
 /**
  * @author Timo Lehnertz
  */
-class OperatorExpression extends Expression {
+class OperatorExpression implements Expression {
 
   public readonly ?Expression $leftExpression;
 
@@ -28,18 +29,10 @@ class OperatorExpression extends Expression {
 
   public ?Expression $rightExpression;
 
-  //   private readonly \Exception $e;
   public function __construct(?Expression $leftExpression, ImplementableOperator $operator, ?Expression $rightExpression) {
-    parent::__construct();
     $this->leftExpression = $leftExpression;
     $this->operator = $operator;
     $this->rightExpression = $rightExpression;
-
-    //     try {
-    //       throw new \Exception("Moin");
-    //     } catch(\Exception $e) {
-    //       $this->e = $e;
-    //     }
 
     switch($operator->getOperatorType()) {
       case OperatorType::PrefixOperator:
@@ -50,19 +43,17 @@ class OperatorExpression extends Expression {
         assertNotNull($leftExpression, 'InfixOperator requires a left expression');
         assertNotNull($rightExpression, 'InfixOperator requires a right expression');
         break;
-      case OperatorType::PostfixOperator:
-        assertNotNull($leftExpression, 'PostfixOperator requires a left expression');
-        assertNull($rightExpression, 'PostfixOperator can\'t have a right expression');
-        break;
+      //       case OperatorType::PostfixOperator:
+      //         assertNotNull($leftExpression, 'PostfixOperator requires a left expression');
+      //         assertNull($rightExpression, 'PostfixOperator can\'t have a right expression');
+      //         break;
     }
   }
 
-  public function validateStatement(Scope $scope): Type {
-    //     if(FormulaPartMetadate::get($this) === null) {
-    //       throw $this->e;
-    //     }
+  public function validate(Scope $scope): Type {
     $leftType = $this->leftExpression?->validate($scope) ?? null;
     $rightType = $this->rightExpression?->validate($scope) ?? null;
+    $returnType = null;
     switch($this->operator->getOperatorType()) {
       case OperatorType::PrefixOperator:
         $returnType = $rightType->getOperatorResultType($this->operator, null);
@@ -76,11 +67,9 @@ class OperatorExpression extends Expression {
         $rightType = $this->rightExpression->validate($scope);
         $returnType = $leftType->getOperatorResultType($this->operator, $rightType);
         break;
-      case OperatorType::PostfixOperator:
-        $returnType = $leftType->getOperatorResultType($this->operator, null);
-        break;
-      default:
-        throw new FormulaBugException('Invalid operatorType');
+      //       case OperatorType::PostfixOperator:
+      //         $returnType = $leftType->getOperatorResultType($this->operator, null);
+      //         break;
     }
     if($returnType === null) {
       throw new FormulaValidationException('Invalid operation '.($leftType?->getIdentifier() ?? '').' '.$this->operator->toString(PrettyPrintOptions::buildDefault()).' '.($rightType?->getIdentifier() ?? ''));
@@ -92,13 +81,11 @@ class OperatorExpression extends Expression {
     switch($this->operator->getOperatorType()) {
       case OperatorType::PrefixOperator:
         return $this->rightExpression->run($scope)->operate($this->operator, null);
-        break;
       case OperatorType::InfixOperator:
         return $this->leftExpression->run($scope)->operate($this->operator, $this->rightExpression->run($scope));
-        break;
-      case OperatorType::PostfixOperator:
-        return $this->leftExpression->run($scope)->operate($this->operator, null);
-        break;
+      //       case OperatorType::PostfixOperator:
+      //         return $this->leftExpression->run($scope)->operate($this->operator, null);
+      //         break;
       default:
         throw new FormulaBugException('Invalid operatorType');
     }
@@ -116,12 +103,11 @@ class OperatorExpression extends Expression {
       foreach($castableTypes as $castableType) {
         $castableType = $castableType->getType();
         if($targetType->assignableBy($castableType, true)) {
-          $expression = new OperatorExpression($source, new ImplementableOperator(ImplementableOperator::TYPE_TYPE_CAST), new TypeExpression($castableType));
-          FormulaPartMetadate::copy($context, $expression);
+          $expression = (new TypeCastOperator(false, $castableType))->transform(null, $source);
           return $expression;
         }
       }
-      throw new FormulaValidationException($context, 'Unable to convert '.$sourceType->getIdentifier().' to '.$targetType->getIdentifier());
+      throw new FormulaValidationException('Unable to convert '.$sourceType->getIdentifier().' to '.$targetType->getIdentifier());
     }
   }
 
@@ -137,7 +123,14 @@ class OperatorExpression extends Expression {
     return $string;
   }
 
-  public function buildNode(Scope $scope): array {
-    return ['type' => 'Operator','outerType' => $this->validate($scope)->buildNode(),'operator' => $this->operator->getIdentifier(),'leftNode' => $this->leftExpression?->buildNode($scope) ?? null,'rightNode' => $this->rightExpression?->buildNode($scope) ?? null];
+  public function buildNode(Scope $scope): Node {
+    $connected = [];
+    if($this->leftExpression !== null) {
+      $connected[] = $this->leftExpression->buildNode($scope);
+    }
+    if($this->rightExpression !== null) {
+      $connected[] = $this->rightExpression->buildNode($scope);
+    }
+    return new Node('OperatorExpression', $connected, ['operator' => $this->operator->getID()]);
   }
 }

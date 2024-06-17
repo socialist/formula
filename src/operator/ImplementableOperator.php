@@ -10,7 +10,7 @@ use TimoLehnertz\formula\PrettyPrintOptions;
  *
  *         Represents an operators that can be implemented by values
  */
-class ImplementableOperator extends FormulaPart {
+class ImplementableOperator implements FormulaPart {
 
   // @formatter:off
   public const TYPE_ADDITION = 0;
@@ -51,7 +51,6 @@ class ImplementableOperator extends FormulaPart {
    * @param ImplementableOperator::TYPE_*
    */
   public function __construct(int $id) {
-    parent::__construct();
     $this->id = $id;
     $this->operatorType = self::idToOperatorType($id);
     $this->identifier = self::idToIdentifier($id);

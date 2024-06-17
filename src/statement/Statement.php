@@ -17,7 +17,7 @@ use TimoLehnertz\formula\type\Type;
  */
 abstract class Statement implements FormulaPart {
 
-  public readonly Token $firstToken;
+  public ?Token $firstToken = null;
 
   public function __construct() {}
 
@@ -37,7 +37,7 @@ abstract class Statement implements FormulaPart {
 
   public function run(Scope $scope): StatementReturn {
     FormulaStatementException::setCurrentStatement($this);
-    $this->runStatement($scope);
+    return $this->runStatement($scope);
   }
 
   public abstract function runStatement(Scope $scope): StatementReturn;

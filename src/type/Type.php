@@ -7,14 +7,14 @@ use TimoLehnertz\formula\FormulaPart;
 use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\procedure\ValueContainer;
+use TimoLehnertz\formula\nodes\NodeInterfaceType;
 
 /**
  * @author Timo Lehnertz
  */
 abstract class Type implements OperatorMeta, FormulaPart {
 
-  private ?ValueContainer $container = null;
+  private bool $final = true;
 
   public function __construct() {}
 
@@ -23,7 +23,7 @@ abstract class Type implements OperatorMeta, FormulaPart {
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT:
       case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL:
-        if($this->container === null) {
+        if($this->final) {
           throw new FormulaValidationException('Can\'t assign final value');
         }
         $array[] = $this;
@@ -54,6 +54,9 @@ abstract class Type implements OperatorMeta, FormulaPart {
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT:
       case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL:
+        if($this->final) {
+          return null;
+        }
         if($otherType === null || !$this->assignableBy($otherType)) {
           break;
         }
@@ -83,8 +86,8 @@ abstract class Type implements OperatorMeta, FormulaPart {
     return $this->getTypeOperatorResultType($operator, $otherType);
   }
 
-  public function setContainer(?ValueContainer $container): void {
-    $this->container = $container;
+  public function setFinal(bool $final): void {
+    $this->final = $final;
   }
 
   protected abstract function getTypeCompatibleOperands(ImplementableOperator $operator): array;
@@ -104,9 +107,9 @@ abstract class Type implements OperatorMeta, FormulaPart {
 
   protected abstract function typeAssignableBy(Type $type): bool;
 
-  public abstract function buildNode(): array;
-
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     return $this->getIdentifier();
   }
+
+  public abstract function buildNodeInterfaceType(): NodeInterfaceType;
 }

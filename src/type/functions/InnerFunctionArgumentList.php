@@ -7,6 +7,7 @@ use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\ArrayType;
 use TimoLehnertz\formula\type\ArrayValue;
 use TimoLehnertz\formula\type\IntegerType;
+use TimoLehnertz\formula\PrettyPrintOptions;
 
 /**
  * @author Timo Lehnertz
@@ -52,12 +53,20 @@ class InnerFunctionArgumentList {
       $innerArgument = $this->arguments[$i];
       $scope->define($innerArgument->final, $innerArgument->type, $innerArgument->name, $value);
     }
+    for(;$i < count($this->arguments);$i++) {
+      /** @var InnerFunctionArgument $innerArgument */
+      $innerArgument = $this->arguments[$i];
+      if($innerArgument->defaultExpression === null) {
+        throw new FormulaBugException('expected default expression');
+      }
+      $scope->define($innerArgument->final, $innerArgument->type, $innerArgument->name, $innerArgument->defaultExpression->run($scope));
+    }
     if($this->varg !== null) {
       $values = [];
       for(;$i < count($args->getValues());$i++) {
         $values[] = $args->getValues()[$i];
       }
-      $arrayType = new ArrayType(new IntegerType(), $this->varg->type, $this->varg->type->isFinal());
+      $arrayType = new ArrayType(new IntegerType(), $this->varg->type);
       $arrayValue = new ArrayValue($values, $arrayType);
       $scope->define($this->varg->final, $arrayType, $this->varg->name, $arrayValue);
     }
@@ -83,5 +92,21 @@ class InnerFunctionArgumentList {
       $args[] = new OuterFunctionArgument($this->varg->type, true);
     }
     return new OuterFunctionArgumentListType($args, $this->varg !== null);
+  }
+
+  public function tostring(PrettyPrintOptions $prettyPrintOptions): string {
+    $str = '(';
+    $del = '';
+    /**
+     * @var InnerFunctionArgument $argument
+     */
+    foreach($this->arguments as $argument) {
+      $str .= $del.$argument->toString($prettyPrintOptions);
+      $del = ',';
+    }
+    if($this->varg !== null) {
+      $str .= $del.$this->varg->toString($prettyPrintOptions);
+    }
+    return $str.')';
   }
 }

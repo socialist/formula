@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\nodes\NodeInterfaceType;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
@@ -17,6 +18,7 @@ class ArrayType extends Type implements IteratableType {
     parent::__construct();
     $this->keyType = $keyType;
     $this->elementsType = $elementsType;
+    $this->elementsType->setFinal(false);
   }
 
   protected function typeAssignableBy(Type $type): bool {
@@ -57,8 +59,12 @@ class ArrayType extends Type implements IteratableType {
     return [];
   }
 
-  public function buildNode(): array {
-    return ['type' => 'ArrayType','keyType' => $this->keyType->buildNode(),'elementsType' => $this->elementsType->buildNode()];
+  public function buildNodeInterfaceType(): NodeInterfaceType {
+    return new NodeInterfaceType('array', ['keyType' => $this->keyType->buildNodeInterfaceType(),'elementsType' => $this->elementsType->buildNodeInterfaceType()]);
+  }
+
+  public function getKeyType(): Type {
+    return $this->keyType;
   }
 
   public function getElementsType(): Type {

@@ -29,6 +29,7 @@ use ReflectionType;
 use TimoLehnertz\formula\type\functions\OuterFunctionArgumentListType;
 use TimoLehnertz\formula\type\functions\PHPFunctionBody;
 use TimoLehnertz\formula\type\ArrayValue;
+use TimoLehnertz\formula\nodes\NodeTreeScope;
 
 /**
  * @author Timo Lehnertz
@@ -36,7 +37,7 @@ use TimoLehnertz\formula\type\ArrayValue;
 class Scope {
 
   /**
-   * @var array<string, DefinedValue>
+   * @var array<string, >
    */
   private array $defined = [];
 
@@ -58,30 +59,30 @@ class Scope {
     }
   }
 
-  public static function reflectionTypeToFormulaType(ReflectionType $reflectionType, bool $final): Type {
+  public static function reflectionTypeToFormulaType(ReflectionType $reflectionType): Type {
     if($reflectionType instanceof ReflectionNamedType) {
       switch($reflectionType->getName()) {
         case 'string':
-          return new StringType($final);
+          return new StringType();
         case 'int':
-          return new IntegerType($final);
+          return new IntegerType();
         case 'float':
-          return new FloatType($final);
+          return new FloatType();
         case 'bool':
-          return new BooleanType($final);
+          return new BooleanType();
         case 'array':
-          return new ArrayType(new MixedType($final), new MixedType($final), $final);
+          return new ArrayType(new MixedType(), new MixedType());
         case 'mixed':
-          return new MixedType($final);
+          return new MixedType();
         case 'void':
-          return new VoidType($final);
+          return new VoidType();
       }
     } else if($reflectionType instanceof \ReflectionUnionType) {
       $types = [];
       foreach($reflectionType->getTypes() as $type) {
-        $types[] = self::reflectionTypeToFormulaType($type, $final);
+        $types[] = self::reflectionTypeToFormulaType($type);
       }
-      return CompoundType::buildFromTypes($types, $final);
+      return CompoundType::buildFromTypes($types);
     }
     throw new \BadMethodCallException('PHP type '.$reflectionType.' is not supported');
   }
@@ -89,22 +90,22 @@ class Scope {
   public function definePHPFunction(string $identifier, callable $callable): void {
     $name = '';
     is_callable($callable, false, $name);
-    $isFunction = count(explode("::", $name)) === 1;
-    if($isFunction) {
-      $reflection = new \ReflectionFunction($callable);
+    //     $isFunction = count(explode("::", $name)) === 1;
+    //     if($isFunction) {
+    //       $reflection = new \ReflectionFunction($callable);
+    //     } else {
+    if(is_array($callable)) {
+      $className = is_object($callable[0]) ? get_class($callable[0]) : $callable[0];
+      $methodName = $callable[1];
+      $reflection = new ReflectionMethod($className, $methodName);
     } else {
-      if(is_array($callable)) {
-        $className = is_object($callable[0]) ? get_class($callable[0]) : $callable[0];
-        $methodName = $callable[1];
-        $reflection = new ReflectionMethod($className, $methodName);
-      } else {
-        throw new \InvalidArgumentException('The provided callable is not an array.');
-      }
+      throw new \InvalidArgumentException('The provided callable is not an array.');
     }
+    //     }
     /** @var \ReflectionFunctionAbstract $reflection */
     $reflectionReturnType = $reflection->getReturnType();
     if($reflectionReturnType !== null) {
-      $returnType = Scope::reflectionTypeToFormulaType($reflectionReturnType, false);
+      $returnType = Scope::reflectionTypeToFormulaType($reflectionReturnType);
     } else {
       $returnType = new VoidType();
     }
@@ -120,14 +121,17 @@ class Scope {
       if($reflectionArgumentType === null) {
         throw new FormulaValidationException('Parameter '.$reflectionArgument->name.' has no php type. Only typed parameters are supported');
       }
-      $arguments[] = new OuterFunctionArgument(Scope::reflectionTypeToFormulaType($reflectionArgumentType, false), $reflectionArgument->isOptional());
+      $arguments[] = new OuterFunctionArgument(Scope::reflectionTypeToFormulaType($reflectionArgumentType), $reflectionArgument->isOptional());
     }
-    $functionType = new FunctionType(new OuterFunctionArgumentListType($arguments, $vargs), $returnType, false);
+    $functionType = new FunctionType(new OuterFunctionArgumentListType($arguments, $vargs), $returnType);
     $functionBody = new PHPFunctionBody($callable, $returnType);
     $this->define(true, $functionType, $identifier, new FunctionValue($functionBody, $this));
   }
 
-  public function define(bool $final, Type $type, string $identifier, ?Value $value = null): void {
+  public function define(bool $final, Type $type, string $identifier, mixed $value = null): void {
+    if($value !== null && !($value instanceof Value)) {
+      $value = Scope::valueByPHPVar($value);
+    }
     if(isset($this->defined[$identifier])) {
       throw new FormulaRuntimeException('Can\'t redefine '.$identifier);
     }
@@ -154,16 +158,6 @@ class Scope {
     }
   }
 
-  public function assignableBy(string $identifier, Type $type): bool {
-    if(isset($this->defined[$identifier])) {
-      return $this->defined[$identifier]->type->equals($type);
-    } else if($this->parent !== null) {
-      return $this->parent->assignableBy($identifier, $type);
-    } else {
-      throw new FormulaRuntimeException($identifier.' is not defined');
-    }
-  }
-
   public static function valueByPHPVar(mixed $value): Value {
     if(is_int($value)) {
       return new IntegerValue($value);
@@ -182,7 +176,7 @@ class Scope {
       }
       return new ArrayValue($values);
     }
-    throw new FormulaRuntimeException($value.' has no supported php type');
+    throw new FormulaRuntimeException('Unsupported php type');
   }
 
   public function assign(string $identifier, mixed $value): void {
@@ -200,5 +194,14 @@ class Scope {
 
   public function setParent(Scope $parent): void {
     $this->parent = $parent;
+  }
+
+  public function toNodeTreeScope(): NodeTreeScope {
+    $definedValues = [];
+    /** @var DefinedValue $definedValue */
+    foreach($this->defined as $identifier => $definedValue) {
+      $definedValues[$identifier] = $definedValue->type->buildNodeInterfaceType();
+    }
+    return new NodeTreeScope($this->parent?->toNodeTreeScope() ?? null, $definedValues);
   }
 }

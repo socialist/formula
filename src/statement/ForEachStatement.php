@@ -2,14 +2,15 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\statement;
 
+use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\IteratableType;
-use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\IteratableValue;
-use TimoLehnertz\formula\FormulaBugException;
+use TimoLehnertz\formula\type\Type;
+use TimoLehnertz\formula\type\Value;
 
 /**
  * @author Timo Lehnertz
@@ -45,11 +46,10 @@ class ForEachStatement extends Statement {
     } else if(!$this->elementType->assignableBy($getterType->getElementsType(), false)) {
       throw new FormulaValidationException($this->elementType->getIdentifier().' is not assignable by '.$getterType->getElementsType()->getIdentifier());
     }
-    $this->elementType = $this->elementType->setFinal($this->final);
-    $scope = $scope->buildChild();
-    $scope->define($this->final, $this->elementType, $this->elementIdentifier);
+    $loopScope = $scope->buildChild();
+    $loopScope->define($this->final, $this->elementType, $this->elementIdentifier);
     $statementReturn = new StatementReturnType(null, Frequency::NEVER, Frequency::NEVER);
-    return $statementReturn->concatOr($this->body->validate($scope, $allowedReturnType));
+    return $statementReturn->concatOr($this->body->validate($loopScope, $allowedReturnType));
   }
 
   public function runStatement(Scope $scope): StatementReturn {
@@ -57,9 +57,10 @@ class ForEachStatement extends Statement {
     if(!($iterator instanceof IteratableValue)) {
       throw new FormulaBugException('Expected iterator');
     }
+    /** @var Value $value */
     foreach($iterator->getIterator() as $value) {
       $loopScope = $scope->buildChild();
-      $loopScope->define($this->final, $this->elementType, $this->elementIdentifier, $value);
+      $loopScope->define($this->final, $this->elementType, $this->elementIdentifier, $this->final ? $value : $value->copy());
       $return = $this->body->run($loopScope);
       if($return->returnValue !== null) {
         return $return;

@@ -30,7 +30,7 @@ class NullValue extends Value {
     return null;
   }
 
-  public function toStringValue(): StringValue {
-    return new StringValue('null');
+  public function toString(): string {
+    return 'null';
   }
 }

@@ -18,10 +18,7 @@ class BreakStatementParser extends Parser {
     if($firstToken->id !== Token::KEYWORD_BREAK) {
       throw new ParsingSkippedException();
     }
-    $token = $firstToken->next();
-    if($token === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
-    }
+    $token = $firstToken->requireNext();
     if($token->id !== Token::SEMICOLON) {
       throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $token, 'Expected ;');
     }

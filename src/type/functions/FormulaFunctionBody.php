@@ -3,6 +3,7 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type\functions;
 
 use TimoLehnertz\formula\FormulaPart;
+use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\statement\CodeBlock;
@@ -12,12 +13,11 @@ use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 use TimoLehnertz\formula\type\VoidType;
 use TimoLehnertz\formula\type\VoidValue;
-use TimoLehnertz\formula\FormulaValidationException;
 
 /**
  * @author Timo Lehnertz
  */
-class FormulaFunctionBody extends FormulaPart implements FunctionBody {
+class FormulaFunctionBody implements FormulaPart, FunctionBody {
 
   private readonly InnerFunctionArgumentList $arguments;
 
@@ -25,17 +25,13 @@ class FormulaFunctionBody extends FormulaPart implements FunctionBody {
 
   private readonly Scope $scope;
 
-  private ?Type $forcedReturnType;
-
-  public function __construct(InnerFunctionArgumentList $arguments, CodeBlock $codeBlock, Scope $scope, ?Type $forcedReturnType = null) {
-    parent::__construct();
+  public function __construct(InnerFunctionArgumentList $arguments, CodeBlock $codeBlock, Scope $scope) {
     $this->arguments = $arguments;
     $this->codeBlock = $codeBlock;
     $this->scope = $scope;
-    $this->forcedReturnType = $forcedReturnType;
   }
 
-  public function validateStatement(Scope $scope, Type $expectedReturnType): void {
+  public function validate(Scope $scope, Type $expectedReturnType): void {
     $scope = $this->scope->buildChild();
     $this->arguments->populateScopeDefinesOnly($scope);
     $codeBlockReturn = $this->codeBlock->validate($scope, $expectedReturnType);
@@ -64,18 +60,7 @@ class FormulaFunctionBody extends FormulaPart implements FunctionBody {
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    $str = '(';
-    $del = '';
-    /**  @var InnerFunctionArgument $argument */
-    foreach($this->arguments as $argument) {
-      $str .= $del.$argument->toString($prettyPrintOptions);
-      $del = ',';
-    }
-    if($this->varg) {
-      $str .= $del.$this->varg->toString($prettyPrintOptions);
-    }
-    $str .= ') '.$this->codeBlock->toString($prettyPrintOptions);
-    return $str;
+    return $this->arguments->tostring($prettyPrintOptions).' '.$this->codeBlock->toString($prettyPrintOptions);
   }
 
   public function getArgs(): OuterFunctionArgumentListType {

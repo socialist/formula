@@ -31,7 +31,7 @@ class VoidValue extends Value {
     throw new FormulaBugException('VoidValue does not have a php representation');
   }
 
-  public function toStringValue(): StringValue {
-    return new StringValue('void');
+  public function toString(): string {
+    return 'void';
   }
 }

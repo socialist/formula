@@ -51,9 +51,12 @@ class CodeBlock extends Statement {
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
     if($this->singleLine) {
       $prettyPrintOptions->indent();
-      $str = $prettyPrintOptions->newLine.$prettyPrintOptions->getIndentStr().$this->statements[0]->toString($prettyPrintOptions);
+      $str = $prettyPrintOptions->newLine.$prettyPrintOptions->getIndentStr().$this->statements[0]->toString($prettyPrintOptions).$prettyPrintOptions->newLine;
       $prettyPrintOptions->outdent();
-      return $str;
+      return $str.$prettyPrintOptions->getIndentStr();
+    }
+    if(count($this->statements) === 0) {
+      return '{}';
     }
     $string = '{';
     $prettyPrintOptions->indent();

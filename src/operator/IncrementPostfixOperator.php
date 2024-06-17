@@ -13,11 +13,9 @@ use TimoLehnertz\formula\type\IntegerValue;
 /**
  * @author Timo Lehnertz
  */
-class IncrementPostfixOperator extends ParsedOperator {
+class IncrementPostfixOperator implements ParsedOperator {
 
-  public function __construct() {
-    parent::__construct();
-  }
+  public function __construct() {}
 
   public function transform(?Expression $leftExpression, ?Expression $rightExpression): Expression {
     $additionOperator = new ImplementableOperator(ImplementableOperator::TYPE_ADDITION);

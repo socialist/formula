@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\nodes\NodeInterfaceType;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
@@ -33,7 +34,7 @@ class FloatType extends Type {
     return NumberValueHelper::getTypeOperatorResultType($this, $operator, $otherType);
   }
 
-  public function buildNode(): array {
-    return ['type' => 'FloatType'];
+  public function buildNodeInterfaceType(): NodeInterfaceType {
+    return new NodeInterfaceType('float');
   }
 }

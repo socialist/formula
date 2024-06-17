@@ -18,13 +18,13 @@ abstract class Value implements OperatorHandler {
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT:
         if($this->container === null) {
-          throw new FormulaBugException('Can not mutate immutable value');
+          throw new FormulaBugException('Missing value container');
         }
         $this->container->assign($other);
         return $other;
       case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL:
         if($this->container === null) {
-          throw new FormulaBugException('Can not mutate immutable value');
+          throw new FormulaBugException('Missing value container');
         }
         $return = $this->copy();
         $this->container->assign($other);
@@ -37,7 +37,7 @@ abstract class Value implements OperatorHandler {
             return new BooleanValue($this->isTruthy());
           }
           if($other->getValue()->equals(new StringType(false))) {
-            return $this->toStringValue();
+            return new StringValue($this->toString());
           }
         }
         break;
@@ -47,8 +47,6 @@ abstract class Value implements OperatorHandler {
         return new BooleanValue($this->isTruthy() || $other->isTruthy());
       case ImplementableOperator::TYPE_LOGICAL_XOR:
         return new BooleanValue($this->isTruthy() xor $other->isTruthy());
-      case ImplementableOperator::TYPE_EQUALS:
-        return new BooleanValue($this->isTruthy() === $other->isTruthy());
     }
     return $this->valueOperate($operator, $other);
   }
@@ -76,5 +74,5 @@ abstract class Value implements OperatorHandler {
    */
   public abstract function toPHPValue(): mixed;
 
-  public abstract function toStringValue(): StringValue;
+  public abstract function toString(): string;
 }

@@ -9,8 +9,8 @@ class NodesNotSupportedException extends \Exception {
 
   private readonly string $incompatiblePart;
 
-  public function __construc(string $incompatiblePart, ?string $message = null) {
-    parent::__construct($message);
+  public function __construct(string $incompatiblePart) {
+    parent::__construct($incompatiblePart.' does not support nodes');
     $this->incompatiblePart = $incompatiblePart;
   }
 }

@@ -44,12 +44,4 @@ class WhileStatement extends Statement {
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
     return 'while ('.$this->condition->toString($prettyPrintOptions).') '.$this->body->toString($prettyPrintOptions);
   }
-
-  public function getCondition(): Expression {
-    return $this->condition;
-  }
-
-  public function getBody(): CodeBlock {
-    return $this->body;
-  }
 }

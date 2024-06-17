@@ -3,6 +3,7 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\expression;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\nodes\Node;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\ArrayType;
 use TimoLehnertz\formula\type\ArrayValue;
@@ -14,15 +15,24 @@ use TimoLehnertz\formula\type\Value;
 /**
  * @author Timo Lehnertz
  */
-class ArrayExpression extends Expression {
+class ArrayExpression implements Expression {
 
   private readonly array $expressions;
 
   private ArrayType $arrayType;
 
   public function __construct(array $expressions) {
-    parent::__construct();
     $this->expressions = $expressions;
+  }
+
+  public function validate(Scope $scope): Type {
+    $types = [];
+    foreach($this->expressions as $expression) {
+      $types[] = $expression->validate($scope);
+    }
+    $elementType = CompoundType::buildFromTypes($types, true);
+    $this->arrayType = new ArrayType(new IntegerType(true), $elementType, true);
+    return $this->arrayType;
   }
 
   public function run(Scope $scope): Value {
@@ -43,21 +53,11 @@ class ArrayExpression extends Expression {
     return '{'.$str.'}';
   }
 
-  public function validateStatement(Scope $scope): Type {
-    $types = [];
+  public function buildNode(Scope $scope): Node {
+    $inputs = [];
     foreach($this->expressions as $expression) {
-      $types[] = $expression->validate($scope);
+      $inputs[] = $expression->buildNode($scope);
     }
-    $elementType = CompoundType::buildFromTypes($types, true);
-    $this->arrayType = new ArrayType(new IntegerType(true), $elementType, true);
-    return $this->arrayType;
-  }
-
-  public function buildNode(Scope $scope): array {
-    $content = [];
-    foreach($this->expressions as $expression) {
-      $content[] = $expression->buildNode($scope);
-    }
-    return ['type' => 'Array','outerType' => $this->validate($scope)->buildNode($scope),'content' => $content];
+    return new Node('ArrayExpression', $inputs);
   }
 }

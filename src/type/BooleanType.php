@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\nodes\NodeInterfaceType;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
@@ -25,15 +26,19 @@ class BooleanType extends Type {
     return 'boolean';
   }
 
-  public function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    return null;
-  }
-
   public function getTypeCompatibleOperands(ImplementableOperator $operator): array {
     return [];
   }
 
-  public function buildNode(): array {
-    return ['type' => 'BooleanType'];
+  public function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+    if($operator->getID() === ImplementableOperator::TYPE_LOGICAL_NOT) {
+      return new BooleanType();
+    } else {
+      return null;
+    }
+  }
+
+  public function buildNodeInterfaceType(): NodeInterfaceType {
+    return new NodeInterfaceType('boolean');
   }
 }

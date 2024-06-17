@@ -4,9 +4,8 @@ namespace test\parsing;
 use PHPUnit\Framework\TestCase;
 use TimoLehnertz\formula\expression\ConstantExpression;
 use TimoLehnertz\formula\parsing\ConstantExpressionParser;
-use TimoLehnertz\formula\tokens\Tokenizer;
-use TimoLehnertz\formula\type\NullValue;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\tokens\Tokenizer;
 
 class ConstantExpressionParserTest extends TestCase {
 

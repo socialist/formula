@@ -41,7 +41,11 @@ class FloatValue extends Value {
     return $this->value;
   }
 
-  public function toStringValue(): StringValue {
-    return new StringValue(''.$this->value);
+  public function toString(): string {
+    if(floor($this->value) == $this->value) {
+      return ((string) $this->value).'.0';
+    } else {
+      return (string) $this->value;
+    }
   }
 }

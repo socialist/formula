@@ -3,6 +3,7 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type\functions;
 
 use TimoLehnertz\formula\FormulaValidationException;
+use TimoLehnertz\formula\nodes\NodeInterfaceType;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\type\Type;
 
@@ -142,11 +143,12 @@ class OuterFunctionArgumentListType extends Type {
     return null;
   }
 
-  public function buildNode(): array {
-    $argumentNodes = [];
+  public function buildNodeInterfaceType(): NodeInterfaceType {
+    $args = [];
+    /** @var OuterFunctionArgument $argument */
     foreach($this->arguments as $argument) {
-      $argumentNodes[] = $argument->buildNode();
+      $args[] = $argument->buildNodeInterfaceType();
     }
-    return ['type' => 'ArgumentListType','arguments' => $argumentNodes,'isVargs' => $this->isVArgs];
+    return new NodeInterfaceType('OuterFunctionArgumentList', ['arguments' => $args,'isVargs' => $this->isVArgs]);
   }
 }

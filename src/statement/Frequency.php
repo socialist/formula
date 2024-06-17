@@ -17,10 +17,6 @@ enum Frequency: int {
     return $a > $b ? $a : $b;
   }
 
-  public static function getLower(Frequency $a, Frequency $b): Frequency {
-    return $a < $b ? $a : $b;
-  }
-
   public static function or(Frequency $a, Frequency $b): Frequency {
     if($a === $b) {
       return $a;

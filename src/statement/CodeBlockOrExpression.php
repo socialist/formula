@@ -28,7 +28,7 @@ class CodeBlockOrExpression extends Statement {
         $implicitType = $this->content->validate($scope);
         $this->content = OperatorExpression::castExpression($this->content, $implicitType, $allowedReturnType, $scope, $this);
       }
-      return new StatementReturnType($this->content->validate($scope), false, true);
+      return new StatementReturnType($this->content->validate($scope), Frequency::ALWAYS, Frequency::ALWAYS);
     }
   }
 
@@ -36,8 +36,7 @@ class CodeBlockOrExpression extends Statement {
     if($this->content instanceof CodeBlock) {
       return $this->content->run($scope);
     } else if($this->content instanceof Expression) {
-      $this->content->run($scope);
-      return new StatementReturn(null, false, false);
+      return new StatementReturn($this->content->run($scope), false, false);
     }
   }
 

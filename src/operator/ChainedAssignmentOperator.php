@@ -10,7 +10,7 @@ use TimoLehnertz\formula\expression\OperatorExpression;
 /**
  * @author Timo Lehnertz
  */
-class ChainedAssignmentOperator extends ParsedOperator {
+class ChainedAssignmentOperator implements ParsedOperator {
 
   private readonly ImplementableOperator $chainedOperator;
 
@@ -19,7 +19,6 @@ class ChainedAssignmentOperator extends ParsedOperator {
   private readonly string $identifier;
 
   public function __construct(ImplementableOperator $chainedOperator, int $precedence, string $identifier) {
-    parent::__construct();
     $this->chainedOperator = $chainedOperator;
     $this->precedence = $precedence;
     $this->identifier = $identifier;

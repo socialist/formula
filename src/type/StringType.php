@@ -2,8 +2,8 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\nodes\NodeInterfaceType;
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\FormulaPart;
 
 /**
  * @author Timo Lehnertz
@@ -42,7 +42,7 @@ class StringType extends Type {
     }
   }
 
-  public function buildNode(): array {
-    return ['type' => 'StringType'];
+  public function buildNodeInterfaceType(): NodeInterfaceType {
+    return new NodeInterfaceType('String');
   }
 }

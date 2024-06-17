@@ -2,19 +2,18 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
-use PHPUnit\Framework\Constraint\Operator;
-use TimoLehnertz\formula\tokens\Token;
-use TimoLehnertz\formula\operator\ImplementableParsedOperator;
-use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\operator\OperatorType;
-use TimoLehnertz\formula\operator\IncrementPrefixOperator;
-use TimoLehnertz\formula\operator\IncrementPostfixOperator;
-use TimoLehnertz\formula\operator\DecrementPrefixOperator;
-use TimoLehnertz\formula\operator\DecrementPostfixOperator;
-use TimoLehnertz\formula\operator\LessEqualsOperator;
-use TimoLehnertz\formula\operator\GreaterEqualsOperator;
-use TimoLehnertz\formula\operator\NotEqualsOperator;
 use TimoLehnertz\formula\operator\ChainedAssignmentOperator;
+use TimoLehnertz\formula\operator\DecrementPostfixOperator;
+use TimoLehnertz\formula\operator\DecrementPrefixOperator;
+use TimoLehnertz\formula\operator\GreaterEqualsOperator;
+use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\operator\ImplementableParsedOperator;
+use TimoLehnertz\formula\operator\IncrementPostfixOperator;
+use TimoLehnertz\formula\operator\IncrementPrefixOperator;
+use TimoLehnertz\formula\operator\LessEqualsOperator;
+use TimoLehnertz\formula\operator\NotEqualsOperator;
+use TimoLehnertz\formula\operator\OperatorType;
+use TimoLehnertz\formula\tokens\Token;
 
 /**
  * @author Timo Lehnertz

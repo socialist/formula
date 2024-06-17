@@ -21,6 +21,7 @@ class ArrayPointerValue extends Value implements ValueContainer {
   public function __construct(ArrayValue $array, mixed $index) {
     $this->array = $array;
     $this->index = $index;
+    parent::setContainer($this);
   }
 
   public function isTruthy(): bool {
@@ -43,7 +44,7 @@ class ArrayPointerValue extends Value implements ValueContainer {
     return null;
   }
 
-  public function toStringValue(): StringValue {
+  public function toString(): string {
     throw new FormulaRuntimeException(null, 'Array key '.$this->index.' does not exist');
   }
 

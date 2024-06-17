@@ -32,14 +32,14 @@ class StringValue extends Value {
     if($other === null || $operator->getID() !== ImplementableOperator::TYPE_ADDITION) {
       throw new InternalFormulaException('Invalid operation on string value!');
     }
-    return new StringValue($this->value.$other->toStringValue()->value);
+    return new StringValue($this->value.$other->toString());
   }
 
   public function toPHPValue(): mixed {
     return $this->value;
   }
 
-  public function toStringValue(): StringValue {
-    return $this;
+  public function toString(): string {
+    return $this->value;
   }
 }

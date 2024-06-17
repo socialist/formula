@@ -11,50 +11,6 @@ use src\tokens\TokenisationException;
  */
 class Tokenizer {
 
-  /**
-   * Name that this tokenizer will generate
-   */
-  private readonly int $id;
-
-  private string $value;
-
-  private string $buffer = "";
-
-  private string $regex;
-
-  private array $firstChars;
-
-  /**
-   * Storing if this tokenizer is currently valid
-   */
-  private bool $valid = false;
-
-  public function __construct(int $id, string $regex, array $firstChars = []) {
-    $this->id = $id;
-    $this->regex = $regex;
-    $this->firstChars = $firstChars;
-  }
-
-  /**
-   * Has to get called once the end of text has been reached.
-   * Behaves identical to parse
-   *
-   * @param int $position the position of the last character
-   */
-  public function parseEndOfinput(): false {
-    $this->buffer .= '';
-    return $this->valid;
-  }
-
-  /**
-   * Resets this tokenizer to a fresh start
-   */
-  public function reset(): void {
-    $this->buffer = "";
-    $this->valid = "";
-    $this->valid = false;
-  }
-
   private static function isValidForIdentifier(string $char): bool {
     return ctype_alpha($char) || ctype_digit($char) || $char === '_';
   }
@@ -262,7 +218,6 @@ class Tokenizer {
     "-=" => Token::ASSIGNMENT_MINUS,
     "*=" => Token::ASSIGNMENT_MULTIPLY,
     "/=" => Token::ASSIGNMENT_DIVIDE,
-    "^=" => Token::ASSIGNMENT_DIVIDE,
     "&=" => Token::ASSIGNMENT_AND,
     "|=" => Token::ASSIGNMENT_OR,
     "^=" => Token::ASSIGNMENT_XOR,
@@ -291,7 +246,6 @@ class Tokenizer {
     "boolean" => Token::KEYWORD_BOOL,
     "new" => Token::KEYWORD_NEW,
     "char" => Token::KEYWORD_CHAR,
-    "new" => Token::KEYWORD_NEW,
     "return" => Token::KEYWORD_RETURN,
     "continue" => Token::KEYWORD_CONTINUE,
     "break" => Token::KEYWORD_BREAK,

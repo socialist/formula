@@ -3,6 +3,7 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\expression;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\nodes\Node;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
@@ -10,19 +11,18 @@ use TimoLehnertz\formula\type\Value;
 /**
  * @author Timo Lehnertz
  */
-class ConstantExpression extends Expression {
+class ConstantExpression implements Expression {
 
   private readonly Type $type;
 
   private readonly Value $value;
 
   public function __construct(Type $type, Value $value) {
-    parent::__construct();
     $this->type = $type;
     $this->value = $value;
   }
 
-  public function validateStatement(Scope $scope): Type {
+  public function validate(Scope $scope): Type {
     return $this->type;
   }
 
@@ -31,10 +31,10 @@ class ConstantExpression extends Expression {
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    return $this->value->toString($prettyPrintOptions);
+    return $this->value->toString();
   }
 
-  public function buildNode(Scope $scope): array {
-    return ['type' => 'Constant','outerType' => $this->validate($scope)->buildNode(),'value' => $this->value->buildNode()];
+  public function buildNode(Scope $scope): Node {
+    return new Node('ConstantExpression', [], ['type' => $this->type->buildNodeInterfaceType(),'value' => $this->value->toString()]);
   }
 }

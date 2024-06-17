@@ -2,8 +2,8 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\nodes\NodeInterfaceType;
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\FormulaPart;
 
 /**
  * @author Timo Lehnertz
@@ -130,12 +130,13 @@ class CompoundType extends Type {
     }
   }
 
-  public function buildNode(): array {
+  public function buildNodeInterfaceType(): NodeInterfaceType {
     $types = [];
+    /** @var Type $type */
     foreach($this->types as $type) {
-      $types[] = $type->buildNode();
+      $types[] = $type->buildNodeInterfaceType();
     }
-    return ['type' => 'CompoundType','types' => $types];
+    return new NodeInterfaceType('compound', ['types' => $types]);
   }
 }
 

@@ -2,7 +2,6 @@
 namespace TimoLehnertz\formula;
 
 use TimoLehnertz\formula\parsing\CodeBlockOrExpressionParser;
-use TimoLehnertz\formula\procedure\Method;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\statement\CodeBlockOrExpression;
 use TimoLehnertz\formula\tokens\Tokenizer;
@@ -84,19 +83,19 @@ class Formula {
   //     }
   //   }
 
-  /**
-   * @param string $oldName
-   * @param string $newName
-   */
-  public function renameMethods(string $oldName, string $newName, bool $caseSensitive = true): void {
-    foreach($this->expression->getContent() as $content) {
-      if($content instanceof Method) {
-        if(self::strcmp($content->getIdentifier(), $oldName, $caseSensitive))
-          $content->setIdentifier($newName);
-      }
-    }
-    $this->initDefaultMethods(); // in case a method got renamed to a buildin method
-  }
+  //   /**
+  //    * @param string $oldName
+  //    * @param string $newName
+  //    */
+  //   public function renameMethods(string $oldName, string $newName, bool $caseSensitive = true): void {
+  //     foreach($this->expression->getContent() as $content) {
+  //       if($content instanceof Method) {
+  //         if(self::strcmp($content->getIdentifier(), $oldName, $caseSensitive))
+  //           $content->setIdentifier($newName);
+  //       }
+  //     }
+  //     $this->initDefaultMethods(); // in case a method got renamed to a buildin method
+  //   }
 
   /**
    * @param string $a
@@ -131,25 +130,25 @@ class Formula {
   //     return $strings;
   //   }
 
-  /**
-   * Gets all method identifiers
-   *
-   * @return array<string>
-   */
-  public function getMethodIdentifiers(): array {
-    $methods = [];
-    foreach($this->expression->getContent() as $content) {
-      if($content instanceof Method)
-        $methods[] = $content;
-    }
-    $identifiers = [];
-    foreach($methods as $method) {
-      if(!in_array($method->getIdentifier(), $identifiers)) {
-        $identifiers[] = $method->getIdentifier();
-      }
-    }
-    return $identifiers;
-  }
+  //   /**
+  //    * Gets all method identifiers
+  //    *
+  //    * @return array<string>
+  //    */
+  //   public function getMethodIdentifiers(): array {
+  //     $methods = [];
+  //     foreach($this->expression->getContent() as $content) {
+  //       if($content instanceof Method)
+  //         $methods[] = $content;
+  //     }
+  //     $identifiers = [];
+  //     foreach($methods as $method) {
+  //       if(!in_array($method->getIdentifier(), $identifiers)) {
+  //         $identifiers[] = $method->getIdentifier();
+  //       }
+  //     }
+  //     return $identifiers;
+  //   }
 
   /**
    * Gets all variable identifiers present in this formula

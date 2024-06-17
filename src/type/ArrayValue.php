@@ -4,6 +4,7 @@ namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\procedure\ValueContainer;
 
 /**
  * @author Timo Lehnertz
@@ -13,13 +14,17 @@ class ArrayValue extends Value implements IteratableValue {
   /**
    * @var array<array-key, Value>
    */
-  private readonly array $value;
+  private array $value;
 
   /**
    * @param array<array-key, Value>
    */
   public function __construct(array $value) {
     $this->value = $value;
+    /** @var Value $value */
+    foreach($this->value as $key => $value) {
+      $value->setContainer(new ArrayPointerValue($this, $key));
+    }
   }
 
   public function isTruthy(): bool {
@@ -56,6 +61,10 @@ class ArrayValue extends Value implements IteratableValue {
   }
 
   public function assignKey(mixed $key, Value $value): void {
+    $value->setContainer(new ArrayPointerValue($this, $key));
+    if(isset($this->value[$key])) {
+      $this->value[$key]->setContainer(null);
+    }
     $this->value[$key] = $value;
   }
 
@@ -67,14 +76,14 @@ class ArrayValue extends Value implements IteratableValue {
     return $arr;
   }
 
-  public function toStringValue(): StringValue {
+  public function toString(): string {
     $str = '{';
     $del = '';
     foreach($this->value as $element) {
       $str .= $del.$element->toStringValue()->toPHPValue();
       $del = ', ';
     }
-    return new StringValue($str.'}');
+    return $str.'}';
   }
 
   public function getIterator(): \Iterator {

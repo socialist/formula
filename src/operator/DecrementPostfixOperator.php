@@ -13,11 +13,9 @@ use TimoLehnertz\formula\type\IntegerType;
 /**
  * @author Timo Lehnertz
  */
-class DecrementPostfixOperator extends ParsedOperator {
+class DecrementPostfixOperator implements ParsedOperator {
 
-  public function __construct() {
-    parent::__construct();
-  }
+  public function __construct() {}
 
   public function transform(?Expression $leftExpression, ?Expression $rightExpression): Expression {
     $subtractionOperator = new ImplementableOperator(ImplementableOperator::TYPE_SUBTRACTION);

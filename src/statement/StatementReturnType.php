@@ -4,6 +4,7 @@ namespace TimoLehnertz\formula\statement;
 
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\CompoundType;
+use function PHPUnit\Framework\assertTrue;
 
 /**
  * @author Timo Lehnertz
@@ -32,12 +33,8 @@ class StatementReturnType {
     $this->returnType = $returnType;
     $this->stopFrequency = $stopFrequency;
     $this->returnFrequency = $returnFrequency;
-    if($returnFrequency > $stopFrequency) {
-      throw new \BadMethodCallException('Return frequency can\'t be higher than stop frequency');
-    }
-    if($returnType === null && $returnFrequency !== Frequency::NEVER) {
-      throw new \BadMethodCallException('Return type can\'t be null here');
-    }
+    assertTrue(!($returnFrequency > $stopFrequency), 'Return frequency can\'t be higher than stop frequency');
+    assertTrue(!($returnType === null && $returnFrequency !== Frequency::NEVER), 'Return type can\'t be null here');
   }
 
   /**

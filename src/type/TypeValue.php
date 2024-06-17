@@ -44,7 +44,7 @@ class TypeValue extends Value {
     return $this->value;
   }
 
-  public function toStringValue(): StringValue {
-    return new StringValue($this->value->getIdentifier());
+  public function toString(): string {
+    return $this->value->getIdentifier();
   }
 }

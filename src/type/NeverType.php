@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\nodes\NodeInterfaceType;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
@@ -33,7 +34,7 @@ class NeverType extends Type {
     return [];
   }
 
-  public function buildNode(): array {
-    throw new \BadMethodCallException('NeverType can not be converted to node');
+  public function buildNodeInterfaceType(): NodeInterfaceType {
+    return new NodeInterfaceType('mixed');
   }
 }

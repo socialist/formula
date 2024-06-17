@@ -56,12 +56,4 @@ class IfStatement extends Statement {
       return $this->body->toString($prettyPrintOptions);
     }
   }
-
-  public function getCondition(): Expression {
-    return $this->condition;
-  }
-
-  public function getBody(): CodeBlock {
-    return $this->body;
-  }
 }

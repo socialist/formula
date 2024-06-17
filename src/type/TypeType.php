@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
+use TimoLehnertz\formula\nodes\NodeInterfaceType;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
@@ -40,7 +41,7 @@ class TypeType extends Type {
     return null;
   }
 
-  public function buildNode(): array {
-    return ['type' => 'TypeType','type' => $this->type->buildNode()];
+  public function buildNodeInterfaceType(): NodeInterfaceType {
+    return new NodeInterfaceType('TypeType', ['type' => $this->type->buildNodeInterfaceType()]);
   }
 }

@@ -16,10 +16,6 @@ class IntegerValue extends Value {
     $this->value = $value;
   }
 
-  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    return ''.$this->value;
-  }
-
   public function copy(): IntegerValue {
     return new IntegerValue($this->value);
   }
@@ -46,7 +42,7 @@ class IntegerValue extends Value {
     return $this->value;
   }
 
-  public function toStringValue(): StringValue {
-    return new StringValue(''.$this->value);
+  public function toString(): string {
+    return ''.$this->value;
   }
 }

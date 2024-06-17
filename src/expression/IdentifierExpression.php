@@ -2,8 +2,8 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\expression;
 
-use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\nodes\Node;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
@@ -11,19 +11,15 @@ use TimoLehnertz\formula\type\Value;
 /**
  * @author Timo Lehnertz
  */
-class IdentifierExpression extends Expression {
+class IdentifierExpression implements Expression {
 
   private readonly string $identifier;
 
   public function __construct(string $identifier) {
-    parent::__construct();
     $this->identifier = $identifier;
   }
 
-  public function validateStatement(Scope $scope): Type {
-    if(!$scope->isDefined($this->identifier)) {
-      throw new FormulaValidationException($this->identifier.' is not defined');
-    }
+  public function validate(Scope $scope): Type {
     return $scope->getType($this->identifier);
   }
 
@@ -39,7 +35,7 @@ class IdentifierExpression extends Expression {
     return $this->identifier;
   }
 
-  public function buildNode(Scope $scope): array {
-    return ['type' => 'Identifier','outerType' => $this->validate($scope)->buildNode(),'identifier' => $this->identifier];
+  public function buildNode(Scope $scope): Node {
+    return new Node('IdentifierExpression', [], ['type' => $this->validate($scope)->buildNodeInterfaceType(),'identifier' => $this->identifier]);
   }
 }

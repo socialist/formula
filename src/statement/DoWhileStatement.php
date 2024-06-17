@@ -43,12 +43,4 @@ class DoWhileStatement extends Statement {
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
     return 'do '.$this->body->toString($prettyPrintOptions).' while('.$this->condition->toString($prettyPrintOptions).');';
   }
-
-  public function getCondition(): Expression {
-    return $this->condition;
-  }
-
-  public function getBody(): CodeBlock {
-    return $this->body;
-  }
 }

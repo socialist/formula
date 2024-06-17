@@ -12,11 +12,12 @@ use TimoLehnertz\formula\type\functions\FormulaFunctionBody;
 use TimoLehnertz\formula\type\functions\FunctionType;
 use TimoLehnertz\formula\type\functions\FunctionValue;
 use TimoLehnertz\formula\type\functions\InnerFunctionArgumentList;
+use TimoLehnertz\formula\nodes\Node;
 
 /**
  * @author Timo Lehnertz
  */
-class FunctionExpression extends Expression {
+class FunctionExpression implements Expression {
 
   private readonly Type $returnType;
 
@@ -25,13 +26,12 @@ class FunctionExpression extends Expression {
   private readonly CodeBlock $codeBlock;
 
   public function __construct(Type $returnType, InnerFunctionArgumentList $arguments, CodeBlock $codeBlock) {
-    parent::__construct();
     $this->returnType = $returnType;
     $this->arguments = $arguments;
     $this->codeBlock = $codeBlock;
   }
 
-  public function validateStatement(Scope $scope): Type {
+  public function validate(Scope $scope): Type {
     $functionBody = new FormulaFunctionBody($this->arguments, $this->codeBlock, $scope);
     $functionBody->validate($scope, $this->returnType);
     return new FunctionType($functionBody->getArgs(), $this->returnType, true);
@@ -44,10 +44,10 @@ class FunctionExpression extends Expression {
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     $functionBody = new FormulaFunctionBody($this->arguments, $this->codeBlock, new Scope());
-    return $functionBody->toString($prettyPrintOptions);
+    return $this->returnType->getIdentifier().' '.$functionBody->toString($prettyPrintOptions);
   }
 
-  public function buildNode(Scope $scope): array {
+  public function buildNode(Scope $scope): Node {
     throw new NodesNotSupportedException('FunctionExpression');
   }
 }

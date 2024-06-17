@@ -29,14 +29,18 @@ class BooleanValue extends Value {
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
-    throw new FormulaBugException('Invalid operation');
+    if($operator->getID() === ImplementableOperator::TYPE_LOGICAL_NOT) {
+      return new BooleanValue(!$this->value);
+    } else {
+      throw new FormulaBugException('Invalid operation');
+    }
   }
 
   public function toPHPValue(): mixed {
     return $this->value;
   }
 
-  public function toStringValue(): StringValue {
-    return new StringValue($this->value ? 'true' : 'false');
+  public function toString(): string {
+    return $this->value ? 'true' : 'false';
   }
 }

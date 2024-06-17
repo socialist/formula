@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
 /**
@@ -16,10 +17,11 @@ class StatementParser extends VariantParser {
       new WhileStatementParser(),
       new IfStatementParser(),
       new BreakStatementParser(),
-      new ForStatementParser(),
       new ContinueStatementParser(),
       new DoWhileStatementParser(),
       new FunctionParser(true),
+      new ForEachStatementParser(),
+      new ForStatementParser(),
     ]);
     // @formatter:on
   }

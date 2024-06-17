@@ -3,9 +3,9 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\procedure;
 
 use TimoLehnertz\formula\FormulaRuntimeException;
+use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
-use TimoLehnertz\formula\FormulaValidationException;
 
 /**
  * @author Timo Lehnertz
@@ -22,18 +22,13 @@ class DefinedValue implements ValueContainer {
     $this->final = $final;
     $this->type = $type;
     $this->value = $initialValue;
-    if($this->final) {
-      $this->type->setContainer(null);
-      $this->value?->setContainer(null);
-    } else {
-      $this->type->setContainer($this);
-      $this->value?->setContainer($this);
-    }
+    $this->type->setFinal($this->final);
+    $this->value?->setContainer($this->final ? null : $this);
   }
 
   public function assign(Value $value): void {
     if($this->final) {
-      throw new FormulaValidationException('Cant mutate immutable value');
+      throw new FormulaRuntimeException('Cant mutate immutable value');
     }
     $this->value?->setContainer(null);
     $this->value = $value;

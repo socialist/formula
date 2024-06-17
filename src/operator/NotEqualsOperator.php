@@ -10,11 +10,9 @@ use TimoLehnertz\formula\expression\OperatorExpression;
 /**
  * @author Timo Lehnertz
  */
-class NotEqualsOperator extends ParsedOperator {
+class NotEqualsOperator implements ParsedOperator {
 
-  public function __construct() {
-    parent::__construct();
-  }
+  public function __construct() {}
 
   public function transform(?Expression $leftExpression, ?Expression $rightExpression): Expression {
     $comparisonOperator = new ImplementableOperator(ImplementableOperator::TYPE_EQUALS);

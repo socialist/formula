@@ -99,9 +99,13 @@ abstract class NumberValueHelper {
     // unary operations
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_UNARY_MINUS:
-        return new IntegerValue(-$self->toPHPValue());
+        if($self instanceof FloatValue) {
+          return new FloatValue(-$self->toPHPValue());
+        } else {
+          return new IntegerValue(-$self->toPHPValue());
+        }
       case ImplementableOperator::TYPE_UNARY_PLUS:
-        return new IntegerValue($self->toPHPValue());
+        return $self; // do nothing
     }
     // binary operations
     if($other === null) {
@@ -140,7 +144,7 @@ abstract class NumberValueHelper {
       case ImplementableOperator::TYPE_EQUALS:
         return new BooleanValue($self->toPHPValue() == $other->toPHPValue());
       default:
-        throw new \BadFunctionCallException('Invalid operation '.$self->getType()->getIdentifier().' '.$operator->toString(PrettyPrintOptions::buildDefault()).' '.$other?->getType()->getIdentifier());
+        throw new \BadFunctionCallException('Invalid operation '.$self->getType()->getIdentifier().' '.$operator->toString(PrettyPrintOptions::buildDefault()).' '.($other !== null ? $other->getType()->getIdentifier() : ''));
     }
   }
 }

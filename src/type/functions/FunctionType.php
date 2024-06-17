@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type\functions;
 
+use TimoLehnertz\formula\nodes\NodeInterfaceType;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\type\Type;
 
@@ -55,7 +56,7 @@ class FunctionType extends Type {
     }
   }
 
-  public function buildNode(): array {
-    return ['type' => 'FunctionType','signature' => $this->getIdentifier()];
+  public function buildNodeInterfaceType(): NodeInterfaceType {
+    return new NodeInterfaceType('function', ['arguments' => $this->arguments->buildNodeInterfaceType(),'returnType' => $this->returnType->buildNodeInterfaceType()]);
   }
 }

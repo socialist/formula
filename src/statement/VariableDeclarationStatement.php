@@ -50,6 +50,4 @@ class VariableDeclarationStatement extends Statement {
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
     return $this->type->getIdentifier().' '.$this->identifier.' = '.$this->initializer->toString($prettyPrintOptions).';';
   }
-
-  public function buildNode(Scope $scope): array {}
 }

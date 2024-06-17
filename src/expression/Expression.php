@@ -3,11 +3,12 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\expression;
 
 use TimoLehnertz\formula\FormulaPart;
+use TimoLehnertz\formula\FormulaValidationException;
+use TimoLehnertz\formula\NodesNotSupportedException;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
-use TimoLehnertz\formula\FormulaValidationException;
-use TimoLehnertz\formula\NodesNotSupportedException;
+use TimoLehnertz\formula\nodes\Node;
 
 /**
  * An Expression is a executable piece of code that can exist anywhere.
@@ -16,7 +17,7 @@ use TimoLehnertz\formula\NodesNotSupportedException;
  *
  * @author Timo Lehnertz
  */
-abstract class Expression implements FormulaPart {
+interface Expression extends FormulaPart {
 
   /**
    * Must validate this and all contained Parts.
@@ -25,12 +26,12 @@ abstract class Expression implements FormulaPart {
    * @return Type the implied return type of this expression
    * @throws FormulaValidationException
    */
-  public abstract function validate(Scope $scope): Type;
+  public function validate(Scope $scope): Type;
 
-  public abstract function run(Scope $scope): Value;
+  public function run(Scope $scope): Value;
 
   /**
    * @throws NodesNotSupportedException
    */
-  public abstract function buildNode(Scope $scope): array;
+  public function buildNode(Scope $scope): Node;
 }

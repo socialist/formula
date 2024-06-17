@@ -4,7 +4,6 @@ namespace TimoLehnertz\formula\type\functions;
 
 use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\type\StringValue;
 use TimoLehnertz\formula\type\Value;
 
 /**
@@ -42,8 +41,8 @@ class FunctionValue extends Value {
     throw new FormulaBugException('FunctionValue list does not have a php representation');
   }
 
-  public function toStringValue(): StringValue {
-    return new StringValue('function');
+  public function toString(): string {
+    return 'function';
   }
 }
 

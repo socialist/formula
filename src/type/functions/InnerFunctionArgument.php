@@ -12,7 +12,7 @@ use TimoLehnertz\formula\type\Type;
  *
  *         Represents a function argument as seen from inside a function
  */
-class InnerFunctionArgument extends FormulaPart {
+class InnerFunctionArgument implements FormulaPart {
 
   public readonly bool $final;
 
@@ -23,7 +23,6 @@ class InnerFunctionArgument extends FormulaPart {
   public readonly ?Expression $defaultExpression;
 
   public function __construct(bool $final, Type $type, string $name, ?Expression $defaultExpression) {
-    parent::__construct();
     $this->final = $final;
     $this->type = $type;
     $this->name = $name;

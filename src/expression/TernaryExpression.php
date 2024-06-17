@@ -3,15 +3,16 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\expression;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\nodes\Node;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\type\CompoundType;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
-use TimoLehnertz\formula\type\CompoundType;
 
 /**
  * @author Timo Lehnertz
  */
-class TernaryExpression extends Expression {
+class TernaryExpression implements Expression {
 
   private readonly Expression $condition;
 
@@ -20,13 +21,12 @@ class TernaryExpression extends Expression {
   private readonly Expression $rightExpression;
 
   public function __construct(Expression $condition, Expression $leftExpression, Expression $rightExpression) {
-    parent::__construct();
     $this->condition = $condition;
     $this->leftExpression = $leftExpression;
     $this->rightExpression = $rightExpression;
   }
 
-  public function validateStatement(Scope $scope): Type {
+  public function validate(Scope $scope): Type {
     $this->condition->validate($scope);
     $leftType = $this->leftExpression->validate($scope);
     $rightType = $this->rightExpression->validate($scope);
@@ -41,7 +41,7 @@ class TernaryExpression extends Expression {
     return ''.$this->condition->toString($prettyPrintOptions).'?'.$this->leftExpression->toString($prettyPrintOptions).':'.$this->rightExpression->toString($prettyPrintOptions).'';
   }
 
-  public function buildNode(Scope $scope): array {
-    return ['type' => 'Ternary','outerType' => $this->validate($scope)->buildNode(),'condition' => $this->condition->buildNode($scope),'leftNode' => $this->leftExpression->buildNode($scope),'rightNode' => $this->rightExpression->buildNode($scope)];
+  public function buildNode(Scope $scope): Node {
+    return new Node('TernaryExpression', [$this->condition->buildNode($scope),$this->leftExpression->buildNode($scope),$this->rightExpression->buildNode($scope)]);
   }
 }

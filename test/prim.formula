@@ -1,32 +1,5 @@
 // This script calculates the amount of prim number below 100 (which is 25)
 
-// int[] prims = {1,2};
-
-// prims[0] = 100;
-
-// println(prims[2]);
-// println(sizeof(prims));
-
-// int i = 0;
-// int count = 0;
-
-// while(i <= 100) {
-// 	boolean isPrim = true;
-// 	int j = 2;
-// 	while(j <= sqrt(i)	) {
-// 		if(i % j == 0) {
-// 			isPrim = false;
-// 			break;
-// 		}
-// 		j++;
-// 	}
-// 	if(isPrim) {
-// 		count++;
-// 	}
-// 	i++;
-// }
-// return count;
-
 int countPrimes(int max) {
   if (max < 2) {
     return 0;
@@ -34,13 +7,8 @@ int countPrimes(int max) {
 
   boolean[] isPrime = {};
 
-  void printPrimes(String... args) {
-    for(int i = 0;i<sizeof(isPrime);i++) {
-      println(""+i+": "+isPrime[i]);
-    }
-  }
-
   for(int i = 0;i<max;i++) {
+    isPrime[i] = false;
     isPrime[i] = false;
   }
 
@@ -62,7 +30,6 @@ int countPrimes(int max) {
       primeCount++;
     }
   }
-  printPrimes("Hallo", "Welt");
   return primeCount;
 }
 

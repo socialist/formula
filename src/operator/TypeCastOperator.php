@@ -11,14 +11,13 @@ use TimoLehnertz\formula\type\Type;
 /**
  * @author Timo Lehnertz
  */
-class TypeCastOperator extends ParsedOperator {
+class TypeCastOperator implements ParsedOperator {
 
   private readonly bool $explicit;
 
   private readonly Type $type;
 
   public function __construct(bool $explicit, Type $type) {
-    parent::__construct();
     $this->explicit = $explicit;
     $this->type = $type;
   }

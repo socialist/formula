@@ -2,7 +2,6 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\operator;
 
-use TimoLehnertz\formula\FormulaParentPart;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\expression\ArgumentListExpression;
 use TimoLehnertz\formula\expression\ComplexOperatorExpression;
@@ -11,12 +10,11 @@ use TimoLehnertz\formula\expression\Expression;
 /**
  * @author Timo Lehnertz
  */
-class CallOperator extends ParsedOperator implements FormulaParentPart {
+class CallOperator implements ParsedOperator {
 
   private ArgumentListExpression $arguments;
 
   public function __construct(ArgumentListExpression $arguments) {
-    parent::__construct();
     $this->arguments = $arguments;
   }
 
@@ -34,10 +32,6 @@ class CallOperator extends ParsedOperator implements FormulaParentPart {
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    return '('.$this->arguments->toString($prettyPrintOptions).')';
-  }
-
-  public function getSubParts(): array {
-    return [$this->arguments];
+    return $this->arguments->toString($prettyPrintOptions);
   }
 }

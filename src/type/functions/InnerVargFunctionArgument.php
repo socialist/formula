@@ -11,7 +11,7 @@ use TimoLehnertz\formula\type\Type;
  *
  *         Represents a varg function argument as seen from inside a function
  */
-class InnerVargFunctionArgument extends FormulaPart {
+class InnerVargFunctionArgument implements FormulaPart {
 
   public readonly bool $final;
 
@@ -20,7 +20,6 @@ class InnerVargFunctionArgument extends FormulaPart {
   public readonly string $name;
 
   public function __construct(bool $final, Type $type, string $name) {
-    parent::__construct();
     $this->final = $final;
     $this->type = $type;
     $this->name = $name;

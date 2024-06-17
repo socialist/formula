@@ -9,11 +9,15 @@ use TimoLehnertz\formula\statement\Statement;
  */
 class FormulaStatementException extends \Exception {
 
-  private static Statement $currentStatement;
+  private static ?Statement $currentStatement = null;
 
   public function __construct(string $message) {
-    $token = FormulaStatementException::$currentStatement->firstToken;
-    parent::__construct($token->line.':'.$token->position.''.$message);
+    if(FormulaStatementException::$currentStatement !== null && FormulaStatementException::$currentStatement->firstToken !== null) {
+      $token = FormulaStatementException::$currentStatement->firstToken;
+      parent::__construct(($token->line + 1).':'.$token->position.' '.$message);
+    } else {
+      parent::__construct($message);
+    }
   }
 
   public static function setCurrentStatement(Statement $currentStatement): void {
