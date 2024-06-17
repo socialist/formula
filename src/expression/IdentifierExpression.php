@@ -36,6 +36,6 @@ class IdentifierExpression implements Expression {
   }
 
   public function buildNode(Scope $scope): Node {
-    return new Node('IdentifierExpression', [], ['type' => $this->validate($scope)->buildNodeInterfaceType(),'identifier' => $this->identifier]);
+    return new Node('IdentifierExpression', [], ['identifier' => $this->identifier]);
   }
 }

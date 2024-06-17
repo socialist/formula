@@ -4,6 +4,7 @@ namespace TimoLehnertz\formula\operator;
 use PHPUnit\Framework\TestCase;
 use TimoLehnertz\formula\Formula;
 use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\FormulaValidationException;
 
 class OperatorTest extends TestCase {
 
@@ -102,5 +103,23 @@ class OperatorTest extends TestCase {
       $a = $i;
       $this->assertEquals(-1 >= 2 xor 1 <= +3 xor 3 != 3 xor min(1, 2) xor $a++ < $a xor ++$a < $a xor $a-- < $a xor --$a < $a xor ($a += 1 + 1) != $a, $result->toPHPValue());
     }
+  }
+
+  public function testDoubleIncrement(): void {
+    $this->expectException(FormulaValidationException::class);
+    $this->expectExceptionMessage('1:10 Validation error: Can\'t assign final value');
+    new Formula('int a = 0; return ++a++;');
+  }
+
+  public function testConstants(): void {
+    $this->expectException(FormulaValidationException::class);
+    $this->expectExceptionMessage('1:0 Validation error: Can\'t assign final value');
+    new Formula('1 = 0;');
+  }
+
+  public function testConstants2(): void {
+    $this->expectException(FormulaValidationException::class);
+    $this->expectExceptionMessage('1:10 Validation error: Can\'t assign final value');
+    new Formula('int a = 0; return a = a = a;');
   }
 }

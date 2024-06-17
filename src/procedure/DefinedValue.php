@@ -3,7 +3,6 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\procedure;
 
 use TimoLehnertz\formula\FormulaRuntimeException;
-use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 
@@ -20,9 +19,8 @@ class DefinedValue implements ValueContainer {
 
   public function __construct(bool $final, Type $type, ?Value $initialValue) {
     $this->final = $final;
-    $this->type = $type;
+    $this->type = $type->setFinal($this->final);
     $this->value = $initialValue;
-    $this->type->setFinal($this->final);
     $this->value?->setContainer($this->final ? null : $this);
   }
 

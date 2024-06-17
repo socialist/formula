@@ -10,6 +10,7 @@ use TimoLehnertz\formula\type\Value;
 use TimoLehnertz\formula\type\VoidType;
 use TimoLehnertz\formula\type\VoidValue;
 use src\tokens\TokenisationException;
+use TimoLehnertz\formula\nodes\NodeTree;
 
 /**
  * This class represents a formula session that can interpret/run code
@@ -49,8 +50,12 @@ class Formula {
     $this->returnType = $this->content->validate($this->buildDefaultScope())->returnType ?? new VoidType();
   }
 
-  public function getNodeTree(): array {
-    return $this->content->buildNode($this->buildDefaultScope());
+  /**
+   * @throws NodesNotSupportedException
+   */
+  public function getNodeTree(): NodeTree {
+    $node = $this->content->buildNode($this->buildDefaultScope());
+    return new NodeTree($node, $this->buildDefaultScope()->toNodeTreeScope());
   }
 
   public function getReturnType(): Type {
@@ -104,8 +109,7 @@ class Formula {
    * @return bool equal
    */
   private static function strcmp(string $a, string $b, bool $caseSensitive): bool {
-    if($caseSensitive)
-      return $a === $b;
+    if($caseSensitive) return $a === $b;
     return strcasecmp($a, $b) == 0;
   }
 
@@ -276,8 +280,7 @@ class Formula {
   }
 
   public static function firstOrNullFunc(array $array): mixed {
-    if(sizeof($array) === 0)
-      return null;
+    if(sizeof($array) === 0) return null;
     return $array[0];
   }
 

@@ -10,7 +10,7 @@ use TimoLehnertz\formula\procedure\Scope;
 
 /**
  * @author Timo Lehnertz
- *
+ *        
  *         Represents an OperatorExpression whoose string representation differs from the default implementation
  */
 class ComplexOperatorExpression extends OperatorExpression {
@@ -40,14 +40,14 @@ class ComplexOperatorExpression extends OperatorExpression {
     return $str;
   }
 
-  public function buildNode(Scope $scope): Node {
-    $connected = [];
-    if($this->outerLeftExpression !== null) {
-      $connected[] = $this->outerLeftExpression->buildNode($scope);
-    }
-    if($this->outerRightExpression !== null) {
-      $connected[] = $this->outerRightExpression->buildNode($scope);
-    }
-    return new Node('ComplexOperatorExpression', $connected, ['operator' => $this->outerOperator->toString(PrettyPrintOptions::buildDefault())]);
-  }
+  //   public function buildNode(Scope $scope): Node {
+  //     $connected = [];
+  //     if($this->outerLeftExpression !== null) {
+  //       $connected[] = $this->outerLeftExpression->buildNode($scope);
+  //     }
+  //     if($this->outerRightExpression !== null) {
+  //       $connected[] = $this->outerRightExpression->buildNode($scope);
+  //     }
+  //     return new Node('ComplexOperatorExpression', $connected, ['operator' => $this->outerOperator->toString(PrettyPrintOptions::buildDefault())]);
+  //   }
 }

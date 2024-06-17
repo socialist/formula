@@ -4,7 +4,9 @@ namespace TimoLehnertz\formula\procedure;
 
 use TimoLehnertz\formula\FormulaRuntimeException;
 use TimoLehnertz\formula\FormulaValidationException;
+use TimoLehnertz\formula\nodes\NodeTreeScope;
 use TimoLehnertz\formula\type\ArrayType;
+use TimoLehnertz\formula\type\ArrayValue;
 use TimoLehnertz\formula\type\BooleanType;
 use TimoLehnertz\formula\type\BooleanValue;
 use TimoLehnertz\formula\type\CompoundType;
@@ -22,14 +24,12 @@ use TimoLehnertz\formula\type\VoidType;
 use TimoLehnertz\formula\type\functions\FunctionType;
 use TimoLehnertz\formula\type\functions\FunctionValue;
 use TimoLehnertz\formula\type\functions\OuterFunctionArgument;
+use TimoLehnertz\formula\type\functions\OuterFunctionArgumentListType;
+use TimoLehnertz\formula\type\functions\PHPFunctionBody;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionType;
-use TimoLehnertz\formula\type\functions\OuterFunctionArgumentListType;
-use TimoLehnertz\formula\type\functions\PHPFunctionBody;
-use TimoLehnertz\formula\type\ArrayValue;
-use TimoLehnertz\formula\nodes\NodeTreeScope;
 
 /**
  * @author Timo Lehnertz

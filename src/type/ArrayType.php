@@ -16,9 +16,8 @@ class ArrayType extends Type implements IteratableType {
 
   public function __construct(Type $keyType, Type $elementsType) {
     parent::__construct();
-    $this->keyType = $keyType;
-    $this->elementsType = $elementsType;
-    $this->elementsType->setFinal(false);
+    $this->keyType = $keyType->setFinal(false);
+    $this->elementsType = $elementsType->setFinal(false);
   }
 
   protected function typeAssignableBy(Type $type): bool {
