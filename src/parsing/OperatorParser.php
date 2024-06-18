@@ -147,6 +147,8 @@ class OperatorParser extends Parser {
         return new ParserReturn(new ChainedAssignmentOperator(new ImplementableOperator(ImplementableOperator::TYPE_LOGICAL_XOR), 16, '^='), $firstToken->next());
       case Token::KEYWORD_INSTANCEOF:
         return new ParserReturn(new ImplementableParsedOperator(ImplementableOperator::TYPE_INSTANCEOF, 'instanceof', OperatorType::InfixOperator, 3), $firstToken->next());
+      case Token::KEYWORD_NEW:
+        return new ParserReturn(new ImplementableParsedOperator(ImplementableOperator::TYPE_NEW, 'new', OperatorType::PrefixOperator, 2), $firstToken->next());
       default:
         throw new ParsingSkippedException();
     }

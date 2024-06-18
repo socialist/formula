@@ -16,6 +16,10 @@ class IntegerValue extends Value {
     $this->value = $value;
   }
 
+  public function toString(): string {
+    return ''.$this->value;
+  }
+
   public function copy(): IntegerValue {
     return new IntegerValue($this->value);
   }
@@ -40,9 +44,5 @@ class IntegerValue extends Value {
 
   public function toPHPValue(): mixed {
     return $this->value;
-  }
-
-  public function toString(): string {
-    return ''.$this->value;
   }
 }

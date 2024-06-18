@@ -19,6 +19,10 @@ class MemberAccsessValue extends Value {
     $this->memberIdentifier = $memberIdentifier;
   }
 
+  public function getMemberIdentifier(): string {
+    return $this->memberIdentifier;
+  }
+
   public function isTruthy(): bool {
     return true;
   }

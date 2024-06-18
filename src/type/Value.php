@@ -26,9 +26,9 @@ abstract class Value implements OperatorHandler {
         if($this->container === null) {
           throw new FormulaBugException('Missing value container');
         }
-        $return = $this->copy();
         $this->container->assign($other);
-        return $return;
+        $this->setContainer(null);
+        return $this;
       case ImplementableOperator::TYPE_EQUALS:
         return new BooleanValue($this->valueEquals($other));
       case ImplementableOperator::TYPE_TYPE_CAST:

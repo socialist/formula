@@ -60,7 +60,7 @@ class ForEachStatement extends Statement {
     /** @var Value $value */
     foreach($iterator->getIterator() as $value) {
       $loopScope = $scope->buildChild();
-      $loopScope->define($this->final, $this->elementType, $this->elementIdentifier, $this->final ? $value : $value->copy());
+      $loopScope->define($this->final, $this->elementType, $this->elementIdentifier, $value);
       $return = $this->body->run($loopScope);
       if($return->returnValue !== null) {
         return $return;

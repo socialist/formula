@@ -96,7 +96,12 @@ class CompoundType extends Type {
 
   protected function typeAssignableBy(Type $type): bool {
     if($type instanceof CompoundType) {
-      return $this->equals($type);
+      foreach($type->types as $otherType) {
+        if(!$this->assignableBy($otherType)) {
+          return false;
+        }
+      }
+      return true;
     } else {
       foreach($this->types as $ownType) {
         if($ownType->assignableBy($type, true)) {
@@ -137,6 +142,25 @@ class CompoundType extends Type {
       $types[] = $type->buildNodeInterfaceType();
     }
     return new NodeInterfaceType('compound', ['types' => $types]);
+  }
+
+  public function setFinal(bool $final): Type {
+    $changeRequired = false;
+    foreach($this->types as $type) {
+      if($type->isFinal() !== $final) {
+        $changeRequired = true;
+        break;
+      }
+    }
+    if(!$changeRequired) {
+      return parent::setFinal($final);
+    } else {
+      $newTypes = [];
+      foreach($this->types as $type) {
+        $newTypes[] = $type->setFinal($final);
+      }
+      return (new CompoundType($newTypes))->setFinal($final);
+    }
   }
 }
 

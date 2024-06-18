@@ -30,7 +30,7 @@ class MemberAccsessType extends Type {
   }
 
   public function getIdentifier(bool $isNested = false): string {
-    return 'member accsess';
+    return 'member accsess('.$this->memberIdentifier.')';
   }
 
   protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {

@@ -4,18 +4,20 @@ namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\nodes\NodeInterfaceType;
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\type\classes\ClassType;
+use TimoLehnertz\formula\type\classes\FieldType;
 
 /**
  * @author Timo Lehnertz
  */
-class ArrayType extends Type implements IteratableType {
+class ArrayType extends ClassType implements IteratableType {
 
   private Type $keyType;
 
   private Type $elementsType;
 
   public function __construct(Type $keyType, Type $elementsType) {
-    parent::__construct();
+    parent::__construct(null, 'array', ['length' => new FieldType(true, new IntegerType())]);
     $this->keyType = $keyType->setFinal(false);
     $this->elementsType = $elementsType->setFinal(false);
   }
@@ -33,7 +35,7 @@ class ArrayType extends Type implements IteratableType {
     if(!($type instanceof ArrayType)) {
       return false;
     }
-    return $type->keyType->equals($this->keyType) && $this->elementsType->equals($type->elementsType);
+    return $this->keyType->equals($type->keyType) && $this->elementsType->equals($type->elementsType);
   }
 
   public function getIdentifier(bool $isNested = false): string {
@@ -49,10 +51,9 @@ class ArrayType extends Type implements IteratableType {
       case ImplementableOperator::TYPE_ARRAY_ACCESS:
         return [$this->keyType];
       case ImplementableOperator::TYPE_MEMBER_ACCESS:
-        return [new MemberAccsessType('length')];
-      default:
-        return [];
+        return parent::getTypeCompatibleOperands($operator);
     }
+    return [];
   }
 
   protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
@@ -63,12 +64,9 @@ class ArrayType extends Type implements IteratableType {
         }
         break;
       case ImplementableOperator::TYPE_MEMBER_ACCESS:
-        if(($otherType instanceof MemberAccsessType) && $otherType->getMemberIdentifier() === 'length') {
-          return new IntegerType();
-        }
-        break;
+        return parent::getTypeOperatorResultType($operator, $otherType);
     }
-    return [];
+    return null;
   }
 
   public function buildNodeInterfaceType(): NodeInterfaceType {

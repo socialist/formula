@@ -21,12 +21,12 @@ class FunctionValue extends Value {
     return true;
   }
 
-  public function copy(): FunctionValue {
-    return new FunctionValue($this->body);
-  }
-
   public function valueEquals(Value $other): bool {
     return $other === $this;
+  }
+
+  public function copy(): FunctionValue {
+    return new FunctionValue($this->body);
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {

@@ -32,6 +32,6 @@ class VoidValue extends Value {
   }
 
   public function toString(): string {
-    return 'void';
+    return new StringValue('void');
   }
 }

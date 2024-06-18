@@ -23,4 +23,8 @@ class OuterFunctionArgument {
   public function buildNodeInterfaceType(): array {
     return ['type' => $this->type->buildNodeInterfaceType(),'optional' => $this->optional];
   }
+
+  public function equals(OuterFunctionArgument $other): bool {
+    return $this->optional === $other->optional && $this->type->equals($other->type);
+  }
 }

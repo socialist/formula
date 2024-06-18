@@ -55,7 +55,7 @@ class FormulaFunctionBody implements FormulaPart, FunctionBody {
     if($statementReturn->returnValue === null) {
       return new VoidValue();
     } else {
-      return $statementReturn->returnValue->copy();
+      return $statementReturn->returnValue;
     }
   }
 

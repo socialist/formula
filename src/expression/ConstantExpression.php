@@ -18,7 +18,7 @@ class ConstantExpression implements Expression {
   private readonly Value $value;
 
   public function __construct(Type $type, Value $value) {
-    $this->type = $type;
+    $this->type = $type->setFinal(true);
     $this->value = $value;
   }
 

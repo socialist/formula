@@ -9,7 +9,6 @@ int countPrimes(int max) {
 
   for(int i = 0;i<max;i++) {
     isPrime[i] = false;
-    isPrime[i] = false;
   }
 
   for (int i = 2; i <= max; i++) {

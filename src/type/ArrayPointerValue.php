@@ -44,11 +44,11 @@ class ArrayPointerValue extends Value implements ValueContainer {
     return null;
   }
 
-  public function toString(): string {
-    throw new FormulaRuntimeException(null, 'Array key '.$this->index.' does not exist');
-  }
-
   public function assign(Value $value): void {
     $this->array->assignKey($this->index, $value);
+  }
+
+  public function toString(): string {
+    throw new FormulaBugException(null, 'Array key '.$this->index.' does not exist');
   }
 }

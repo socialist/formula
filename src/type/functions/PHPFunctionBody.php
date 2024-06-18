@@ -3,7 +3,6 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type\functions;
 
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\type\Value;
 
 /**
@@ -16,11 +15,8 @@ class PHPFunctionBody implements FunctionBody {
    */
   private readonly mixed $callable;
 
-  private readonly Type $returnType;
-
-  public function __construct(callable $callable, Type $returnType) {
+  public function __construct(callable $callable) {
     $this->callable = $callable;
-    $this->returnType = $returnType;
   }
 
   public function call(OuterFunctionArgumentListValue $argList): Value {
@@ -31,6 +27,6 @@ class PHPFunctionBody implements FunctionBody {
       $args[$i] = $argValue->toPHPValue();
     }
     $phpReturn = call_user_func_array($this->callable, $args);
-    return Scope::valueByPHPVar($phpReturn);
+    return Scope::convertPHPVar($phpReturn, true)[1];
   }
 }

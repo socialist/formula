@@ -4,22 +4,29 @@ namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\procedure\ValueContainer;
+use TimoLehnertz\formula\type\classes\ClassInstanceValue;
+use TimoLehnertz\formula\type\classes\FieldValue;
+use const false;
+use const true;
 
 /**
  * @author Timo Lehnertz
  */
-class ArrayValue extends Value implements IteratableValue {
+class ArrayValue extends ClassInstanceValue implements IteratableValue {
 
   /**
    * @var array<array-key, Value>
    */
   private array $value;
 
+  private readonly FieldValue $lengthField;
+
   /**
    * @param array<array-key, Value>
    */
   public function __construct(array $value) {
+    $this->lengthField = new FieldValue(new IntegerValue(count($value)));
+    parent::__construct(['length' => $this->lengthField]);
     $this->value = $value;
     /** @var Value $value */
     foreach($this->value as $key => $value) {
@@ -31,39 +38,47 @@ class ArrayValue extends Value implements IteratableValue {
     return true;
   }
 
-  public function copy(): ArrayValue {
-    return new ArrayValue($this->value);
-  }
-
-  public function valueEquals(Value $other): bool {
-    return $other === $this;
+  public function valueEquals(Value $other, bool $deep = false): bool {
+    if(!($other instanceof ArrayValue)) {
+      return false;
+    }
+    if(!$deep) {
+      return $other === $this;
+    } else {
+      if(count($this->value) !== coun($other->value)) {
+        return false;
+      }
+      foreach($this->value as $key => $value) {
+        if(!$value->equals($other->value[$key])) {
+          return false;
+        }
+      }
+      return true;
+    }
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_ARRAY_ACCESS:
         $key = $other->toPHPValue();
-        if(isset($key)) {
+        if(isset($this->value[$key])) {
           return $this->value[$key];
         } else {
           return new ArrayPointerValue($this, $key);
         }
       case ImplementableOperator::TYPE_MEMBER_ACCESS:
-        if(!($other instanceof MemberAccsessType) || $other->getMemberIdentifier() !== 'length') {
-          break;
-        }
-        return count($this->value);
+        return parent::valueOperate($operator, $other);
     }
-
-    throw new FormulaBugException('Invalid operator!');
+    throw new FormulaBugException('Invalid operation');
   }
 
   public function assignKey(mixed $key, Value $value): void {
-    $value->setContainer(new ArrayPointerValue($this, $key));
     if(isset($this->value[$key])) {
       $this->value[$key]->setContainer(null);
     }
     $this->value[$key] = $value;
+    $this->value[$key]->setContainer(new ArrayPointerValue($this, $key));
+    $this->lengthField->assign(new IntegerValue(count($this->value)));
   }
 
   public function toPHPValue(): mixed {
@@ -78,7 +93,7 @@ class ArrayValue extends Value implements IteratableValue {
     $str = '{';
     $del = '';
     foreach($this->value as $element) {
-      $str .= $del.$element->toStringValue()->toPHPValue();
+      $str .= $del.$element->toString();
       $del = ', ';
     }
     return $str.'}';

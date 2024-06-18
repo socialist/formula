@@ -109,7 +109,8 @@ class Formula {
    * @return bool equal
    */
   private static function strcmp(string $a, string $b, bool $caseSensitive): bool {
-    if($caseSensitive) return $a === $b;
+    if($caseSensitive)
+      return $a === $b;
     return strcasecmp($a, $b) == 0;
   }
 
@@ -280,7 +281,8 @@ class Formula {
   }
 
   public static function firstOrNullFunc(array $array): mixed {
-    if(sizeof($array) === 0) return null;
+    if(sizeof($array) === 0)
+      return null;
     return $array[0];
   }
 
@@ -313,26 +315,26 @@ class Formula {
 
   private static function buildInbuiltScope(): Scope {
     $scope = new Scope();
-    $scope->definePHPFunction('print', [Formula::class,'printFunc']);
-    $scope->definePHPFunction('println', [Formula::class,'printlnFunc']);
-    $scope->definePHPFunction('pow', [Formula::class,'powFunc']);
-    $scope->definePHPFunction("min", [Formula::class,"minFunc"]);
-    $scope->definePHPFunction("max", [Formula::class,"maxFunc"]);
-    $scope->definePHPFunction("sqrt", [Formula::class,"sqrtFunc"]);
-    $scope->definePHPFunction("ceil", [Formula::class,"ceilFunc"]);
-    $scope->definePHPFunction("floor", [Formula::class,"floorFunc"]);
-    $scope->definePHPFunction("round", [Formula::class,"roundFunc"]);
-    $scope->definePHPFunction("sin", [Formula::class,"sinFunc"]);
-    $scope->definePHPFunction("cos", [Formula::class,"cosFunc"]);
-    $scope->definePHPFunction("tan", [Formula::class,"tanFunc"]);
-    $scope->definePHPFunction("is_nan", [Formula::class,"is_nanFunc"]);
-    $scope->definePHPFunction("abs", [Formula::class,"absFunc"]);
-    $scope->definePHPFunction("asVector", [Formula::class,"asVectorFunc"]);
-    $scope->definePHPFunction("sizeof", [Formula::class,"sizeofFunc"]);
-    $scope->definePHPFunction("inRange", [Formula::class,"inRangeFunc"]);
-    $scope->definePHPFunction("reduce", [Formula::class,"reduceFunc"]);
-    $scope->definePHPFunction("firstOrNull", [Formula::class,"firstOrNullFunc"]);
-    $scope->definePHPFunction("sum", [Formula::class,"sumFunc"]);
+    $scope->definePHP(true, 'print', [Formula::class,'printFunc']);
+    $scope->definePHP(true, 'println', [Formula::class,'printlnFunc']);
+    $scope->definePHP(true, 'pow', [Formula::class,'powFunc']);
+    $scope->definePHP(true, "min", [Formula::class,"minFunc"]);
+    $scope->definePHP(true, "max", [Formula::class,"maxFunc"]);
+    $scope->definePHP(true, "sqrt", [Formula::class,"sqrtFunc"]);
+    $scope->definePHP(true, "ceil", [Formula::class,"ceilFunc"]);
+    $scope->definePHP(true, "floor", [Formula::class,"floorFunc"]);
+    $scope->definePHP(true, "round", [Formula::class,"roundFunc"]);
+    $scope->definePHP(true, "sin", [Formula::class,"sinFunc"]);
+    $scope->definePHP(true, "cos", [Formula::class,"cosFunc"]);
+    $scope->definePHP(true, "tan", [Formula::class,"tanFunc"]);
+    $scope->definePHP(true, "is_nan", [Formula::class,"is_nanFunc"]);
+    $scope->definePHP(true, "abs", [Formula::class,"absFunc"]);
+    $scope->definePHP(true, "asVector", [Formula::class,"asVectorFunc"]);
+    $scope->definePHP(true, "sizeof", [Formula::class,"sizeofFunc"]);
+    $scope->definePHP(true, "inRange", [Formula::class,"inRangeFunc"]);
+    $scope->definePHP(true, "reduce", [Formula::class,"reduceFunc"]);
+    $scope->definePHP(true, "firstOrNull", [Formula::class,"firstOrNullFunc"]);
+    $scope->definePHP(true, "sum", [Formula::class,"sumFunc"]);
     return $scope;
   }
 

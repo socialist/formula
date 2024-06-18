@@ -2,8 +2,9 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\InternalFormulaException;
+use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use const false;
 
 /**
  * @author Timo Lehnertz
@@ -23,7 +24,7 @@ class NullValue extends Value {
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
-    throw new InternalFormulaException('Invalid operation on null!');
+    throw new FormulaBugException('Invalid operation on null!');
   }
 
   public function toPHPValue(): mixed {

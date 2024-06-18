@@ -93,6 +93,10 @@ abstract class Type implements OperatorMeta, FormulaPart {
     return $clone;
   }
 
+  public function isFinal(): bool {
+    return $this->final;
+  }
+
   protected abstract function getTypeCompatibleOperands(ImplementableOperator $operator): array;
 
   protected abstract function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type;

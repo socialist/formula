@@ -5,6 +5,7 @@ namespace TimoLehnertz\formula\type\functions;
 use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\type\ArrayValue;
+use TimoLehnertz\formula\type\StringValue;
 use TimoLehnertz\formula\type\Value;
 
 /**
@@ -49,6 +50,6 @@ class OuterFunctionArgumentListValue extends Value {
   }
 
   public function toString(): string {
-    return 'OuterFunctionArgumentListValue';
+    return new StringValue('OuterFunctionArgumentListValue');
   }
 }
