@@ -6,14 +6,15 @@ use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\FormulaPart;
 use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\PrettyPrintOptions;
-use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\nodes\NodeInterfaceType;
+use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
  * @author Timo Lehnertz
  */
 abstract class Type implements OperatorMeta, FormulaPart {
 
+  // final per default
   private bool $final = true;
 
   public function __construct() {}
@@ -60,19 +61,19 @@ abstract class Type implements OperatorMeta, FormulaPart {
         if($otherType === null || !$this->assignableBy($otherType)) {
           break;
         }
-        return $this;
+        return $this->setFinal(true);
       case ImplementableOperator::TYPE_EQUALS:
         if($otherType === null || !$this->assignableBy($otherType)) {
           break;
         }
-        return new BooleanType(false);
+        return new BooleanType();
       case ImplementableOperator::TYPE_TYPE_CAST:
         if($otherType instanceof TypeType) {
           if($otherType->getType() instanceof BooleanType) {
-            return new BooleanType(false);
+            return new BooleanType();
           }
-          if($otherType->getType()->equals(new StringType(false))) {
-            return new StringType(false);
+          if($otherType->getType()->equals(new StringType())) {
+            return new StringType();
           }
         }
         break;
@@ -80,14 +81,16 @@ abstract class Type implements OperatorMeta, FormulaPart {
       case ImplementableOperator::TYPE_LOGICAL_OR:
       case ImplementableOperator::TYPE_LOGICAL_XOR:
         if($otherType !== null) {
-          return new BooleanType(false);
+          return new BooleanType();
         }
     }
     return $this->getTypeOperatorResultType($operator, $otherType);
   }
 
-  public function setFinal(bool $final): void {
-    $this->final = $final;
+  public function setFinal(bool $final): Type {
+    $clone = clone $this;
+    $clone->final = $final;
+    return $clone;
   }
 
   protected abstract function getTypeCompatibleOperands(ImplementableOperator $operator): array;

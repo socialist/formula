@@ -110,7 +110,17 @@ void addRes2(int num = 2) {
 addRes2(); // 32
 addRes2(1); // 33
 
+// codeblockStatement
+
+{
+  res++; // 34
+}
+
+{
+  int res = 0; // check that parent scope remains untouched
+}
+
 // WhileStatementParser
 while(true) {
-  return res; // 33
+  return res; // 34
 }

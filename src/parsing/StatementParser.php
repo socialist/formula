@@ -10,8 +10,8 @@ class StatementParser extends VariantParser {
   public function __construct() {
     // @formatter:off
     parent::__construct('statement', [
-      new ExpressionStatementParser(),
       new CodeBlockParser(false, false),
+      new ExpressionStatementParser(),
       new VariableDeclarationStatementParser(),
       new ReturnStatementParser(),
       new WhileStatementParser(),

@@ -7,6 +7,8 @@ use TimoLehnertz\formula\expression\Expression;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\Type;
 use TimoLehnertz\formula\expression\OperatorExpression;
+use TimoLehnertz\formula\nodes\Node;
+use TimoLehnertz\formula\NodesNotSupportedException;
 
 /**
  * @author Timo Lehnertz
@@ -44,11 +46,11 @@ class CodeBlockOrExpression extends Statement {
     return $this->content->toString($prettyPrintOptions);
   }
 
-  public function buildNode(Scope $scope): array {
+  public function buildNode(Scope $scope): Node {
     if($this->content instanceof Expression) {
       return $this->content->buildNode($scope);
     } else {
-      throw new \BadMethodCallException('Code blocks dont support node trees');
+      throw new NodesNotSupportedException('Code block');
     }
   }
 }

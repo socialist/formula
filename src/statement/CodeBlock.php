@@ -29,6 +29,7 @@ class CodeBlock extends Statement {
   }
 
   public function validateStatement(Scope $scope, ?Type $allowedReturnType = null): StatementReturnType {
+    $scope = $scope->buildChild();
     $statementReturnType = new StatementReturnType(null, Frequency::NEVER, Frequency::NEVER);
     foreach($this->statements as $statement) {
       $statementReturnType = $statementReturnType->concatSequential($statement->validate($scope, $allowedReturnType));

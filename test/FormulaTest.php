@@ -8,20 +8,17 @@ use TimoLehnertz\formula\type\IntegerType;
 class FormulaTest extends TestCase {
 
   //   public function testCodeBlock(): void {
-  //     $formula = new Formula('int a = 0;a = a + 2;a = a+200/a;++a++;{return ++a++;}');
+  //     $scope = new Scope();
+  //     $scope->define(false, new IntegerType(), 'a', 0);
+  //     $formula = new Formula('++a++', $scope);
+  //     print_r(json_encode($formula->getNodeTree()->rootNode));
   //     $this->assertInstanceOf(IntegerType::class, $formula->getReturnType());
   //     $this->assertEquals(104, $formula->calculate()->toPHPValue());
   //   }
-
-  //   public function testWhile(): void {
-  //     $formula = new Formula('int a = 0; while(a<3){a++;} return a;');
-  //     $this->assertInstanceOf(IntegerType::class, $formula->getReturnType());
-  //     $this->assertEquals(3, $formula->calculate()->toPHPValue());
-  //   }
-  public function testIf(): void {
-    $formula = new Formula('int a = 0; int b = 0; while(a<10){if(a % 2 == 0){b++;} a++ ;} return b;'); // count even numbers between 0 and 9
+  public function testWhile(): void {
+    $formula = new Formula('int a = 0; while(a<3){a++;} return a;');
     $this->assertInstanceOf(IntegerType::class, $formula->getReturnType());
-    $this->assertEquals(5, $formula->calculate()->toPHPValue());
+    $this->assertEquals(3, $formula->calculate()->toPHPValue());
   }
 
   //   public function testVariables(): void {
