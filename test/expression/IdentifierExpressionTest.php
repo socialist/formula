@@ -42,6 +42,6 @@ class IdentifierExpressionTest extends TestCase {
     $node = $expression->buildNode($scope);
     $this->assertEquals('IdentifierExpression', $node->nodeType);
     $this->assertCount(0, $node->connectedInputs);
-    $this->assertEquals(['type' => (new FloatType())->buildNodeInterfaceType(),'identifier' => 'abc'], $node->info);
+    $this->assertEquals(['identifier' => 'abc'], $node->info);
   }
 }

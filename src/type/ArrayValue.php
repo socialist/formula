@@ -40,24 +40,22 @@ class ArrayValue extends Value implements IteratableValue {
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
-    if($operator->getID() === ImplementableOperator::TYPE_ARRAY_ACCESS) {
-      if($other instanceof IntegerValue) {
+    switch($operator->getID()) {
+      case ImplementableOperator::TYPE_ARRAY_ACCESS:
         $key = $other->toPHPValue();
-      } else if($other instanceof FloatValue) {
-        $key = $other->toPHPValue();
-      } else if($other instanceof StringValue) {
-        $key = $other->toPHPValue();
-      } else {
-        throw new FormulaBugException('Invalid operation');
-      }
-      if(isset($this->value[$key])) {
-        return $this->value[$key];
-      } else {
-        return new ArrayPointerValue($this, $key);
-      }
-    } else {
-      throw new FormulaBugException('Invalid operator!');
+        if(isset($key)) {
+          return $this->value[$key];
+        } else {
+          return new ArrayPointerValue($this, $key);
+        }
+      case ImplementableOperator::TYPE_MEMBER_ACCESS:
+        if(!($other instanceof MemberAccsessType) || $other->getMemberIdentifier() !== 'length') {
+          break;
+        }
+        return count($this->value);
     }
+
+    throw new FormulaBugException('Invalid operator!');
   }
 
   public function assignKey(mixed $key, Value $value): void {

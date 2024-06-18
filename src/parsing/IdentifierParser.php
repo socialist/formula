@@ -3,6 +3,7 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
 use TimoLehnertz\formula\expression\IdentifierExpression;
+use TimoLehnertz\formula\expression\MemberAccsessExpression;
 use TimoLehnertz\formula\tokens\Token;
 
 /**
@@ -14,11 +15,15 @@ class IdentifierParser extends Parser {
     parent::__construct('identifier expression');
   }
 
-  protected function parsePart(Token $firstToken, bool $topLevel = true): ParserReturn {
-    if($firstToken->id === Token::IDENTIFIER) {
-      return new ParserReturn(new IdentifierExpression($firstToken->value), $firstToken->next());
-    } else {
+  protected function parsePart(Token $firstToken): ParserReturn {
+    if($firstToken->id !== Token::IDENTIFIER) {
       throw new ParsingSkippedException();
     }
+    if($firstToken->hasPrev() && $firstToken->prev()->id === Token::DOT) {
+      $parsed = new MemberAccsessExpression($firstToken->value);
+    } else {
+      $parsed = new IdentifierExpression($firstToken->value);
+    }
+    return new ParserReturn($parsed, $firstToken->next());
   }
 }

@@ -81,7 +81,7 @@ class Token {
   public function requireNext(bool $includeComments = false): Token {
     $next = $this->next($includeComments);
     if($next === null) {
-      throw new ParsingException(new IdentifierParser(), ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, $this);
     } else {
       return $next;
     }

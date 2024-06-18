@@ -45,16 +45,29 @@ class ArrayType extends Type implements IteratableType {
     }
   }
 
-  protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
-    if(!$this->keyType->assignableBy($otherType)) {
-      return null;
+  protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {
+    switch($operator->getID()) {
+      case ImplementableOperator::TYPE_ARRAY_ACCESS:
+        return [$this->keyType];
+      case ImplementableOperator::TYPE_MEMBER_ACCESS:
+        return [new MemberAccsessType('length')];
+      default:
+        return [];
     }
-    return $this->elementsType;
   }
 
-  protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {
-    if($operator->getID() === ImplementableOperator::TYPE_ARRAY_ACCESS) {
-      return [$this->keyType];
+  protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
+    switch($operator->getID()) {
+      case ImplementableOperator::TYPE_ARRAY_ACCESS:
+        if($this->keyType->assignableBy($otherType)) {
+          return $this->elementsType;
+        }
+        break;
+      case ImplementableOperator::TYPE_MEMBER_ACCESS:
+        if(($otherType instanceof MemberAccsessType) && $otherType->getMemberIdentifier() === 'length') {
+          return new IntegerType();
+        }
+        break;
     }
     return [];
   }
