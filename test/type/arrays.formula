@@ -1,0 +1,56 @@
+var arr = {1,2.3};
+arr += 1;
+assertEquals({2,3.3}, arr);
+
+arr = {1,2.5};
+arr -= 1;
+assertEquals({0,1.5}, arr);
+
+arr = {1,2.5};
+arr *= 2;
+assertEquals({2,5}, arr);
+
+arr = {1,5};
+arr /= 2;
+assertEquals({0.5,2.5}, arr);
+
+arr = {10,5};
+assertEquals({0,1}, arr % 2);
+
+arr = {10,5};
+assertEquals({-10,-5}, -arr);
+
+arr = {10,5};
+assertEquals({+10,+5}, +arr);
+
+
+// arrays 
+arr = {1,2.5};
+arr += {1,2};
+
+assertEquals({2,4.5}, arr);
+
+arr = {1,2.5};
+arr -= {1,2};
+assertEquals({0,0.5}, arr);
+
+arr = {1,2.5};
+arr *= {1,2};
+assertEquals({1,5}, arr);
+
+arr = {1,5};
+arr /= {1,2};
+assertEquals({1,2.5}, arr);
+
+// comparisons
+assertEquals({0,1}, {10,5} % {2,4});
+
+assertEquals("{1,2,3}", (String){1,2,3});
+
+assertTrue({1,2,3});
+
+assertFalse({1,2,3} == {1,2,3});
+
+assertTrue(arr == arr);
+
+return 25;

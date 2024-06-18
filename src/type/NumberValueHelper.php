@@ -4,6 +4,7 @@ namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\FormulaBugException;
 
 /**
  * @author Timo Lehnertz
@@ -37,14 +38,14 @@ abstract class NumberValueHelper {
       case ImplementableOperator::TYPE_LESS:
       case ImplementableOperator::TYPE_GREATER:
       case ImplementableOperator::TYPE_EQUALS:
-        return [new IntegerType(false),new FloatType(false)];
+        return [new IntegerType(),new FloatType()];
       case ImplementableOperator::TYPE_MODULO:
-        return [new IntegerType(false)];
+        return [new IntegerType()];
       case ImplementableOperator::TYPE_TYPE_CAST:
         if($self instanceof IntegerType) {
-          return [new TypeType(new FloatType(false), false)];
+          return [new TypeType(new FloatType())];
         } else {
-          return [new TypeType(new IntegerType(false), false)];
+          return [new TypeType(new IntegerType())];
         }
       default:
         return [];
@@ -65,10 +66,10 @@ abstract class NumberValueHelper {
     if($operator->getID() === ImplementableOperator::TYPE_TYPE_CAST) {
       if($typeB instanceof TypeType) {
         if($typeB->getType() instanceof FloatType) {
-          return new FloatType(false);
+          return new FloatType();
         }
         if($typeB->getType() instanceof IntegerType) {
-          return new IntegerType(false);
+          return new IntegerType();
         }
       }
       return null;
@@ -109,7 +110,7 @@ abstract class NumberValueHelper {
     }
     // binary operations
     if($other === null) {
-      throw new \BadFunctionCallException('Invalid operation');
+      throw new FormulaBugException('Invalid operation');
     }
     // cast
     if($operator->getID() === ImplementableOperator::TYPE_TYPE_CAST) {
@@ -121,10 +122,10 @@ abstract class NumberValueHelper {
           return new IntegerValue((int) $self->toPHPValue());
         }
       }
-      throw new \BadFunctionCallException('Invalid operation');
+      throw new FormulaBugException('Invalid operation');
     }
     if(!($other instanceof FloatValue) && !($other instanceof IntegerValue)) { // only numbers
-      throw new \BadFunctionCallException('Invalid operation');
+      throw new FormulaBugException('Invalid operation');
     }
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_ADDITION:
@@ -144,7 +145,7 @@ abstract class NumberValueHelper {
       case ImplementableOperator::TYPE_EQUALS:
         return new BooleanValue($self->toPHPValue() == $other->toPHPValue());
       default:
-        throw new \BadFunctionCallException('Invalid operation '.$self->getType()->getIdentifier().' '.$operator->toString(PrettyPrintOptions::buildDefault()).' '.($other !== null ? $other->getType()->getIdentifier() : ''));
+        throw new FormulaBugException('Invalid operation '.$self->getType()->getIdentifier().' '.$operator->toString(PrettyPrintOptions::buildDefault()).' '.($other !== null ? $other->getType()->getIdentifier() : ''));
     }
   }
 }

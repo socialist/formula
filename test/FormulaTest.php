@@ -3,120 +3,69 @@ namespace test;
 
 use PHPUnit\Framework\TestCase;
 use TimoLehnertz\formula\Formula;
+use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\type\FloatType;
 use TimoLehnertz\formula\type\IntegerType;
+use const false;
 
 class FormulaTest extends TestCase {
 
-  //   public function testCodeBlock(): void {
-  //     $scope = new Scope();
-  //     $scope->define(false, new IntegerType(), 'a', 0);
-  //     $formula = new Formula('++a++', $scope);
-  //     print_r(json_encode($formula->getNodeTree()->rootNode));
-  //     $this->assertInstanceOf(IntegerType::class, $formula->getReturnType());
-  //     $this->assertEquals(104, $formula->calculate()->toPHPValue());
-  //   }
   public function testWhile(): void {
     $formula = new Formula('int a = 0; while(a<3){a++;} return a;');
     $this->assertInstanceOf(IntegerType::class, $formula->getReturnType());
     $this->assertEquals(3, $formula->calculate()->toPHPValue());
   }
 
-  //   public function testVariables(): void {
-  //     $scope = new Scope();
-  //     $scope->define('a', new IntegerType());
-  //     $scope->define('b', new IntegerType());
-  //     $scope->define('c', new IntegerType());
-  //     $scope->define('d', new IntegerType());
-  //     $scope->define('e', new FloatType());
-  //     $str = 'a+b+c+d+e';
-  //     $formula = new Formula($str, $scope);
-  //     $this->assertInstanceOf(FloatType::class, $formula->getReturnType());
-  //     for($i = 0;$i < 10;$i++) {
-  //       $a = rand(-1000, 1000);
-  //       $b = rand(-1000, 1000);
-  //       $c = rand(-1000, 1000);
-  //       $d = rand(-1000, 1000);
-  //       $e = rand(-1000, 1000) + 1.5;
-  //       $scope->assign('a', $a);
-  //       $scope->assign('b', $b);
-  //       $scope->assign('c', $c);
-  //       $scope->assign('d', $d);
-  //       $scope->assign('e', $e);
-  //       $result = $formula->calculate();
-  //       $this->assertInstanceOf(FloatValue::class, $result);
-  //       $this->assertEquals($a + $b + $c + $d + $e, $result->getValue());
-  //     }
-  //   }
+  public function testVariables(): void {
+    $scope = new Scope();
+    $scope->definePHP(false, 'a', 1);
+    $scope->definePHP(false, 'b', 1);
+    $scope->definePHP(false, 'c', 1);
+    $scope->definePHP(false, 'd', 1);
+    $scope->definePHP(false, 'e', 1.0);
+    $str = 'a+b+c+d+e';
+    $formula = new Formula($str, $scope);
+    $this->assertInstanceOf(FloatType::class, $formula->getReturnType());
+    for($i = 0;$i < 10;$i++) {
+      $a = rand(-1000, 1000);
+      $b = rand(-1000, 1000);
+      $c = rand(-1000, 1000);
+      $d = rand(-1000, 1000);
+      $e = rand(-1000, 1000) + 1.5;
+      $scope->assignPHP('a', $a);
+      $scope->assignPHP('b', $b);
+      $scope->assignPHP('c', $c);
+      $scope->assignPHP('d', $d);
+      $scope->assignPHP('e', $e);
+      $this->assertEquals($a + $b + $c + $d + $e, $formula->calculate()->toPHPValue());
+    }
+  }
 
-  //   public function testpow(): void {
-  //     $str = 'pow(a,b)';
-  //     $scope = new Scope();
-  //     $scope->define('a', new IntegerType());
-  //     $scope->define('b', new IntegerType());
-  //     $formula = new Formula($str, $scope);
-  //     for($i = 0;$i < 1;$i++) {
-  //       $a = rand(0, 10);
-  //       $b = rand(0, 10);
-  //       $scope->assign('a', new IntegerValue($a));
-  //       $scope->assign('b', new IntegerValue($b));
-  //       $result = $formula->calculate();
-  //       $this->assertEquals(pow($a, $b), $result->toPHPValue());
-  //     }
-  //   }
+  public function testpow(): void {
+    $str = 'pow(a,b)';
+    $scope = new Scope();
+    $scope->definePHP(false, 'a', 1);
+    $scope->definePHP(false, 'b', 1);
+    $formula = new Formula($str, $scope);
+    for($i = 0;$i < 1;$i++) {
+      $a = rand(0, 10);
+      $b = rand(0, 10);
+      $scope->assignPHP('a', $a);
+      $scope->assignPHP('b', $b);
+      $result = $formula->calculate();
+      $this->assertEquals(pow($a, $b), $result->toPHPValue());
+    }
+  }
 
-  //   public function testMathOperatorPrecedence(): void {
-  //     $str = '(a+(b-c))*(a/d)*e+pow(a,b)*(b/d)-pow(a,e)';
-  //     $scope = new Scope();
-  //     $scope->define('a', new IntegerType());
-  //     $scope->define('b', new IntegerType());
-  //     $scope->define('c', new IntegerType());
-  //     $scope->define('d', new IntegerType());
-  //     $scope->define('e', new IntegerType());
-  //     $formula = new Formula($str, $scope);
-  //     for($i = 0;$i < 10;$i++) { // tested with 1000000
-  //       $a = rand(1, 10);
-  //       $b = rand(-10, 10);
-  //       $c = rand(-10, 10);
-  //       $d = rand(1, 10);
-  //       $e = rand(1, 10);
-  //       $scope->assign('a', $a);
-  //       $scope->assign('b', $b);
-  //       $scope->assign('c', $c);
-  //       $scope->assign('d', $d);
-  //       $scope->assign('e', $e);
-  //       $correct = round(($a + ($b - $c)) * ($a / $d) * $e + pow($a, $b) * ($b / $d) - pow($a, $e));
-  //       $calculated = $formula->calculate();
-  //       $this->assertTrue(abs($calculated->toPHPValue() - $correct) < 1); // rounding errors...
-  //     }
-  //   }
-
-  //   public function testFunctions(): void {
-  //     $str = 'max(min(a,b),c)';
-  //     $scope = new Scope();
-  //     $scope->define('a', new IntegerType());
-  //     $scope->define('b', new IntegerType());
-  //     $scope->define('c', new IntegerType());
-  //     $formula = new Formula($str, $scope);
-  //     for($i = 0;$i < 10;$i++) {
-  //       $a = rand(-1000, 1000);
-  //       $b = rand(-1000, 1000);
-  //       $c = rand(-1000, 1000);
-  //       $scope->assign('a', $a);
-  //       $scope->assign('b', $b);
-  //       $scope->assign('c', $c);
-  //       $this->assertEquals(max(min($a, $b), $c), $formula->calculate()->toPHPValue());
-  //     }
-  //   }
-
-  //   public function testNesting(): void {
-  //     $str = '((min(a,2)*b+5)/(((2+5)-5)+99*0))-7.5';
-  //     $scope = new Scope();
-  //     $scope->define('a', new IntegerType(), new IntegerValue(2));
-  //     $scope->define('b', new IntegerType(), new IntegerValue(5));
-  //     $formula = new Formula($str, $scope);
-  //     $result = $formula->calculate();
-  //     $this->assertEquals($result->toPHPValue(), 0);
-  //   }
+  public function testNesting(): void {
+    $str = '((min(a,2)*b+5)/(((2+5)-5)+99*0))-7.5';
+    $scope = new Scope();
+    $scope->definePHP(false, 'a', 2);
+    $scope->definePHP(false, 'b', 5);
+    $formula = new Formula($str, $scope);
+    $result = $formula->calculate();
+    $this->assertEquals($result->toPHPValue(), 0);
+  }
 
   //   //   /**
   //   //    * Dateintervals are not 100% precise

@@ -11,6 +11,9 @@ use TimoLehnertz\formula\type\VoidType;
 use TimoLehnertz\formula\type\VoidValue;
 use src\tokens\TokenisationException;
 use TimoLehnertz\formula\nodes\NodeTree;
+use function PHPUnit\Framework\assertTrue;
+use function PHPUnit\Framework\assertEquals;
+use function PHPUnit\Framework\assertFalse;
 
 /**
  * This class represents a formula session that can interpret/run code
@@ -313,6 +316,18 @@ class Formula {
     return $sum / self::sizeofFunc($values);
   }
 
+  public static function assertTrueFunc(bool $condition) {
+    assertTrue($condition);
+  }
+
+  public static function assertEqualsFunc($expected, $actual, string $message = '') {
+    assertEquals($expected, $actual, $message);
+  }
+
+  public static function assertFalseFunc(bool $condition, string $message = '') {
+    assertFalse($condition, $message);
+  }
+
   private static function buildInbuiltScope(): Scope {
     $scope = new Scope();
     $scope->definePHP(true, 'print', [Formula::class,'printFunc']);
@@ -335,6 +350,9 @@ class Formula {
     $scope->definePHP(true, "reduce", [Formula::class,"reduceFunc"]);
     $scope->definePHP(true, "firstOrNull", [Formula::class,"firstOrNullFunc"]);
     $scope->definePHP(true, "sum", [Formula::class,"sumFunc"]);
+    $scope->definePHP(true, "assertTrue", [Formula::class,"assertTrueFunc"]);
+    $scope->definePHP(true, "assertFalse", [Formula::class,"assertFalseFunc"]);
+    $scope->definePHP(true, "assertEquals", [Formula::class,"assertEqualsFunc"]);
     return $scope;
   }
 

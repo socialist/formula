@@ -26,6 +26,9 @@ class CompoundType extends Type {
     foreach($types as $type) {
       $found = false;
       foreach($uniqueTypes as $uniqueType) {
+        //         if($uniqueType === null) {
+        //           var_dump($types);
+        //         }
         if($uniqueType->equals($type)) {
           $found = true;
           break;
@@ -75,7 +78,10 @@ class CompoundType extends Type {
   protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     $resultTypes = [];
     foreach($this->types as $type) {
-      $resultTypes[] = $type->getOperatorResultType($operator, $otherType);
+      $result = $type->getOperatorResultType($operator, $otherType);
+      if($result !== null) {
+        $resultTypes[] = $result;
+      }
     }
     return CompoundType::buildFromTypes($resultTypes);
   }

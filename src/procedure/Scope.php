@@ -156,11 +156,7 @@ class Scope {
       if($reflectionArgument->isVariadic()) {
         $vargs = true;
       }
-      $reflectionArgumentType = $reflectionArgument->getType();
-      if($reflectionArgumentType === null) {
-        throw new FormulaValidationException('Parameter '.$reflectionArgument->name.' has no php type. Only typed parameters are supported');
-      }
-      $arguments[] = new OuterFunctionArgument(Scope::reflectionTypeToFormulaType($reflectionArgumentType), $reflectionArgument->isOptional());
+      $arguments[] = new OuterFunctionArgument(Scope::reflectionTypeToFormulaType($reflectionArgument->getType()), $reflectionArgument->isOptional());
     }
     return new FunctionType(new OuterFunctionArgumentListType($arguments, $vargs), $returnType);
   }

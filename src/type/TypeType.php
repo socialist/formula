@@ -30,7 +30,7 @@ class TypeType extends Type {
   }
 
   public function getIdentifier(bool $nested = false): string {
-    return 'Type';
+    return 'TypeType('.$this->type->getIdentifier().')';
   }
 
   protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {

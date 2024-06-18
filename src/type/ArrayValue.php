@@ -8,6 +8,7 @@ use TimoLehnertz\formula\type\classes\ClassInstanceValue;
 use TimoLehnertz\formula\type\classes\FieldValue;
 use const false;
 use const true;
+use TimoLehnertz\formula\FormulaRuntimeException;
 
 /**
  * @author Timo Lehnertz
@@ -38,23 +39,8 @@ class ArrayValue extends ClassInstanceValue implements IteratableValue {
     return true;
   }
 
-  public function valueEquals(Value $other, bool $deep = false): bool {
-    if(!($other instanceof ArrayValue)) {
-      return false;
-    }
-    if(!$deep) {
-      return $other === $this;
-    } else {
-      if(count($this->value) !== coun($other->value)) {
-        return false;
-      }
-      foreach($this->value as $key => $value) {
-        if(!$value->equals($other->value[$key])) {
-          return false;
-        }
-      }
-      return true;
-    }
+  public function valueEquals(Value $other): bool {
+    return $other === $this;
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
@@ -68,6 +54,35 @@ class ArrayValue extends ClassInstanceValue implements IteratableValue {
         }
       case ImplementableOperator::TYPE_MEMBER_ACCESS:
         return parent::valueOperate($operator, $other);
+      case ImplementableOperator::TYPE_TYPE_CAST:
+        if(($other instanceof TypeValue) && ($other->getValue() instanceof ArrayType)) {
+          $other = new TypeValue($other->getValue()->getElementsType());
+        }
+      // intentionally no break
+      case ImplementableOperator::TYPE_ADDITION:
+      case ImplementableOperator::TYPE_SUBTRACTION:
+      case ImplementableOperator::TYPE_MULTIPLICATION:
+      case ImplementableOperator::TYPE_DIVISION:
+      case ImplementableOperator::TYPE_UNARY_PLUS:
+      case ImplementableOperator::TYPE_UNARY_MINUS:
+      case ImplementableOperator::TYPE_MODULO:
+        $newVals = [];
+        if($other instanceof ArrayValue) {
+          if(count($other->value) !== count($this->value)) {
+            throw new FormulaRuntimeException('Cant calculate with arrays of different length');
+          }
+          foreach($this->value as $key => $value) {
+            if(!isset($other->value[$key])) {
+              throw new FormulaRuntimeException('Missing key '.$key.' in second array');
+            }
+            $newVals[$key] = $value->operate($operator, $other->value[$key]);
+          }
+        } else {
+          foreach($this->value as $key => $value) {
+            $newVals[$key] = $value->operate($operator, $other);
+          }
+        }
+        return new ArrayValue($newVals);
     }
     throw new FormulaBugException('Invalid operation');
   }
@@ -94,7 +109,7 @@ class ArrayValue extends ClassInstanceValue implements IteratableValue {
     $del = '';
     foreach($this->value as $element) {
       $str .= $del.$element->toString();
-      $del = ', ';
+      $del = ',';
     }
     return $str.'}';
   }

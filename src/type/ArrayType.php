@@ -52,6 +52,21 @@ class ArrayType extends ClassType implements IteratableType {
         return [$this->keyType];
       case ImplementableOperator::TYPE_MEMBER_ACCESS:
         return parent::getTypeCompatibleOperands($operator);
+      case ImplementableOperator::TYPE_ADDITION:
+      case ImplementableOperator::TYPE_SUBTRACTION:
+      case ImplementableOperator::TYPE_MULTIPLICATION:
+      case ImplementableOperator::TYPE_DIVISION:
+      case ImplementableOperator::TYPE_UNARY_PLUS:
+      case ImplementableOperator::TYPE_UNARY_MINUS:
+      case ImplementableOperator::TYPE_MODULO:
+        return [...$this->elementsType->getCompatibleOperands($operator),new ArrayType($this->keyType, ...$this->elementsType->getCompatibleOperands($operator))];
+      case ImplementableOperator::TYPE_TYPE_CAST:
+        $elementCasts = $this->elementsType->getCompatibleOperands($operator);
+        $arrayCasts = [];
+        foreach($elementCasts as $elementCast) {
+          $arrayCasts[] = new TypeType(new ArrayType($this->keyType, $elementCast->getType()));
+        }
+        return $arrayCasts;
     }
     return [];
   }
@@ -65,6 +80,32 @@ class ArrayType extends ClassType implements IteratableType {
         break;
       case ImplementableOperator::TYPE_MEMBER_ACCESS:
         return parent::getTypeOperatorResultType($operator, $otherType);
+      case ImplementableOperator::TYPE_ADDITION:
+      case ImplementableOperator::TYPE_SUBTRACTION:
+      case ImplementableOperator::TYPE_MULTIPLICATION:
+      case ImplementableOperator::TYPE_DIVISION:
+      case ImplementableOperator::TYPE_UNARY_PLUS:
+      case ImplementableOperator::TYPE_UNARY_MINUS:
+      case ImplementableOperator::TYPE_MODULO:
+        if($otherType instanceof ArrayType) {
+          $otherType = $otherType->elementsType;
+        }
+        //         if($operator->getID() === ImplementableOperator::TYPE_MODULO) {
+        //           var_dump($otherType);
+        //         }
+        $result = $this->elementsType->getOperatorResultType($operator, $otherType);
+        if($result !== null) {
+          return new ArrayType($this->keyType, $result);
+        }
+        break;
+      case ImplementableOperator::TYPE_TYPE_CAST:
+        if(($otherType instanceof TypeType) && $otherType->getType() instanceof ArrayType) {
+          $result = $this->elementsType->getOperatorResultType($operator, new TypeType($otherType->getType()->elementsType));
+          if($result !== null) {
+            return new ArrayType($this->keyType, $result);
+          }
+        }
+        break;
     }
     return null;
   }
