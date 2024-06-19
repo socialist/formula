@@ -14,6 +14,8 @@ use const false;
 use TimoLehnertz\formula\type\IntegerType;
 use TimoLehnertz\formula\type\CompoundType;
 use TimoLehnertz\formula\type\NullType;
+use TimoLehnertz\formula\type\NeverType;
+use TimoLehnertz\formula\ExitIfNullException;
 
 class DefaultScopeTest extends TestCase {
 
@@ -61,7 +63,7 @@ class DefaultScopeTest extends TestCase {
   /**
    * @dataProvider functionProvider
    */
-  public function testDefine(string $source, Type $expectedReturnType, mixed $expectedReturn, ?string $expectedOutput): void {
+  public function testFunctions(string $source, Type $expectedReturnType, mixed $expectedReturn, ?string $expectedOutput): void {
     $formula = new Formula($source);
     if($expectedOutput !== null) {
       $this->expectOutputString($expectedOutput);
@@ -76,5 +78,24 @@ class DefaultScopeTest extends TestCase {
     } else {
       $this->assertEquals($expectedReturn, $result->toPHPValue());
     }
+  }
+
+  public function testEarlyReturnException(): void {
+    $formula = new Formula('earlyReturnIfNull(null)');
+    $this->assertInstanceOf(NeverType::class, $formula->getReturnType());
+    $this->expectException(ExitIfNullException::class);
+    $formula->calculate();
+  }
+
+  public function testEarlyReturn(): void {
+    $formula = new Formula('earlyReturnIfNull({1,false,null}[0])');
+    $this->assertTrue(CompoundType::buildFromTypes([new IntegerType(),new BooleanType()])->equals($formula->getReturnType()));
+    $this->assertEquals(1, $formula->calculate()->toPHPValue());
+  }
+
+  public function testEarlyReturnNormalType(): void {
+    $formula = new Formula('earlyReturnIfNull(1)');
+    $this->assertInstanceOf(IntegerType::class, $formula->getReturnType());
+    $this->assertEquals(1, $formula->calculate()->toPHPValue());
   }
 }

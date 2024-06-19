@@ -18,6 +18,7 @@ use TimoLehnertz\formula\type\functions\OuterFunctionArgument;
 use TimoLehnertz\formula\type\functions\OuterFunctionArgumentListType;
 use const false;
 use const true;
+use TimoLehnertz\formula\ExitIfNullException;
 
 /**
  * @author Timo Lehnertz
@@ -64,8 +65,27 @@ class DefaultScope extends Scope {
       return $args->getArgumentType(0);
     });
 
+    $this->definePHP(true, "earlyReturnIfNull", [DefaultScope::class,"earlyReturnIfNullFunc"], null, function (OuterFunctionArgumentListType $args): ?Type {
+      $type = $args->getArgumentType(0);
+      if($type instanceof CompoundType) {
+        return $type->eliminateType(new NullType());
+      } else if($type instanceof NullType) {
+        return new NeverType();
+      } else {
+        return $type;
+      }
+    });
+
     // constants
     $this->definePHP(true, "PI", M_PI);
+  }
+
+  public static function earlyReturnIfNullFunc(mixed $value): mixed {
+    if($value === null) {
+      throw new ExitIfNullException();
+    } else {
+      return $value;
+    }
   }
 
   public static function array_filterFunc(array $array, callable $callback): array {

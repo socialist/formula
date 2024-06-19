@@ -147,6 +147,16 @@ class CompoundType extends Type {
     }
   }
 
+  public function eliminateType(Type $type): Type {
+    $newTypes = [];
+    foreach($this->types as $ownType) {
+      if(!$ownType->equals($type)) {
+        $newTypes[] = $ownType;
+      }
+    }
+    return CompoundType::buildFromTypes($newTypes);
+  }
+
   public function buildNodeInterfaceType(): NodeInterfaceType {
     $types = [];
     /** @var Type $type */
