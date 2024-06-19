@@ -13,7 +13,7 @@ class BracketExpressionTest extends TestCase {
     /**
      * Setup
      */
-    $constantNode = (new ConstantExpression(new FloatType(), new FloatValue(123.4)))->buildNode(new Scope());
+    $constantNode = (new ConstantExpression(new FloatType(), new FloatValue(123.4), '123.4'))->buildNode(new Scope());
     $element = $this->createMock(ConstantExpression::class);
     $element->expects($this->once())->method('validate')->willReturn(new FloatType());
     $element->expects($this->once())->method('run')->willReturn(new FloatValue(123.4));

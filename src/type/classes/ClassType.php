@@ -85,9 +85,6 @@ class ClassType extends Type {
         foreach(array_keys($this->fields) as $identifier) {
           $compatible[] = new MemberAccsessType($identifier);
         }
-        //         if(count($this->fields) === 0) {
-        //           var_dump($this);
-        //         }
         return $compatible;
       default:
         return [];

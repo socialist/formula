@@ -15,7 +15,7 @@ class ConstantExpressionTest extends TestCase {
      */
     $type = new FloatType();
     $value = new FloatValue(123.4);
-    $expression = new ConstantExpression($type, $value);
+    $expression = new ConstantExpression($type, $value, '123.4');
 
     /**
      * Validate

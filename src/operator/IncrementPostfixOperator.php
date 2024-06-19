@@ -19,7 +19,7 @@ class IncrementPostfixOperator implements ParsedOperator {
 
   public function transform(?Expression $leftExpression, ?Expression $rightExpression): Expression {
     $additionOperator = new ImplementableOperator(ImplementableOperator::TYPE_ADDITION);
-    $additionExpression = new OperatorExpression($leftExpression, $additionOperator, new ConstantExpression(new IntegerType(true), new IntegerValue(1)));
+    $additionExpression = new OperatorExpression($leftExpression, $additionOperator, new ConstantExpression(new IntegerType(true), new IntegerValue(1), '1'));
     $assignmentOperator = new ImplementableOperator(ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL);
     return new ComplexOperatorExpression($leftExpression, $assignmentOperator, $additionExpression, $leftExpression, $this, $rightExpression);
   }

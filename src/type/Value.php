@@ -74,5 +74,8 @@ abstract class Value implements OperatorHandler {
    */
   public abstract function toPHPValue(): mixed;
 
+  /**
+   * @return string the string representation of this value when concatinated with another string
+   */
   public abstract function toString(): string;
 }

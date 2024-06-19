@@ -18,9 +18,9 @@ class TernaryExpressionTest extends TestCase {
     /**
      * Setup
      */
-    $condition = new ConstantExpression(new BooleanType(), new BooleanValue(true));
-    $leftExpression = new ConstantExpression(new FloatType(), new FloatValue(1));
-    $rightExpression = new ConstantExpression(new IntegerType(), new IntegerValue(2));
+    $condition = new ConstantExpression(new BooleanType(), new BooleanValue(true), 'true');
+    $leftExpression = new ConstantExpression(new FloatType(), new FloatValue(1), '1.0');
+    $rightExpression = new ConstantExpression(new IntegerType(), new IntegerValue(2), '2');
     $expression = new TernaryExpression($condition, $leftExpression, $rightExpression);
 
     /**
@@ -59,9 +59,9 @@ class TernaryExpressionTest extends TestCase {
     /**
      * Setup
      */
-    $condition = new ConstantExpression(new BooleanType(), new BooleanValue(false));
-    $leftExpression = new ConstantExpression(new FloatType(), new FloatValue(1));
-    $rightExpression = new ConstantExpression(new IntegerType(), new IntegerValue(2));
+    $condition = new ConstantExpression(new BooleanType(), new BooleanValue(false), 'false');
+    $leftExpression = new ConstantExpression(new FloatType(), new FloatValue(1), '1.0');
+    $rightExpression = new ConstantExpression(new IntegerType(), new IntegerValue(2), '2');
     $expression = new TernaryExpression($condition, $leftExpression, $rightExpression);
 
     /**

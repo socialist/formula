@@ -2,22 +2,21 @@
 namespace TimoLehnertz\formula\expression;
 
 use PHPUnit\Framework\TestCase;
+use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\operator\OperatorType;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\statement\ContinueStatement;
 use TimoLehnertz\formula\type\FloatType;
 use TimoLehnertz\formula\type\FloatValue;
-use TimoLehnertz\formula\type\StringType;
-use TimoLehnertz\formula\type\StringValue;
-use TimoLehnertz\formula\operator\OperatorType;
-use TimoLehnertz\formula\FormulaBugException;
-use TimoLehnertz\formula\type\functions\FunctionType;
-use TimoLehnertz\formula\type\functions\OuterFunctionArgumentListType;
-use TimoLehnertz\formula\type\VoidType;
 use TimoLehnertz\formula\type\NullType;
 use TimoLehnertz\formula\type\NullValue;
+use TimoLehnertz\formula\type\StringType;
+use TimoLehnertz\formula\type\StringValue;
+use TimoLehnertz\formula\type\VoidType;
+use TimoLehnertz\formula\type\functions\FunctionType;
+use TimoLehnertz\formula\type\functions\OuterFunctionArgumentListType;
 
 class OperatorExpressionTest extends TestCase {
 
@@ -25,9 +24,9 @@ class OperatorExpressionTest extends TestCase {
     /**
      * Setup
      */
-    $leftExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4));
+    $leftExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4), "123.4");
     $operator = new ImplementableOperator(ImplementableOperator::TYPE_ADDITION);
-    $rightExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4));
+    $rightExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4), "123.4");
 
     $expression = new OperatorExpression($leftExpression, $operator, $rightExpression);
 
@@ -66,7 +65,7 @@ class OperatorExpressionTest extends TestCase {
      */
     $leftExpression = null;
     $operator = new ImplementableOperator(ImplementableOperator::TYPE_UNARY_MINUS);
-    $rightExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4));
+    $rightExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4), "123.4");
 
     $expression = new OperatorExpression($leftExpression, $operator, $rightExpression);
 
@@ -101,33 +100,33 @@ class OperatorExpressionTest extends TestCase {
   public function testPrefixNoImplementedOperator(): void {
     $leftExpression = null;
     $operator = new ImplementableOperator(ImplementableOperator::TYPE_UNARY_MINUS);
-    $rightExpression = new ConstantExpression(new StringType(), new StringValue('123.4'));
+    $rightExpression = new ConstantExpression(new StringType(), new StringValue('123.4'), "'123.4'");
 
     $expression = new OperatorExpression($leftExpression, $operator, $rightExpression);
 
     $this->expectException(FormulaValidationException::class);
-    $this->expectExceptionMessage('Invalid operation  - string');
+    $this->expectExceptionMessage('Invalid operation  - String');
     $type = $expression->validate(new Scope());
     $this->assertInstanceOf(FloatType::class, $type);
   }
 
   public function testInfixNoImplementedOperator(): void {
-    $leftExpression = new ConstantExpression(new StringType(), new StringValue('123.4'));
+    $leftExpression = new ConstantExpression(new StringType(), new StringValue('123.4'), "'123.4'");
     $operator = new ImplementableOperator(ImplementableOperator::TYPE_SCOPE_RESOLUTION);
-    $rightExpression = new ConstantExpression(new StringType(), new StringValue('123.4'));
+    $rightExpression = new ConstantExpression(new StringType(), new StringValue('123.4'), "'123.4'");
 
     $expression = new OperatorExpression($leftExpression, $operator, $rightExpression);
 
     $this->expectException(FormulaValidationException::class);
-    $this->expectExceptionMessage('string does not implement operator ::');
+    $this->expectExceptionMessage('String does not implement operator ::');
     $expression->validate(new Scope());
   }
 
   public function testRunInvalidOperatorType(): void {
-    $leftExpression = new ConstantExpression(new StringType(), new StringValue('123.4'));
+    $leftExpression = new ConstantExpression(new StringType(), new StringValue('123.4'), "'123.4'");
     $operator = $this->createMock(ImplementableOperator::class);
     $operator->expects($this->atLeastOnce())->method('getOperatorType')->willReturn(OperatorType::PostfixOperator);
-    $rightExpression = new ConstantExpression(new StringType(), new StringValue('123.4'));
+    $rightExpression = new ConstantExpression(new StringType(), new StringValue('123.4'), "'123.4'");
 
     $expression = new OperatorExpression($leftExpression, $operator, $rightExpression);
 
@@ -153,9 +152,9 @@ class OperatorExpressionTest extends TestCase {
   }
 
   public function testImplicitCast(): void {
-    $leftExpression = new ConstantExpression(new StringType(), new StringValue('12'));
+    $leftExpression = new ConstantExpression(new StringType(), new StringValue('12'), '"12"');
     $operator = new ImplementableOperator(ImplementableOperator::TYPE_ADDITION);
-    $rightExpression = new ConstantExpression(new FloatType(), new FloatValue(3.4));
+    $rightExpression = new ConstantExpression(new FloatType(), new FloatValue(3.4), '3.4');
 
     $expression = new OperatorExpression($leftExpression, $operator, $rightExpression);
 
@@ -171,9 +170,9 @@ class OperatorExpressionTest extends TestCase {
   }
 
   public function testInvalidImplicitCast(): void {
-    $leftExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4));
+    $leftExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4), '123.4');
     $operator = new ImplementableOperator(ImplementableOperator::TYPE_ADDITION);
-    $rightExpression = new ConstantExpression(new NullType(), new NullValue());
+    $rightExpression = new ConstantExpression(new NullType(), new NullValue(), 'null');
 
     $expression = new OperatorExpression($leftExpression, $operator, $rightExpression);
 

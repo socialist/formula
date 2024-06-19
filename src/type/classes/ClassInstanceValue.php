@@ -29,7 +29,7 @@ class ClassInstanceValue extends Value {
     return $other === $this;
   }
 
-  public function copy(): ClassInstanceValue {
+  public function copy(): Value {
     return new ClassInstanceValue($this->fields);
   }
 
@@ -52,4 +52,6 @@ class ClassInstanceValue extends Value {
   public function toString(): string {
     return 'classInstance';
   }
+
+  public function prettyprint(): string {}
 }

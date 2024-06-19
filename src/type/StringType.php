@@ -4,14 +4,17 @@ namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\nodes\NodeInterfaceType;
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\type\classes\ClassType;
+use TimoLehnertz\formula\type\classes\FieldType;
 
 /**
  * @author Timo Lehnertz
  */
-class StringType extends Type {
+class StringType extends ClassType {
 
   public function __construct() {
-    parent::__construct();
+    $lengthField = new FieldType(true, new IntegerType());
+    parent::__construct(null, 'String', ['length' => $lengthField]);
   }
 
   protected function typeAssignableBy(Type $type): bool {
@@ -23,14 +26,14 @@ class StringType extends Type {
   }
 
   public function getIdentifier(bool $nested = false): string {
-    return 'string';
+    return 'String';
   }
 
   protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {
     if($operator->getID() === ImplementableOperator::TYPE_ADDITION) {
       return [new StringType(false)];
     } else {
-      return [];
+      return parent::getTypeCompatibleOperands($operator);
     }
   }
 
@@ -38,7 +41,7 @@ class StringType extends Type {
     if($operator->getID() === ImplementableOperator::TYPE_ADDITION && $otherType instanceof StringType) {
       return new StringType(false);
     } else {
-      return null;
+      return parent::getTypeOperatorResultType($operator, $otherType);
     }
   }
 

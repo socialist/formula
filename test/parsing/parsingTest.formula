@@ -124,7 +124,11 @@ addRes2(1); // 33
 
 res += arr.length; // 37
 
+String string = "abc";
+
+res += string.length; // 40
+
 // WhileStatementParser
 while(true) {
-  return res; // 37
+  return res; // 40
 }

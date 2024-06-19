@@ -17,9 +17,12 @@ class ConstantExpression implements Expression {
 
   private readonly Value $value;
 
-  public function __construct(Type $type, Value $value) {
+  private readonly string $stringRepresentation;
+
+  public function __construct(Type $type, Value $value, string $stringRepresentation) {
     $this->type = $type->setFinal(true);
     $this->value = $value;
+    $this->stringRepresentation = $stringRepresentation;
   }
 
   public function validate(Scope $scope): Type {
@@ -31,7 +34,7 @@ class ConstantExpression implements Expression {
   }
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
-    return $this->value->toString();
+    return $this->stringRepresentation;
   }
 
   public function buildNode(Scope $scope): Node {

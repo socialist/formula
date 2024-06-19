@@ -2,17 +2,20 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use TimoLehnertz\formula\type\classes\ClassInstanceValue;
+use TimoLehnertz\formula\type\classes\FieldValue;
 
 /**
  * @author Timo Lehnertz
  */
-class StringValue extends Value {
+class StringValue extends ClassInstanceValue {
 
   private readonly string $value;
 
   public function __construct(string $value) {
+    $lengthField = new FieldValue(new IntegerValue(strlen($value)));
+    parent::__construct(['length' => $lengthField]);
     $this->value = $value;
   }
 
@@ -29,10 +32,13 @@ class StringValue extends Value {
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
-    if($other === null || $operator->getID() !== ImplementableOperator::TYPE_ADDITION) {
-      throw new FormulaBugException('Invalid operation on string value!');
+    switch($operator->getID()) {
+      case ImplementableOperator::TYPE_ADDITION:
+        if($other !== null && $other instanceof StringValue) {
+          return new StringValue($this->value.$other->toString());
+        }
     }
-    return new StringValue($this->value.$other->toString());
+    return parent::valueOperate($operator, $other);
   }
 
   public function toPHPValue(): mixed {

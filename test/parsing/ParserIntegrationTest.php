@@ -10,9 +10,9 @@ class ParserIntegrationTest extends TestCase {
     $source = file_get_contents('test/parsing/parsingTest.formula');
     $formula = new Formula($source);
     $result = $formula->calculate();
-    $this->assertEquals(37, $result->toPHPValue());
+    $this->assertEquals(40, $result->toPHPValue());
     $parsedSource = $formula->prettyprintFormula();
     $formula = new Formula($parsedSource);
-    $this->assertEquals(37, $result->toPHPValue()); // assert that stringify works as expected
+    $this->assertEquals(40, $result->toPHPValue()); // assert that stringify works as expected
   }
 }

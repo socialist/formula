@@ -57,7 +57,7 @@ class ArgumentListExpressionTest extends TestCase {
   }
 
   public function testToString(): void {
-    $expression = new ConstantExpression(new FloatType(), new FloatValue(123));
+    $expression = new ConstantExpression(new FloatType(), new FloatValue(123), '123.0');
     $expressions = [$expression];
     $expression = new ArgumentListExpression($expressions);
     $string = $expression->toString(PrettyPrintOptions::buildDefault());
@@ -65,7 +65,7 @@ class ArgumentListExpressionTest extends TestCase {
   }
 
   public function testBuildNode(): void {
-    $constantExpression = new ConstantExpression(new FloatType(), new FloatValue(123));
+    $constantExpression = new ConstantExpression(new FloatType(), new FloatValue(123), '123.0');
     $expressions = [$constantExpression];
     $expression = new ArgumentListExpression($expressions);
     $node = $expression->buildNode(new Scope());

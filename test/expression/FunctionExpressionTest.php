@@ -25,7 +25,7 @@ class FunctionExpressionTest extends TestCase {
     $returnType = new FloatType();
     $innerVargFunctionArgument = new InnerFunctionArgument(false, new IntegerType(), 'a', null);
     $arguments = new InnerFunctionArgumentList([$innerVargFunctionArgument], null);
-    $returnStatement = new ReturnStatement(new ConstantExpression(new FloatType(), new FloatValue(123.4)));
+    $returnStatement = new ReturnStatement(new ConstantExpression(new FloatType(), new FloatValue(123.4), '123.4'));
     $codeBlock = new CodeBlock([$returnStatement], false, false);
     $expression = new FunctionExpression($returnType, $arguments, $codeBlock);
 

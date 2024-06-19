@@ -15,13 +15,13 @@ class ComplexOperatorExpressionTest extends TestCase {
     /**
      * Setup
      */
-    $innerLeftExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4));
+    $innerLeftExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4), '123.4');
     $innerOperator = new ImplementableOperator(ImplementableOperator::TYPE_ADDITION);
-    $innerRightExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4));
-    $outerLeftExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4));
+    $innerRightExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4), '123.4');
+    $outerLeftExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4), '123.4');
     $outerOperator = $this->createMock(ParsedOperator::class);
     $outerOperator->expects($this->exactly(1))->method('toString')->willReturn('+=');
-    $outerRightExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4));
+    $outerRightExpression = new ConstantExpression(new FloatType(), new FloatValue(123.4), '123.4');
 
     $expression = new ComplexOperatorExpression($innerLeftExpression, $innerOperator, $innerRightExpression, $outerLeftExpression, $outerOperator, $outerRightExpression);
 

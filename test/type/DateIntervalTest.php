@@ -43,6 +43,7 @@ class DateIntervalTest extends TestCase {
     $formula = new Formula('"'.$format.'"');
     $this->assertInstanceOf(DateIntervalType::class, $formula->getReturnType());
     $this->assertEquals(new \DateInterval($format), $formula->calculate()->toPHPValue());
+    //     $this->assertEquals('"'.$format.'"', $formula->prettyprintFormula());
   }
 
   public function testDefine(): void {

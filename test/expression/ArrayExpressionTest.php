@@ -2,13 +2,13 @@
 namespace TimoLehnertz\formula\expression;
 
 use PHPUnit\Framework\TestCase;
+use TimoLehnertz\formula\PrettyPrintOptions;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\IntegerType;
 use TimoLehnertz\formula\type\ArrayType;
+use TimoLehnertz\formula\type\ArrayValue;
 use TimoLehnertz\formula\type\FloatType;
 use TimoLehnertz\formula\type\FloatValue;
-use TimoLehnertz\formula\type\ArrayValue;
-use TimoLehnertz\formula\PrettyPrintOptions;
+use TimoLehnertz\formula\type\IntegerType;
 
 class ArrayExpressionTest extends TestCase {
 
@@ -16,7 +16,7 @@ class ArrayExpressionTest extends TestCase {
     /**
      * Setup
      */
-    $constantNode = (new ConstantExpression(new FloatType(), new FloatValue(123.4)))->buildNode(new Scope());
+    $constantNode = (new ConstantExpression(new FloatType(), new FloatValue(123.4), '123.4'))->buildNode(new Scope());
     $element = $this->createMock(ConstantExpression::class);
     $element->expects($this->once())->method('validate')->willReturn(new FloatType());
     $element->expects($this->once())->method('run')->willReturn(new FloatValue(123.4));
