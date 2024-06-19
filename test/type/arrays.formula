@@ -53,4 +53,12 @@ assertFalse({1,2,3} == {1,2,3});
 
 assertTrue(arr == arr);
 
+//DateTimes
+
+DateTimeImmutable[] dates = {"2024-01-01", "2024-02-01", "2024-03-01"};
+
+dates += "P1D";
+
+assertEquals({"2024-01-02", "2024-02-02", "2024-03-02"}, dates);
+
 return 25;

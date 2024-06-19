@@ -52,8 +52,4 @@ class ClassInstanceValue extends Value {
   public function toString(): string {
     return 'classInstance';
   }
-
-  public function getFields(): array {
-    return $this->fields;
-  }
 }

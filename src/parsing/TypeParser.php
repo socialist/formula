@@ -10,8 +10,9 @@ use TimoLehnertz\formula\type\FloatType;
 use TimoLehnertz\formula\type\IntegerType;
 use TimoLehnertz\formula\type\StringType;
 use TimoLehnertz\formula\type\Type;
-use TimoLehnertz\formula\UnexpectedEndOfInputException;
 use TimoLehnertz\formula\type\VoidType;
+use TimoLehnertz\formula\type\DateTimeImmutableType;
+use TimoLehnertz\formula\type\DateIntervalType;
 
 /**
  * ArrayDimension ::= [](<ArrayDimension>|<>)
@@ -40,7 +41,7 @@ class TypeParser extends Parser {
       $this->final = true;
       $token = $token->next();
       if($token === null) {
-        throw new UnexpectedEndOfInputException();
+        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
       }
     }
     $inBrackets = false;
@@ -122,7 +123,6 @@ class TypeParser extends Parser {
   }
 
   private function parseSingleType(Token $firstToken): ParserReturn {
-    $type = null;
     if($firstToken->id === Token::KEYWORD_BOOL) {
       $type = new BooleanType($this->final);
     } else if($firstToken->id === Token::KEYWORD_INT) {
@@ -133,6 +133,10 @@ class TypeParser extends Parser {
       $type = new StringType($this->final);
     } else if($firstToken->id === Token::KEYWORD_VOID) {
       $type = new VoidType();
+    } else if($firstToken->id === Token::KEYWORD_DATE_INTERVAL) {
+      $type = new DateIntervalType();
+    } else if($firstToken->id === Token::KEYWORD_DATE_TIME_IMMUTABLE) {
+      $type = new DateTimeImmutableType();
     } else {
       throw new ParsingSkippedException($firstToken->value.$firstToken->id);
     }

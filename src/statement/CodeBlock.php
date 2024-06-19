@@ -39,7 +39,6 @@ class CodeBlock extends Statement {
 
   public function runStatement(Scope $scope): StatementReturn {
     $scope = $scope->buildChild();
-    $statementReturn = null;
     foreach($this->statements as $statement) {
       $statementReturn = $statement->run($scope);
       if($statementReturn->isTerminating()) {

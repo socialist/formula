@@ -1,10 +1,9 @@
 <?php
-namespace src\tokens;
+namespace TimoLehnertz\formula\tokens;
 
 /**
- *
  * @author Timo Lehnertz
- *        
+ *
  */
 class TokenisationException extends \Exception {
 

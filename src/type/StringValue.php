@@ -2,7 +2,7 @@
 declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
-use TimoLehnertz\formula\InternalFormulaException;
+use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
@@ -30,7 +30,7 @@ class StringValue extends Value {
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
     if($other === null || $operator->getID() !== ImplementableOperator::TYPE_ADDITION) {
-      throw new InternalFormulaException('Invalid operation on string value!');
+      throw new FormulaBugException('Invalid operation on string value!');
     }
     return new StringValue($this->value.$other->toString());
   }

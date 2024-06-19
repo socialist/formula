@@ -33,7 +33,7 @@ class FunctionExpression implements Expression {
 
   public function validate(Scope $scope): Type {
     $functionBody = new FormulaFunctionBody($this->arguments, $this->codeBlock, $scope);
-    $functionBody->validate($scope, $this->returnType);
+    $functionBody->validate($this->returnType);
     return new FunctionType($functionBody->getArgs(), $this->returnType, true);
   }
 

@@ -3,7 +3,7 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\tokens;
 
 use TimoLehnertz\formula\parsing\ParsingException;
-use TimoLehnertz\formula\parsing\IdentifierParser;
+use const false;
 
 /**
  * @author Timo Lehnertz
@@ -165,5 +165,9 @@ class Token {
   public const KEYWORD_ELSE = 66;
   public const KEYWORD_FINAL = 67;
   public const KEYWORD_VAR = 68;
+  public const DATE_INTERVAL = 69;
+  public const DATE_TIME = 70;
+  public const KEYWORD_DATE_TIME_IMMUTABLE = 71;
+  public const KEYWORD_DATE_INTERVAL = 72;
   // @formatter:on
 }

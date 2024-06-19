@@ -7,8 +7,6 @@ use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\MemberAccsessValue;
 use TimoLehnertz\formula\type\Value;
-use const false;
-use const true;
 use TimoLehnertz\formula\type\functions\FunctionValue;
 use TimoLehnertz\formula\type\functions\PHPFunctionBody;
 
@@ -17,7 +15,7 @@ use TimoLehnertz\formula\type\functions\PHPFunctionBody;
  */
 class PHPClassInstanceValue extends Value {
 
-  private readonly mixed $instance;
+  protected readonly mixed $instance;
 
   private readonly \ReflectionClass $reflection;
 
@@ -33,7 +31,6 @@ class PHPClassInstanceValue extends Value {
   public function copy(): PHPClassInstanceValue {
     return new PHPClassInstanceValue($this->instance);
   }
-
 
   public function valueEquals(Value $other): bool {
     if($other instanceof PHPClassInstanceValue) {
@@ -67,9 +64,5 @@ class PHPClassInstanceValue extends Value {
 
   public function toString(): string {
     return 'classInstance';
-  }
-
-  public function getFields(): array {
-    return $this->fields;
   }
 }

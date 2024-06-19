@@ -3,7 +3,6 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\FormulaBugException;
-use TimoLehnertz\formula\InternalFormulaException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 
 /**
@@ -24,7 +23,7 @@ class VoidValue extends Value {
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
-    throw new InternalFormulaException('Invalid operation on void');
+    throw new FormulaBugException('Invalid operation on void');
   }
 
   public function toPHPValue(): mixed {

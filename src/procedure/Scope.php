@@ -3,13 +3,16 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\procedure;
 
 use TimoLehnertz\formula\FormulaRuntimeException;
-use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\nodes\NodeTreeScope;
 use TimoLehnertz\formula\type\ArrayType;
 use TimoLehnertz\formula\type\ArrayValue;
 use TimoLehnertz\formula\type\BooleanType;
 use TimoLehnertz\formula\type\BooleanValue;
 use TimoLehnertz\formula\type\CompoundType;
+use TimoLehnertz\formula\type\DateIntervalType;
+use TimoLehnertz\formula\type\DateIntervalValue;
+use TimoLehnertz\formula\type\DateTimeImmutableType;
+use TimoLehnertz\formula\type\DateTimeImmutableValue;
 use TimoLehnertz\formula\type\FloatType;
 use TimoLehnertz\formula\type\FloatValue;
 use TimoLehnertz\formula\type\IntegerType;
@@ -28,7 +31,6 @@ use TimoLehnertz\formula\type\classes\ClassTypeValue;
 use TimoLehnertz\formula\type\classes\ConstructorType;
 use TimoLehnertz\formula\type\classes\ConstructorValue;
 use TimoLehnertz\formula\type\classes\FieldType;
-use TimoLehnertz\formula\type\classes\FieldValue;
 use TimoLehnertz\formula\type\classes\PHPClassInstanceValue;
 use TimoLehnertz\formula\type\functions\FunctionType;
 use TimoLehnertz\formula\type\functions\FunctionValue;
@@ -93,6 +95,8 @@ class Scope {
             return new MixedType();
           case 'void':
             return new VoidType();
+          case 'object':
+            return new MixedType();
         }
       } else {
         return Scope::reflectionClassToType(new \ReflectionClass($reflectionType->getName()));
@@ -104,6 +108,7 @@ class Scope {
       }
       return CompoundType::buildFromTypes($types);
     }
+
     throw new \BadMethodCallException('PHP type '.$reflectionType.' is not supported');
   }
 
@@ -163,13 +168,12 @@ class Scope {
 
   private static array $phpClassTypes = [];
 
-  private static bool $onlyCollectClasses = false;
-
-  private static function reflectionClassToType(\ReflectionClass $reflection): ?ClassType {
-    if(isset(Scope::$phpClassTypes[$reflection->getName()])) {
+  public static function reflectionClassToType(\ReflectionClass $reflection, bool $force = false): ClassType {
+    if(!$force && isset(Scope::$phpClassTypes[$reflection->getName()])) {
       return Scope::$phpClassTypes[$reflection->getName()];
     }
-    Scope::$phpClassTypes[$reflection->getName()] = new ClassType(null, '', []); // dummy
+    Scope::$phpClassTypes[$reflection->getName()] = new ClassType(null, '--', []); // dummy
+
     $fieldTypes = [];
     /** @var ReflectionProperty $refelctionProperty */
     foreach($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $refelctionProperty) {
@@ -199,8 +203,11 @@ class Scope {
   public static function convertPHPVar(mixed $value, bool $onlyValue = false): array {
     if($value instanceof Value) {
       return [null,$value];
-    }
-    if(is_string($value) && class_exists($value)) {
+    } else if($value instanceof \DateTimeImmutable) {
+      return [new DateTimeImmutableType(),new DateTimeImmutableValue($value)];
+    } else if($value instanceof \DateInterval) {
+      return [new DateIntervalType(),new DateIntervalValue($value)];
+    } else if(is_string($value) && class_exists($value)) {
       $reflection = new \ReflectionClass($value);
       $classType = Scope::reflectionClassToType($reflection);
 

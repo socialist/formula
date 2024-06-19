@@ -12,14 +12,14 @@ use TimoLehnertz\formula\type\Type;
  */
 class ClassType extends Type {
 
-  private readonly ?ClassType $parentType;
+  protected readonly ?ClassType $parentType;
 
-  private readonly string $identifier;
+  protected readonly string $identifier;
 
   /**
    * @var array<string, FieldType>
    */
-  private readonly array $fields;
+  protected readonly array $fields;
 
   /**
    * @param array<string, FieldType> $fields
@@ -82,10 +82,12 @@ class ClassType extends Type {
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_MEMBER_ACCESS:
         $compatible = [];
-        /** @var FieldType $field */
-        foreach($this->fields as $identifier => $field) {
+        foreach(array_keys($this->fields) as $identifier) {
           $compatible[] = new MemberAccsessType($identifier);
         }
+        //         if(count($this->fields) === 0) {
+        //           var_dump($this);
+        //         }
         return $compatible;
       default:
         return [];

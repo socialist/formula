@@ -1,10 +1,6 @@
 <?php
 namespace TimoLehnertz\formula\tokens;
 
-use TimoLehnertz\formula\ExpressionNotFoundException;
-use TimoLehnertz\formula\UnexpectedEndOfInputException;
-use src\tokens\TokenisationException;
-
 /**
  * @author Timo Lehnertz
  *
@@ -19,7 +15,6 @@ class Tokenizer {
    * Converts a string into Tokens
    *
    * @param string $string
-   * @throws ExpressionNotFoundException in case of failed tokenizing
    * @return array<Token>
    */
   public static function tokenize(string $string): ?Token {
@@ -163,7 +158,56 @@ class Tokenizer {
           break;
         case 'string':
           if($char === $stringBoundry) {
-            $lastToken = new Token(Token::STRING_CONSTANT, $buffer, $tokenStartLine, $lastStartPosition, $tokenSource, $lastToken);
+            /**
+             * Supported formats:
+             *
+             * P0Y1M2DT3H4M5S
+             * P0Y1M2WT3H4M5S
+             * P0Y1M2DT3H
+             * P0YT3H4M5S
+             * P0YT3H
+             * P0Y1M2D
+             * P0Y
+             */
+            $dateIntervalRegex = '/^P((((([0-9]+Y([0-9]+M)?([0-9]+[DW])?)|([0-9]+M([0-9]+[DW])?)|([0-9]+[DW]))(T(([0-9]+H([0-9]+M)?([0-9]+S)?)|([0-9]+M([0-9]+S)?)|([0-9]+S)))?|(T(([0-9]+H([0-9]+M)?([0-9]+S)?)|([0-9]+M([0-9]+S)?)|([0-9]+S)))))|(([0-9]{4}-(0[0-9]|1[0-2])-([0-2][0-9]|3[0-1]))T(([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9])))$/';
+            /**
+             * Supported formats:
+             *
+             * 2008-09-15T15:53:00
+             * 2008-09-15
+             * 2008-09-15
+             * 2007-03-01T13:00:00Z
+             * 2015-10-05T21:46:54+00:00
+             * 2015-10-05T21:46:54Z
+             * 2008-09-15 11:12:13
+             * 2008-09-15 11:12
+             * 2008-09
+             * 1988-05-26T23:00:00.000Z
+             */
+            $dateTimeRegex = '/^(?P<y>\d{4})
+-
+(?P<m>\d{2})
+(?:
+  -
+  (?P<d>\d{2})
+)?
+(?:
+  [T\s]
+  (?P<hh>\d{2})\:
+  (?P<mm>\d{2})
+  (?:\:(?P<ss>\d{2}))?
+  (?:[+-](?P<tz>\d{2}\:\d{2}))?
+  (?:
+   (?:\.(?P<u>\d{2,4}))?[Z]
+  )?
+)?$/ix';
+            if(preg_match($dateIntervalRegex, $buffer)) {
+              $lastToken = new Token(Token::DATE_INTERVAL, $buffer, $tokenStartLine, $lastStartPosition, $tokenSource, $lastToken);
+            } else if(preg_match($dateTimeRegex, $buffer)) {
+              $lastToken = new Token(Token::DATE_TIME, $buffer, $tokenStartLine, $lastStartPosition, $tokenSource, $lastToken);
+            } else {
+              $lastToken = new Token(Token::STRING_CONSTANT, $buffer, $tokenStartLine, $lastStartPosition, $tokenSource, $lastToken);
+            }
             $addedToken();
             break;
           }
@@ -190,7 +234,7 @@ class Tokenizer {
       }
     }
     if($mode !== 'normal') {
-      throw new UnexpectedEndOfInputException();
+      throw new TokenisationException('Unexpected end of input', $line, $position);
     }
     return $firstToken;
   }
@@ -260,6 +304,8 @@ class Tokenizer {
     "else" => Token::KEYWORD_ELSE,
     "final" => Token::KEYWORD_FINAL,
     "var" => Token::KEYWORD_VAR,
+    "DateTimeImmutable" => Token::KEYWORD_DATE_TIME_IMMUTABLE,
+    "DateInterval" => Token::KEYWORD_DATE_INTERVAL,
   ];
 
   private

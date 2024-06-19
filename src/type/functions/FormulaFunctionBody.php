@@ -31,7 +31,7 @@ class FormulaFunctionBody implements FormulaPart, FunctionBody {
     $this->scope = $scope;
   }
 
-  public function validate(Scope $scope, Type $expectedReturnType): void {
+  public function validate(Type $expectedReturnType): void {
     $scope = $this->scope->buildChild();
     $this->arguments->populateScopeDefinesOnly($scope);
     $codeBlockReturn = $this->codeBlock->validate($scope, $expectedReturnType);

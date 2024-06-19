@@ -14,4 +14,10 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+    
+    <issueHandlers>
+        <UnnecessaryVarAnnotation errorLevel="info" />
+        <PossiblyUnusedProperty errorLevel="info" />
+        <PossiblyUnusedParam errorLevel="info" />
+	</issueHandlers>
 </psalm>

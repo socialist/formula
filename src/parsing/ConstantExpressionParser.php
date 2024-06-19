@@ -14,6 +14,10 @@ use TimoLehnertz\formula\type\StringType;
 use TimoLehnertz\formula\type\BooleanType;
 use TimoLehnertz\formula\type\IntegerType;
 use TimoLehnertz\formula\type\FloatType;
+use TimoLehnertz\formula\type\DateTimeImmutableType;
+use TimoLehnertz\formula\type\DateTimeImmutableValue;
+use TimoLehnertz\formula\type\DateIntervalValue;
+use TimoLehnertz\formula\type\DateIntervalType;
 
 /**
  * @author Timo Lehnertz
@@ -38,6 +42,10 @@ class ConstantExpressionParser extends Parser {
         return new ParserReturn(new ConstantExpression(new StringType(true), new StringValue($firstToken->value)), $firstToken->next());
       case Token::KEYWORD_NULL:
         return new ParserReturn(new ConstantExpression(new NullType(true), new NullValue()), $firstToken->next());
+      case Token::DATE_TIME:
+        return new ParserReturn(new ConstantExpression(new DateTimeImmutableType(), new DateTimeImmutableValue(new \DateTimeImmutable($firstToken->value))), $firstToken->next());
+      case Token::DATE_INTERVAL:
+        return new ParserReturn(new ConstantExpression(new DateIntervalType(), new DateIntervalValue(new \DateInterval($firstToken->value))), $firstToken->next());
     }
     throw new ParsingSkippedException();
   }
