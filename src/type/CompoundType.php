@@ -21,14 +21,20 @@ class CompoundType extends Type {
     if(count($types) === 0) {
       return new NeverType();
     }
+    // flatten
+    $notCompoundTypes = [];
+    foreach($types as $type) {
+      if($type instanceof CompoundType) {
+        $notCompoundTypes = array_merge($notCompoundTypes, $type->types);
+      } else {
+        $notCompoundTypes[] = $type;
+      }
+    }
     $uniqueTypes = [];
     // eliminate clones
-    foreach($types as $type) {
+    foreach($notCompoundTypes as $type) {
       $found = false;
       foreach($uniqueTypes as $uniqueType) {
-        //         if($uniqueType === null) {
-        //           var_dump($types);
-        //         }
         if($uniqueType->equals($type)) {
           $found = true;
           break;

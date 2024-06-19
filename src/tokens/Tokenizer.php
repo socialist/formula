@@ -278,7 +278,8 @@ class Tokenizer {
     "," => Token::COMMA,
     ";" => Token::SEMICOLON,
     "::" => Token::SCOPE_RESOLUTION,
-    "..." => Token::SPREAD
+    "..." => Token::SPREAD,
+    "->" => Token::FUNCTION_ARROW
   ];
 
   private const KEYWORD_TOKENS = [

@@ -58,8 +58,6 @@ class Scope {
 
   private ?Scope $parent = null;
 
-  public function __construct() {}
-
   public function buildChild(): Scope {
     $child = new Scope();
     $child->parent = $this;
@@ -97,6 +95,8 @@ class Scope {
             return new VoidType();
           case 'object':
             return new MixedType();
+          case 'callable':
+            return new FunctionType(new OuterFunctionArgumentListType([new OuterFunctionArgument(new MixedType(), true)], true), new MixedType());
         }
       } else {
         return Scope::reflectionClassToType(new \ReflectionClass($reflectionType->getName()));
@@ -108,13 +108,15 @@ class Scope {
       }
       return CompoundType::buildFromTypes($types);
     }
-
     throw new \BadMethodCallException('PHP type '.$reflectionType.' is not supported');
   }
 
-  public function definePHP(bool $final, string $identifier, mixed $value = null): void {
+  /**
+   * @param ?callable(OuterFunctionArgumentListType): ?Type $specificFunctionReturnType
+   */
+  public function definePHP(bool $final, string $identifier, mixed $value = null, ?OuterFunctionArgumentListType $argumentType = null, ?callable $specificFunctionReturnType = null): void {
     if($value !== null) {
-      $value = Scope::convertPHPVar($value);
+      $value = Scope::convertPHPVar($value, false, $argumentType, $specificFunctionReturnType);
     }
     $this->define($final, $value[0], $identifier, $value[1]);
   }
@@ -146,7 +148,10 @@ class Scope {
     }
   }
 
-  private static function reflectionFunctionToType(ReflectionFunctionAbstract $reflection): FunctionType {
+  /**
+   * @param ?callable(OuterFunctionArgumentListType): ?Type $specificFunctionReturnType
+   */
+  private static function reflectionFunctionToType(ReflectionFunctionAbstract $reflection, ?OuterFunctionArgumentListType $argumentType = null, ?callable $specificFunctionReturnType = null): FunctionType {
     $reflectionReturnType = $reflection->getReturnType();
     if($reflectionReturnType !== null) {
       $returnType = Scope::reflectionTypeToFormulaType($reflectionReturnType);
@@ -163,7 +168,7 @@ class Scope {
       }
       $arguments[] = new OuterFunctionArgument(Scope::reflectionTypeToFormulaType($reflectionArgument->getType()), $reflectionArgument->isOptional());
     }
-    return new FunctionType(new OuterFunctionArgumentListType($arguments, $vargs), $returnType);
+    return new FunctionType($argumentType ?? new OuterFunctionArgumentListType($arguments, $vargs), $returnType, $specificFunctionReturnType);
   }
 
   private static array $phpClassTypes = [];
@@ -198,9 +203,10 @@ class Scope {
   }
 
   /**
-   * @return [Type, Value]
+   * @param ?callable(OuterFunctionArgumentListType): ?Type $specificFunctionReturnType
+   * @return array [Type, Value]
    */
-  public static function convertPHPVar(mixed $value, bool $onlyValue = false): array {
+  public static function convertPHPVar(mixed $value, bool $onlyValue = false, ?OuterFunctionArgumentListType $argumentType = null, ?callable $specificFunctionReturnType = null): array {
     if($value instanceof Value) {
       return [null,$value];
     } else if($value instanceof \DateTimeImmutable) {
@@ -211,7 +217,11 @@ class Scope {
       $reflection = new \ReflectionClass($value);
       $classType = Scope::reflectionClassToType($reflection);
 
-      $constructorFunctionType = Scope::reflectionFunctionToType($reflection->getConstructor());
+      if($reflection->getConstructor() === null) {
+        $constructorFunctionType = new FunctionType(new OuterFunctionArgumentListType([], false), new VoidType());
+      } else {
+        $constructorFunctionType = Scope::reflectionFunctionToType($reflection->getConstructor());
+      }
 
       $constructor = new ConstructorValue(new PHPFunctionBody(function (...$args) use ($reflection) {
         $phpArgs = [];
@@ -219,7 +229,7 @@ class Scope {
           $phpArgs[] = $arg;
         }
         return new PHPClassInstanceValue($reflection->newInstance(...$phpArgs));
-      }));
+      }, false));
 
       $contructorType = new ConstructorType($constructorFunctionType->arguments, $classType);
 
@@ -249,8 +259,8 @@ class Scope {
         throw new \InvalidArgumentException('The provided callable is not an array.');
       }
       //     }
-      $functionType = Scope::reflectionFunctionToType($reflection);
-      $functionBody = new PHPFunctionBody($value);
+      $functionType = Scope::reflectionFunctionToType($reflection, $argumentType, $specificFunctionReturnType);
+      $functionBody = new PHPFunctionBody($value, $functionType->generalReturnType instanceof VoidType);
       return [$functionType,new FunctionValue($functionBody)];
     } else if(is_array($value)) {
       $values = [];

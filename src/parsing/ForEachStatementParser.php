@@ -63,10 +63,10 @@ class ForEachStatementParser extends Parser {
     $parsedExpression = (new ExpressionParser())->parse($token, true);
     $token = $parsedExpression->nextToken;
     if($token === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
     }
     if($token->id !== Token::BRACKETS_CLOSED) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, 'Expected )');
+      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_TOKEN, 'Expected )');
     }
     $token = $token->requireNext();
     $parsedCodeBlock = (new CodeBlockParser(true, false))->parse($token, true);

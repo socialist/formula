@@ -5,6 +5,7 @@ namespace TimoLehnertz\formula\type\functions;
 use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\type\Value;
+use TimoLehnertz\formula\procedure\Scope;
 
 /**
  * @author Timo Lehnertz
@@ -38,7 +39,14 @@ class FunctionValue extends Value {
   }
 
   public function toPHPValue(): mixed {
-    throw new FormulaBugException('FunctionValue list does not have a php representation');
+    $body = $this->body;
+    return function (...$args) use (&$body) {
+      $values = [];
+      foreach($args as $arg) {
+        $values[] = Scope::convertPHPVar($arg, true)[1];
+      }
+      return $body->call(new OuterFunctionArgumentListValue($values))->toPHPValue();
+    };
   }
 
   public function toString(): string {

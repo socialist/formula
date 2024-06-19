@@ -4,6 +4,7 @@ namespace test\type;
 use PHPUnit\Framework\TestCase;
 use TimoLehnertz\formula\Formula;
 use TimoLehnertz\formula\type\DateTimeImmutableType;
+use TimoLehnertz\formula\procedure\Scope;
 
 class DateTimeImmutableTest extends TestCase {
 
@@ -27,6 +28,14 @@ class DateTimeImmutableTest extends TestCase {
     $formula = new Formula('DateTimeImmutable date = "2024-01-01"; DateInterval interval = "P1D"; return date+interval;');
     $this->assertInstanceOf(DateTimeImmutableType::class, $formula->getReturnType());
     $this->assertEquals(new \DateTimeImmutable('2024-01-02'), $formula->calculate()->toPHPValue());
+  }
+
+  public function testDefine(): void {
+    $scope = new Scope();
+    $scope->definePHP(true, 'date', new \DateTimeImmutable("2024-01-01"));
+    $formula = new Formula('date', $scope);
+    $this->assertInstanceOf(DateTimeImmutableType::class, $formula->getReturnType());
+    $this->assertEquals(new \DateTimeImmutable('2024-01-01'), $formula->calculate()->toPHPValue());
   }
 
   public function formatProvider(): array {

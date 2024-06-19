@@ -74,14 +74,14 @@ class OperatorTest extends TestCase {
     $formula = new Formula('false || 1');
     $result = $formula->calculate();
     $this->assertEquals(true, $result->toPHPValue());
-    $this->assertEquals('false||1', $formula->getFormula());
+    $this->assertEquals('false||1', $formula->prettyprintFormula());
   }
 
   public function testExplicitTypeCastOperator(): void {
     $formula = new Formula('false || (boolean)1');
     $result = $formula->calculate();
     $this->assertEquals(true, $result->toPHPValue());
-    $this->assertEquals('false||(boolean)1', $formula->getFormula());
+    $this->assertEquals('false||(boolean)1', $formula->prettyprintFormula());
   }
 
   public function testOrderOfMathematicOperators(): void {

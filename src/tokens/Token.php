@@ -81,7 +81,7 @@ class Token {
   public function requireNext(bool $includeComments = false): Token {
     $next = $this->next($includeComments);
     if($next === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT, $this);
+      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT, $this);
     } else {
       return $next;
     }
@@ -169,5 +169,6 @@ class Token {
   public const DATE_TIME = 70;
   public const KEYWORD_DATE_TIME_IMMUTABLE = 71;
   public const KEYWORD_DATE_INTERVAL = 72;
+  public const FUNCTION_ARROW = 73; // ->
   // @formatter:on
 }

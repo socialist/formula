@@ -29,14 +29,14 @@ class VariableDeclarationStatementParser extends Parser {
       $token = $parsedType->nextToken;
     }
     if($token === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
     }
     if($token->id !== Token::IDENTIFIER) {
       throw new ParsingSkippedException();
     }
     $identifier = $token->value;
     if(!$token->hasNext()) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
     }
     $token = $token->next();
     if($token->id !== Token::ASSIGNMENT) {
@@ -44,11 +44,11 @@ class VariableDeclarationStatementParser extends Parser {
     }
     $parsedInitializer = (new ExpressionParser())->parse($token->next(), true);
     if($parsedInitializer->nextToken === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
     }
     $token = $parsedInitializer->nextToken;
     if($token->id !== Token::SEMICOLON) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $token, 'Expected ;');
+      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_TOKEN, $token, 'Expected ;');
     }
     return new ParserReturn(new VariableDeclarationStatement($final, $parsedType?->parsed ?? null, $identifier, $parsedInitializer->parsed), $token->next());
   }

@@ -21,10 +21,10 @@ class ContinueStatementParser extends Parser {
     }
     $token = $firstToken->next();
     if($token === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
     }
     if($token->id !== Token::SEMICOLON) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $token, 'Expected ;');
+      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_TOKEN, $token, 'Expected ;');
     } else {
       return new ParserReturn(new ContinueStatement(), $token->next());
     }

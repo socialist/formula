@@ -23,7 +23,7 @@ class CodeBlockParser extends Parser {
   protected function parsePart(Token $firstToken): ParserReturn {
     if($this->allowSingleLine && $firstToken->id !== Token::CURLY_BRACKETS_OPEN) {
       $parsed = (new StatementParser())->parse($firstToken, true);
-      return new ParserReturn(new CodeBlock([$parsed->parsed], true), $parsed->nextToken);
+      return new ParserReturn(new CodeBlock([$parsed->parsed], true, $this->root), $parsed->nextToken);
     }
     $token = $firstToken;
     if(!$this->root) {
@@ -31,7 +31,7 @@ class CodeBlockParser extends Parser {
         throw new ParsingSkippedException();
       }
       if(!$token->hasNext()) {
-        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
       }
       $token = $token->next();
     }
@@ -43,13 +43,13 @@ class CodeBlockParser extends Parser {
     }
     if(!$this->root) {
       if($token === null) {
-        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
       }
       if($token->id !== Token::CURLY_BRACKETS_CLOSED) {
-        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $token, 'Expected }');
+        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_TOKEN, $token, 'Expected }');
       }
       $token = $token->next();
     }
-    return new ParserReturn(new CodeBlock($statements, false), $token);
+    return new ParserReturn(new CodeBlock($statements, false, $this->root), $token);
   }
 }

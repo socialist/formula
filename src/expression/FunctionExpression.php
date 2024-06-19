@@ -19,22 +19,29 @@ use TimoLehnertz\formula\nodes\Node;
  */
 class FunctionExpression implements Expression {
 
-  private readonly Type $returnType;
+  private ?Type $returnType;
 
   private readonly InnerFunctionArgumentList $arguments;
 
   private readonly CodeBlock $codeBlock;
 
-  public function __construct(Type $returnType, InnerFunctionArgumentList $arguments, CodeBlock $codeBlock) {
+  private readonly bool $implicitReturnType;
+
+  public function __construct(?Type $returnType, InnerFunctionArgumentList $arguments, CodeBlock $codeBlock) {
     $this->returnType = $returnType;
     $this->arguments = $arguments;
     $this->codeBlock = $codeBlock;
+    $this->implicitReturnType = $returnType === null;
   }
 
   public function validate(Scope $scope): Type {
     $functionBody = new FormulaFunctionBody($this->arguments, $this->codeBlock, $scope);
-    $functionBody->validate($this->returnType);
-    return new FunctionType($functionBody->getArgs(), $this->returnType, true);
+    if($this->returnType !== null) {
+      $functionBody->validate($this->returnType);
+    } else {
+      $this->returnType = $functionBody->validate();
+    }
+    return new FunctionType($functionBody->getArgs(), $this->returnType);
   }
 
   public function run(Scope $scope): Value {
@@ -44,10 +51,18 @@ class FunctionExpression implements Expression {
 
   public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     $functionBody = new FormulaFunctionBody($this->arguments, $this->codeBlock, new Scope());
-    return $this->returnType->getIdentifier().' '.$functionBody->toString($prettyPrintOptions);
+    if($this->implicitReturnType) {
+      return $functionBody->toString($prettyPrintOptions);
+    } else {
+      return $this->returnType->getIdentifier().' '.$functionBody->toString($prettyPrintOptions);
+    }
   }
 
   public function buildNode(Scope $scope): Node {
-    throw new NodesNotSupportedException('FunctionExpression');
+    if($this->codeBlock instanceof ExpressionFunctionBody) {
+      return new Node('FunctionExpression', [$this->codeBlock->getExpression()], ['arguments' => 'todo']);
+    } else {
+      throw new NodesNotSupportedException('FunctionExpression');
+    }
   }
 }

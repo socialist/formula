@@ -4,7 +4,8 @@ namespace test\type\functions;
 use PHPUnit\Framework\TestCase;
 use TimoLehnertz\formula\Formula;
 use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\FormulaBugException;
+use const false;
+use const true;
 
 class FunctionTest extends TestCase {
 
@@ -33,15 +34,14 @@ class FunctionTest extends TestCase {
     $this->assertEquals(false, $formula->calculate()->toPHPValue());
   }
 
-  public function testToPHPValue(): void {
-    $scope = new Scope();
-    $scope->definePHP(true, 'func1', [$this,'func1']);
-    $formula = new Formula('func1', $scope);
-    $this->expectException(FormulaBugException::class);
-    $this->expectExceptionMessage('FunctionValue list does not have a php representation');
-    $formula->calculate()->toPHPValue();
-  }
-
+  //   public function testToPHPValue(): void {
+  //     $scope = new Scope();
+  //     $scope->definePHP(true, 'func1', [$this,'func1']);
+  //     $formula = new Formula('func1', $scope);
+  //     $this->expectException(FormulaBugException::class);
+  //     $this->expectExceptionMessage('FunctionValue list does not have a php representation');
+  //     $formula->calculate()->toPHPValue();
+  //   }
   public function testToString(): void {
     $scope = new Scope();
     $scope->definePHP(true, 'func1', [$this,'func1']);

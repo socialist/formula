@@ -7,10 +7,9 @@ namespace TimoLehnertz\formula;
  */
 class NodesNotSupportedException extends \Exception {
 
-  private readonly string $incompatiblePart;
-
+  //   private readonly string $incompatiblePart;
   public function __construct(string $incompatiblePart) {
     parent::__construct($incompatiblePart.' does not support nodes');
-    $this->incompatiblePart = $incompatiblePart;
+    //     $this->incompatiblePart = $incompatiblePart;
   }
 }

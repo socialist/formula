@@ -31,7 +31,7 @@ class FormulaFunctionBody implements FormulaPart, FunctionBody {
     $this->scope = $scope;
   }
 
-  public function validate(Type $expectedReturnType): void {
+  public function validate(?Type $expectedReturnType = null): Type {
     $scope = $this->scope->buildChild();
     $this->arguments->populateScopeDefinesOnly($scope);
     $codeBlockReturn = $this->codeBlock->validate($scope, $expectedReturnType);
@@ -43,8 +43,13 @@ class FormulaFunctionBody implements FormulaPart, FunctionBody {
       $returnTypes[] = new VoidType();
     }
     $implicitReturnType = CompoundType::buildFromTypes($returnTypes, false);
-    if(!$expectedReturnType->assignableBy($implicitReturnType)) {
+    if($expectedReturnType !== null && !$expectedReturnType->assignableBy($implicitReturnType)) {
       throw new FormulaValidationException($expectedReturnType->getIdentifier().' function can\'t return '.$implicitReturnType->getIdentifier());
+    }
+    if($expectedReturnType !== null) {
+      return $expectedReturnType;
+    } else {
+      return $implicitReturnType;
     }
   }
 

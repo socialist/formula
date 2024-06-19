@@ -21,14 +21,12 @@ class PrettyPrintOptions {
     return new PrettyPrintOptions();
   }
 
-  public function indent(): string {
+  public function indent(): void {
     $this->indentations++;
-    return $this->getIndentStr();
   }
 
-  public function outdent(): string {
+  public function outdent(): void {
     $this->indentations--;
-    return $this->getIndentStr();
   }
 
   public function getIndentStr(): string {

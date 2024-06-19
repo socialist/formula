@@ -7,13 +7,37 @@ use TimoLehnertz\formula\procedure\Scope;
 use TimoLehnertz\formula\type\FloatType;
 use TimoLehnertz\formula\type\IntegerType;
 use const false;
+use TimoLehnertz\formula\tokens\TokenisationException;
+use TimoLehnertz\formula\PrettyPrintOptions;
 
 class FormulaTest extends TestCase {
+
+  public function testEmptyFOrmula(): void {
+    $this->expectException(TokenisationException::class);
+    $this->expectExceptionMessage('Invalid formula');
+    new Formula('');
+  }
+
+  public function testGetNodeTree(): void {
+    $formula = new Formula('1+1');
+    $nodeTree = $formula->getNodeTree();
+    $this->assertEquals('OperatorExpression', $nodeTree->rootNode->nodeType);
+    $this->assertCount(2, $nodeTree->rootNode->connectedInputs);
+  }
 
   public function testWhile(): void {
     $formula = new Formula('int a = 0; while(a<3){a++;} return a;');
     $this->assertInstanceOf(IntegerType::class, $formula->getReturnType());
     $this->assertEquals(3, $formula->calculate()->toPHPValue());
+  }
+
+  public function testIndentation(): void {
+    $formula = new Formula('if(true){return false;}');
+    $this->assertEquals("if (true) {\r\n  return false;\r\n}", $formula->prettyprintFormula());
+    $prettyPrintOptions = new PrettyPrintOptions();
+    $prettyPrintOptions->indentationMethodSpaces = false;
+    $prettyPrintOptions->charsPerIndent = 1;
+    $this->assertEquals("if (true) {\r\n\treturn false;\r\n}", $formula->prettyprintFormula($prettyPrintOptions));
   }
 
   public function testVariables(): void {
@@ -406,7 +430,7 @@ class FormulaTest extends TestCase {
   //   //   /**
   //   //    * @dataProvider provideFormulaStrings
   //   //    */
-  //   //   public function testGetFormula(string $formulaString): void {
+  //   //   public function testPrettyprintFormula(string $formulaString): void {
   //   //     $formula1 = new Formula($formulaString);
   //   //     $formula1->setVariable('a', 0);
   //   //     $formula1->setVariable('b', 1);
@@ -414,7 +438,7 @@ class FormulaTest extends TestCase {
   //   //     $formula1->setVariable('d', 3);
   //   //     $formula1->setVariable('e', 4);
   //   //     $formula1->setVariable('f', 5);
-  //   //     $parsedString = $formula1->getFormula();
+  //   //     $parsedString = $formula1->prettyprintFormula();
   //   //     $formula2 = new Formula($parsedString);
   //   //     $formula2->setVariable('a', 0);
   //   //     $formula2->setVariable('b', 1);
@@ -468,7 +492,7 @@ class FormulaTest extends TestCase {
   //   //   public function testStringifyBrackets(): void {
   //   //     $testFormula = "((((getModuleComponentIndex()==1)))?(1):((getModuleComponentIndex()>1)?(s362/getMeasurementAtComponentIndex((getModuleComponentIndex()-1),{'s362','s363','s364','s365','s366'})):0))*100";
   //   //     $formula = new Formula($testFormula);
-  //   //     $stringified = $formula->getFormula();
+  //   //     $stringified = $formula->prettyprintFormula();
   //   //     $this->assertEquals("(getModuleComponentIndex()==1?1:getModuleComponentIndex()>1?s362/getMeasurementAtComponentIndex(getModuleComponentIndex()-1,{'s362','s363','s364','s365','s366'}):0)*100", $stringified);
   //   //   }
 

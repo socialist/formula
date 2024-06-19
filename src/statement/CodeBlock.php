@@ -16,13 +16,16 @@ class CodeBlock extends Statement {
 
   private readonly bool $singleLine;
 
+  private readonly bool $root;
+
   /**
    * @param array<Statement> $statements
    */
-  public function __construct(array $statements, bool $singleLine) {
+  public function __construct(array $statements, bool $singleLine, bool $root) {
     parent::__construct();
     $this->statements = $statements;
     $this->singleLine = $singleLine;
+    $this->root = $root;
     if($singleLine && count($statements) !== 1) {
       throw new FormulaBugException('Single line codeblock must contain exactly one statement');
     }
@@ -48,7 +51,7 @@ class CodeBlock extends Statement {
     return new StatementReturn(null, false, false);
   }
 
-  public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
+  public function toString(PrettyPrintOptions $prettyPrintOptions): string {
     if($this->singleLine) {
       $prettyPrintOptions->indent();
       $str = $prettyPrintOptions->newLine.$prettyPrintOptions->getIndentStr().$this->statements[0]->toString($prettyPrintOptions).$prettyPrintOptions->newLine;
@@ -56,14 +59,23 @@ class CodeBlock extends Statement {
       return $str.$prettyPrintOptions->getIndentStr();
     }
     if(count($this->statements) === 0) {
-      return '{}';
+      return $this->root ? '' : '{}';
     }
-    $string = '{';
-    $prettyPrintOptions->indent();
+    if($this->root) {
+      $string = '';
+    } else {
+      $prettyPrintOptions->indent();
+      $string = '{'.$prettyPrintOptions->newLine.$prettyPrintOptions->getIndentStr();
+    }
+    $del = '';
     foreach($this->statements as $statement) {
-      $string .= $prettyPrintOptions->newLine.$prettyPrintOptions->getIndentStr().$statement->toString($prettyPrintOptions);
+      $string .= $del.$statement->toString($prettyPrintOptions);
+      $del = $prettyPrintOptions->newLine.$prettyPrintOptions->getIndentStr();
     }
-    $prettyPrintOptions->outdent();
-    return $string.$prettyPrintOptions->newLine.$prettyPrintOptions->getIndentStr().'}';
+    if(!$this->root) {
+      $prettyPrintOptions->outdent();
+      $string .= $prettyPrintOptions->newLine.$prettyPrintOptions->getIndentStr().'}';
+    }
+    return $string;
   }
 }

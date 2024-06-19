@@ -3,7 +3,6 @@ declare(strict_types = 1);
 namespace TimoLehnertz\formula\parsing;
 
 use TimoLehnertz\formula\FormulaPart;
-use TimoLehnertz\formula\operator\ParsedOperator;
 use TimoLehnertz\formula\tokens\Token;
 use TimoLehnertz\formula\type\Type;
 
@@ -13,16 +12,16 @@ use TimoLehnertz\formula\type\Type;
 class ParserReturn {
 
   /**
-   * @var FormulaPart|array<ParsedPart>
+   * @var FormulaPart|array<FormulaPart>
    */
   public readonly FormulaPart|array $parsed;
 
   public readonly ?Token $nextToken;
 
   /**
-   * @param FormulaPart|array<ParsedPart>|Type $parsed
+   * @param FormulaPart|array<FormulaPart>|Type $parsed
    */
-  public function __construct(FormulaPart|array|Type|ParsedOperator $parsed, ?Token $nextToken) {
+  public function __construct(FormulaPart|array $parsed, ?Token $nextToken) {
     $this->parsed = $parsed;
     $this->nextToken = $nextToken;
   }

@@ -41,7 +41,7 @@ class TypeParser extends Parser {
       $this->final = true;
       $token = $token->next();
       if($token === null) {
-        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
       }
     }
     $inBrackets = false;
@@ -49,7 +49,7 @@ class TypeParser extends Parser {
       $inBrackets = true;
       $token = $token->next();
       if($token === null) {
-        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
       }
     }
     $types = [];
@@ -77,11 +77,11 @@ class TypeParser extends Parser {
       }
     }
     if(count($types) === 0) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_INVALID_TYPE, $firstToken);
+      throw new ParsingException(ParsingException::ERROR_INVALID_TYPE, $firstToken);
     }
     $type = CompoundType::buildFromTypes($types, $this->final);
     if($type === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_INVALID_TYPE, $firstToken);
+      throw new ParsingException(ParsingException::ERROR_INVALID_TYPE, $firstToken);
     }
     if($inBrackets) {
       if($token === null || $token->id !== Token::BRACKETS_CLOSED) {
@@ -103,7 +103,7 @@ class TypeParser extends Parser {
     while($token !== null) {
       if($token->id === Token::SQUARE_BRACKETS_OPEN) {
         if(!$token->hasNext()) {
-          throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+          throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
         }
         $token = $token->next();
         if($token->id !== Token::SQUARE_BRACKETS_CLOSED) {

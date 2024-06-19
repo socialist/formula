@@ -36,7 +36,7 @@ class FunctionStatement extends Statement {
   public function validateStatement(Scope $scope, ?Type $allowedReturnType = null): StatementReturnType {
     $functionBody = new FormulaFunctionBody($this->arguments, $this->codeBlock, $scope);
     $functionBody->validate($this->returnType);
-    $this->functionType = new FunctionType($this->arguments->toOuterType(), $this->returnType, true);
+    $this->functionType = new FunctionType($this->arguments->toOuterType(), $this->returnType);
     $scope->define(true, $this->functionType, $this->identifier);
     return new StatementReturnType(null, Frequency::NEVER, Frequency::NEVER);
   }
@@ -50,6 +50,6 @@ class FunctionStatement extends Statement {
 
   public function toString(?PrettyPrintOptions $prettyPrintOptions): string {
     $functionBody = new FormulaFunctionBody($this->arguments, $this->codeBlock, new Scope());
-    return $this->functionType->returnType->getIdentifier().' '.$this->identifier.$functionBody->toString($prettyPrintOptions);
+    return $this->functionType->generalReturnType->getIdentifier().' '.$this->identifier.$functionBody->toString($prettyPrintOptions);
   }
 }

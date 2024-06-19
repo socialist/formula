@@ -38,7 +38,7 @@ class EnumeratedParserTest extends TestCase {
     $firstToken = Tokenizer::tokenize("{int,}");
     $parser = new EnumeratedParser('', new TypeParser(false), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, false);
     $this->expectException(ParsingException::class);
-    //     $this->expectExceptionMessage((new ParsingException(ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS, $firstToken->next()->next()->next()))->getMessage());
+    //     $this->expectExceptionMessage((new ParsingException(ParsingException::ERROR_TOO_MANY_DELIMITERS, $firstToken->next()->next()->next()))->getMessage());
     $parser->parse($firstToken);
   }
 
@@ -55,7 +55,7 @@ class EnumeratedParserTest extends TestCase {
     $firstToken = Tokenizer::tokenize("{int,,int}");
     $parser = new EnumeratedParser('', new TypeParser(false), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, false, false);
     $this->expectException(ParsingException::class);
-    $this->expectExceptionMessage((new ParsingException(ParsingException::PARSING_ERROR_TOO_MANY_DELIMITERS, $firstToken->next()->next()->next()))->getMessage());
+    $this->expectExceptionMessage((new ParsingException(ParsingException::ERROR_TOO_MANY_DELIMITERS, $firstToken->next()->next()->next()))->getMessage());
     $parser->parse($firstToken);
   }
 
@@ -63,7 +63,7 @@ class EnumeratedParserTest extends TestCase {
     $firstToken = Tokenizer::tokenize("{int;}");
     $parser = new EnumeratedParser('', new TypeParser(false), Token::CURLY_BRACKETS_OPEN, Token::COMMA, Token::CURLY_BRACKETS_CLOSED, true, false);
     $this->expectException(ParsingException::class);
-    $this->expectExceptionMessage((new ParsingException(ParsingException::PARSING_ERROR_MISSING_DELIMITERS, $firstToken->next()->next()))->getMessage());
+    $this->expectExceptionMessage((new ParsingException(ParsingException::ERROR_MISSING_DELIMITERS, $firstToken->next()->next()))->getMessage());
     $parser->parse($firstToken);
   }
 

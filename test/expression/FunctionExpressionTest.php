@@ -26,7 +26,7 @@ class FunctionExpressionTest extends TestCase {
     $innerVargFunctionArgument = new InnerFunctionArgument(false, new IntegerType(), 'a', null);
     $arguments = new InnerFunctionArgumentList([$innerVargFunctionArgument], null);
     $returnStatement = new ReturnStatement(new ConstantExpression(new FloatType(), new FloatValue(123.4)));
-    $codeBlock = new CodeBlock([$returnStatement], false);
+    $codeBlock = new CodeBlock([$returnStatement], false, false);
     $expression = new FunctionExpression($returnType, $arguments, $codeBlock);
 
     /**
@@ -35,7 +35,7 @@ class FunctionExpressionTest extends TestCase {
     /** @var FunctionType $type */
     $type = $expression->validate(new Scope());
     $this->assertInstanceOf(FunctionType::class, $type);
-    $this->assertEquals($returnType, $type->returnType);
+    $this->assertEquals($returnType, $type->generalReturnType);
     $this->assertEquals($arguments->toOuterType(), $type->arguments);
 
     /**

@@ -19,5 +19,6 @@
         <UnnecessaryVarAnnotation errorLevel="info" />
         <PossiblyUnusedProperty errorLevel="info" />
         <PossiblyUnusedParam errorLevel="info" />
+        <PossiblyUnusedMethod errorLevel="info" />
 	</issueHandlers>
 </psalm>

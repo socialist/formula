@@ -13,31 +13,40 @@ class FunctionType extends Type {
 
   public readonly OuterFunctionArgumentListType $arguments;
 
-  public readonly Type $returnType;
+  public readonly Type $generalReturnType;
 
-  public function __construct(OuterFunctionArgumentListType $arguments, Type $returnType) {
+  /**
+   * @var ?callable(OuterFunctionArgumentListType): ?Type
+   */
+  private readonly mixed $specificReturnType;
+
+  /**
+   * @param ?callable(OuterFunctionArgumentListType): ?Type $specificReturnType
+   */
+  public function __construct(OuterFunctionArgumentListType $arguments, Type $generalReturnType, ?callable $specificReturnType = null) {
     parent::__construct();
     $this->arguments = $arguments;
-    $this->returnType = $returnType;
+    $this->generalReturnType = $generalReturnType;
+    $this->specificReturnType = $specificReturnType;
   }
 
   protected function typeAssignableBy(Type $type): bool {
     if(!($type instanceof FunctionType)) {
       return false;
     }
-    return $this->arguments->assignableBy($type->arguments, true) && $this->returnType->assignableBy($type->returnType, true);
+    return $this->arguments->assignableBy($type->arguments, true) && $this->generalReturnType->assignableBy($type->generalReturnType, true);
   }
 
   public function equals(Type $type): bool {
     if($type instanceof FunctionType) {
-      return $this->arguments->equals($type->arguments) && $this->returnType->equals($type->returnType);
+      return $this->arguments->equals($type->arguments) && $this->generalReturnType->equals($type->generalReturnType) && $this->specificReturnType == $type->specificReturnType;
     } else {
       return false;
     }
   }
 
   public function getIdentifier(bool $nested = false): string {
-    return $this->arguments->getIdentifier().': '.$this->returnType->getIdentifier();
+    return $this->arguments->getIdentifier().': '.$this->generalReturnType->getIdentifier();
   }
 
   protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {
@@ -50,13 +59,16 @@ class FunctionType extends Type {
 
   protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     if($operator->getID() === ImplementableOperator::TYPE_CALL) {
-      return $this->returnType;
-    } else {
-      return [];
+      if($this->specificReturnType === null) {
+        return $this->generalReturnType;
+      } else if($otherType instanceof OuterFunctionArgumentListType) {
+        return call_user_func($this->specificReturnType, $otherType);
+      }
     }
+    return null;
   }
 
   public function buildNodeInterfaceType(): NodeInterfaceType {
-    return new NodeInterfaceType('function', ['arguments' => $this->arguments->buildNodeInterfaceType(),'returnType' => $this->returnType->buildNodeInterfaceType()]);
+    return new NodeInterfaceType('function', ['arguments' => $this->arguments->buildNodeInterfaceType(),'returnType' => $this->generalReturnType->buildNodeInterfaceType()]);
   }
 }

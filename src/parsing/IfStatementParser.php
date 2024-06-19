@@ -17,30 +17,29 @@ class IfStatementParser extends Parser {
   }
 
   protected function parsePart(Token $firstToken): ParserReturn {
-    $parsedCondition = null;
     try {
       if($firstToken->id !== Token::KEYWORD_IF) {
         throw new ParsingSkippedException();
       }
       $token = $firstToken->next();
       if($token === null) {
-        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
       }
       if($token->id !== Token::BRACKETS_OPEN) {
-        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $firstToken, 'Expected (');
+        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_TOKEN, $firstToken, 'Expected (');
       }
       $token = $token->next();
       $parsedCondition = (new ExpressionParser())->parse($token, true);
       $token = $parsedCondition->nextToken;
       if($token === null) {
-        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
       }
       if($token->id !== Token::BRACKETS_CLOSED) {
-        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $firstToken, 'Expected )');
+        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_TOKEN, $firstToken, 'Expected )');
       }
       $token = $token->next();
       if($token === null) {
-        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
       }
     } catch(ParsingException | ParsingSkippedException $e) {
       if($this->isFirst) {
@@ -56,7 +55,7 @@ class IfStatementParser extends Parser {
     $parsedElse = null;
     if($token !== null && $token->id === Token::KEYWORD_ELSE) {
       if($parsedCondition === null) {
-        throw new ParsingException(ParsingException::PARSING_ERROR_TOO_MANY_ELSE, $token);
+        throw new ParsingException(ParsingException::ERROR_TOO_MANY_ELSE, $token);
       }
       $token = $token->next();
       $parsedElse = (new IfStatementParser(false))->parse($token, true);

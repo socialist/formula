@@ -14,16 +14,13 @@ class ExpressionStatementParser extends Parser {
     parent::__construct('expression statement');
   }
 
-  /**
-   * @param Token[] $tokens
-   */
   protected function parsePart(Token $firstToken): ParserReturn {
     $parsedExpression = (new ExpressionParser())->parse($firstToken);
     if($parsedExpression->nextToken === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
     }
     if($parsedExpression->nextToken->id !== Token::SEMICOLON) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $parsedExpression->nextToken, 'Expected ;');
+      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_TOKEN, $parsedExpression->nextToken, 'Expected ;');
     }
     return new ParserReturn(new ExpressionStatement($parsedExpression->parsed), $parsedExpression->nextToken->next());
   }

@@ -23,7 +23,7 @@ abstract class Parser {
   public function parse(?Token $firstToken, bool $required = false, bool $expectEnd = false): ParserReturn {
     ParsingException::setParser($this, $firstToken);
     if($firstToken === null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_END_OF_INPUT);
+      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
     }
     try {
       $parserReturn = $this->parsePart($firstToken);
@@ -32,13 +32,13 @@ abstract class Parser {
       }
     } catch(ParsingSkippedException $e) {
       if($required) {
-        throw new ParsingException(ParsingException::PARSING_ERROR_UNEXPECTED_TOKEN, $firstToken);
+        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_TOKEN, $firstToken);
       } else {
         throw $e;
       }
     }
     if($expectEnd && $parserReturn->nextToken !== null) {
-      throw new ParsingException(ParsingException::PARSING_ERROR_EXPECTED_EOF, $parserReturn->nextToken);
+      throw new ParsingException(ParsingException::ERROR_EXPECTED_EOF, $parserReturn->nextToken);
     }
     return $parserReturn;
   }
