@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for A:\dev\formula\src\statement</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=9.2.31" rel="stylesheet" type="text/css">
+  <link href="../_css/nv.d3.min.css?v=9.2.31" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=9.2.31" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">A:\dev\formula\src</a></li>
+         <li class="breadcrumb-item"><a href="index.html">statement</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="CodeBlockOrExpression.php.html#16">TimoLehnertz\formula\statement\CodeBlockOrExpression</a></td><td class="text-right">82%</td></tr>
+       <tr><td><a href="ForEachStatement.php.html#18">TimoLehnertz\formula\statement\ForEachStatement</a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="DoWhileStatement.php.html#13">TimoLehnertz\formula\statement\DoWhileStatement</a></td><td class="text-right">84%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ForEachStatement.php.html#18">TimoLehnertz\formula\statement\ForEachStatement</a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="CodeBlockOrExpression.php.html#16">TimoLehnertz\formula\statement\CodeBlockOrExpression</a></td><td class="text-right">11</td></tr>
+       <tr><td><a href="DoWhileStatement.php.html#13">TimoLehnertz\formula\statement\DoWhileStatement</a></td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="CodeBlockOrExpression.php.html#49"><abbr title="TimoLehnertz\formula\statement\CodeBlockOrExpression::buildNode">buildNode</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="CodeBlockOrExpression.php.html#25"><abbr title="TimoLehnertz\formula\statement\CodeBlockOrExpression::validateStatement">validateStatement</abbr></a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="DoWhileStatement.php.html#30"><abbr title="TimoLehnertz\formula\statement\DoWhileStatement::runStatement">runStatement</abbr></a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="ForEachStatement.php.html#55"><abbr title="TimoLehnertz\formula\statement\ForEachStatement::runStatement">runStatement</abbr></a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="ForEachStatement.php.html#39"><abbr title="TimoLehnertz\formula\statement\ForEachStatement::validateStatement">validateStatement</abbr></a></td><td class="text-right">81%</td></tr>
+       <tr><td><a href="CodeBlock.php.html#24"><abbr title="TimoLehnertz\formula\statement\CodeBlock::__construct">__construct</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="WhileStatement.php.html#31"><abbr title="TimoLehnertz\formula\statement\WhileStatement::runStatement">runStatement</abbr></a></td><td class="text-right">85%</td></tr>
+       <tr><td><a href="ReturnStatement.php.html#26"><abbr title="TimoLehnertz\formula\statement\ReturnStatement::validateStatement">validateStatement</abbr></a></td><td class="text-right">87%</td></tr>
+       <tr><td><a href="StatementReturnType.php.html#43"><abbr title="TimoLehnertz\formula\statement\StatementReturnType::concatOr">concatOr</abbr></a></td><td class="text-right">88%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ForEachStatement.php.html#55"><abbr title="TimoLehnertz\formula\statement\ForEachStatement::runStatement">runStatement</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="ReturnStatement.php.html#26"><abbr title="TimoLehnertz\formula\statement\ReturnStatement::validateStatement">validateStatement</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="CodeBlockOrExpression.php.html#25"><abbr title="TimoLehnertz\formula\statement\CodeBlockOrExpression::validateStatement">validateStatement</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="ForEachStatement.php.html#39"><abbr title="TimoLehnertz\formula\statement\ForEachStatement::validateStatement">validateStatement</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="WhileStatement.php.html#31"><abbr title="TimoLehnertz\formula\statement\WhileStatement::runStatement">runStatement</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="StatementReturnType.php.html#43"><abbr title="TimoLehnertz\formula\statement\StatementReturnType::concatOr">concatOr</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="DoWhileStatement.php.html#30"><abbr title="TimoLehnertz\formula\statement\DoWhileStatement::runStatement">runStatement</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="CodeBlock.php.html#24"><abbr title="TimoLehnertz\formula\statement\CodeBlock::__construct">__construct</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="CodeBlockOrExpression.php.html#49"><abbr title="TimoLehnertz\formula\statement\CodeBlockOrExpression::buildNode">buildNode</abbr></a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 9.2.31</a> using <a href="https://secure.php.net/" target="_top">PHP 8.2.12</a> and <a href="https://phpunit.de/">PHPUnit 9.5.28</a> at Thu Jun 20 20:03:23 UTC 2024.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/jquery.min.js?v=9.2.31" type="text/javascript"></script>
+  <script src="../_js/d3.min.js?v=9.2.31" type="text/javascript"></script>
+  <script src="../_js/nv.d3.min.js?v=9.2.31" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([0,0,0,0,0,0,0,0,0,3,5,9], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([0,0,0,0,0,0,0,1,3,5,1,57], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[100,4,"<a href=\"BreakStatement.php.html#12\">TimoLehnertz\\formula\\statement\\BreakStatement<\/a>"],[97.22222222222221,15,"<a href=\"CodeBlock.php.html#10\">TimoLehnertz\\formula\\statement\\CodeBlock<\/a>"],[82.35294117647058,11,"<a href=\"CodeBlockOrExpression.php.html#16\">TimoLehnertz\\formula\\statement\\CodeBlockOrExpression<\/a>"],[100,4,"<a href=\"ContinueStatement.php.html#12\">TimoLehnertz\\formula\\statement\\ContinueStatement<\/a>"],[84.61538461538461,6,"<a href=\"DoWhileStatement.php.html#13\">TimoLehnertz\\formula\\statement\\DoWhileStatement<\/a>"],[100,4,"<a href=\"ExpressionStatement.php.html#13\">TimoLehnertz\\formula\\statement\\ExpressionStatement<\/a>"],[83.87096774193549,12,"<a href=\"ForEachStatement.php.html#18\">TimoLehnertz\\formula\\statement\\ForEachStatement<\/a>"],[95.65217391304348,8,"<a href=\"ForStatement.php.html#13\">TimoLehnertz\\formula\\statement\\ForStatement<\/a>"],[100,4,"<a href=\"FunctionStatement.php.html#16\">TimoLehnertz\\formula\\statement\\FunctionStatement<\/a>"],[100,10,"<a href=\"IfStatement.php.html#13\">TimoLehnertz\\formula\\statement\\IfStatement<\/a>"],[93.33333333333333,10,"<a href=\"ReturnStatement.php.html#17\">TimoLehnertz\\formula\\statement\\ReturnStatement<\/a>"],[100,4,"<a href=\"Statement.php.html#18\">TimoLehnertz\\formula\\statement\\Statement<\/a>"],[100,4,"<a href=\"StatementReturn.php.html#12\">TimoLehnertz\\formula\\statement\\StatementReturn<\/a>"],[96,11,"<a href=\"StatementReturnType.php.html#14\">TimoLehnertz\\formula\\statement\\StatementReturnType<\/a>"],[100,5,"<a href=\"VariableDeclarationStatement.php.html#14\">TimoLehnertz\\formula\\statement\\VariableDeclarationStatement<\/a>"],[92.85714285714286,7,"<a href=\"WhileStatement.php.html#13\">TimoLehnertz\\formula\\statement\\WhileStatement<\/a>"],[100,4,"<a href=\"Frequency.php.html#8\">TimoLehnertz\\formula\\statement\\Frequency<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[100,1,"<a href=\"BreakStatement.php.html#14\">TimoLehnertz\\formula\\statement\\BreakStatement::__construct<\/a>"],[100,1,"<a href=\"BreakStatement.php.html#18\">TimoLehnertz\\formula\\statement\\BreakStatement::validateStatement<\/a>"],[100,1,"<a href=\"BreakStatement.php.html#22\">TimoLehnertz\\formula\\statement\\BreakStatement::runStatement<\/a>"],[100,1,"<a href=\"BreakStatement.php.html#26\">TimoLehnertz\\formula\\statement\\BreakStatement::toString<\/a>"],[83.33333333333334,3,"<a href=\"CodeBlock.php.html#24\">TimoLehnertz\\formula\\statement\\CodeBlock::__construct<\/a>"],[100,2,"<a href=\"CodeBlock.php.html#34\">TimoLehnertz\\formula\\statement\\CodeBlock::validateStatement<\/a>"],[100,3,"<a href=\"CodeBlock.php.html#43\">TimoLehnertz\\formula\\statement\\CodeBlock::runStatement<\/a>"],[100,7,"<a href=\"CodeBlock.php.html#54\">TimoLehnertz\\formula\\statement\\CodeBlock::toString<\/a>"],[100,1,"<a href=\"CodeBlockOrExpression.php.html#20\">TimoLehnertz\\formula\\statement\\CodeBlockOrExpression::__construct<\/a>"],[71.42857142857143,4,"<a href=\"CodeBlockOrExpression.php.html#25\">TimoLehnertz\\formula\\statement\\CodeBlockOrExpression::validateStatement<\/a>"],[100,3,"<a href=\"CodeBlockOrExpression.php.html#37\">TimoLehnertz\\formula\\statement\\CodeBlockOrExpression::runStatement<\/a>"],[100,1,"<a href=\"CodeBlockOrExpression.php.html#45\">TimoLehnertz\\formula\\statement\\CodeBlockOrExpression::toString<\/a>"],[66.66666666666666,2,"<a href=\"CodeBlockOrExpression.php.html#49\">TimoLehnertz\\formula\\statement\\CodeBlockOrExpression::buildNode<\/a>"],[100,1,"<a href=\"ContinueStatement.php.html#14\">TimoLehnertz\\formula\\statement\\ContinueStatement::__construct<\/a>"],[100,1,"<a href=\"ContinueStatement.php.html#18\">TimoLehnertz\\formula\\statement\\ContinueStatement::validateStatement<\/a>"],[100,1,"<a href=\"ContinueStatement.php.html#22\">TimoLehnertz\\formula\\statement\\ContinueStatement::runStatement<\/a>"],[100,1,"<a href=\"ContinueStatement.php.html#26\">TimoLehnertz\\formula\\statement\\ContinueStatement::toString<\/a>"],[100,1,"<a href=\"DoWhileStatement.php.html#19\">TimoLehnertz\\formula\\statement\\DoWhileStatement::__construct<\/a>"],[100,1,"<a href=\"DoWhileStatement.php.html#25\">TimoLehnertz\\formula\\statement\\DoWhileStatement::validateStatement<\/a>"],[71.42857142857143,3,"<a href=\"DoWhileStatement.php.html#30\">TimoLehnertz\\formula\\statement\\DoWhileStatement::runStatement<\/a>"],[100,1,"<a href=\"DoWhileStatement.php.html#43\">TimoLehnertz\\formula\\statement\\DoWhileStatement::toString<\/a>"],[100,1,"<a href=\"ExpressionStatement.php.html#17\">TimoLehnertz\\formula\\statement\\ExpressionStatement::__construct<\/a>"],[100,1,"<a href=\"ExpressionStatement.php.html#22\">TimoLehnertz\\formula\\statement\\ExpressionStatement::validateStatement<\/a>"],[100,1,"<a href=\"ExpressionStatement.php.html#27\">TimoLehnertz\\formula\\statement\\ExpressionStatement::runStatement<\/a>"],[100,1,"<a href=\"ExpressionStatement.php.html#32\">TimoLehnertz\\formula\\statement\\ExpressionStatement::toString<\/a>"],[100,1,"<a href=\"ForEachStatement.php.html#30\">TimoLehnertz\\formula\\statement\\ForEachStatement::__construct<\/a>"],[81.81818181818183,4,"<a href=\"ForEachStatement.php.html#39\">TimoLehnertz\\formula\\statement\\ForEachStatement::validateStatement<\/a>"],[75,5,"<a href=\"ForEachStatement.php.html#55\">TimoLehnertz\\formula\\statement\\ForEachStatement::runStatement<\/a>"],[100,2,"<a href=\"ForEachStatement.php.html#75\">TimoLehnertz\\formula\\statement\\ForEachStatement::toString<\/a>"],[100,1,"<a href=\"ForStatement.php.html#23\">TimoLehnertz\\formula\\statement\\ForStatement::__construct<\/a>"],[100,1,"<a href=\"ForStatement.php.html#31\">TimoLehnertz\\formula\\statement\\ForStatement::validateStatement<\/a>"],[90.9090909090909,5,"<a href=\"ForStatement.php.html#40\">TimoLehnertz\\formula\\statement\\ForStatement::runStatement<\/a>"],[100,1,"<a href=\"ForStatement.php.html#59\">TimoLehnertz\\formula\\statement\\ForStatement::toString<\/a>"],[100,1,"<a href=\"FunctionStatement.php.html#28\">TimoLehnertz\\formula\\statement\\FunctionStatement::__construct<\/a>"],[100,1,"<a href=\"FunctionStatement.php.html#36\">TimoLehnertz\\formula\\statement\\FunctionStatement::validateStatement<\/a>"],[100,1,"<a href=\"FunctionStatement.php.html#44\">TimoLehnertz\\formula\\statement\\FunctionStatement::runStatement<\/a>"],[100,1,"<a href=\"FunctionStatement.php.html#51\">TimoLehnertz\\formula\\statement\\FunctionStatement::toString<\/a>"],[100,1,"<a href=\"IfStatement.php.html#21\">TimoLehnertz\\formula\\statement\\IfStatement::__construct<\/a>"],[100,2,"<a href=\"IfStatement.php.html#28\">TimoLehnertz\\formula\\statement\\IfStatement::validateStatement<\/a>"],[100,4,"<a href=\"IfStatement.php.html#38\">TimoLehnertz\\formula\\statement\\IfStatement::runStatement<\/a>"],[100,3,"<a href=\"IfStatement.php.html#48\">TimoLehnertz\\formula\\statement\\IfStatement::toString<\/a>"],[100,1,"<a href=\"ReturnStatement.php.html#21\">TimoLehnertz\\formula\\statement\\ReturnStatement::__construct<\/a>"],[87.5,5,"<a href=\"ReturnStatement.php.html#26\">TimoLehnertz\\formula\\statement\\ReturnStatement::validateStatement<\/a>"],[100,1,"<a href=\"ReturnStatement.php.html#39\">TimoLehnertz\\formula\\statement\\ReturnStatement::runStatement<\/a>"],[100,2,"<a href=\"ReturnStatement.php.html#43\">TimoLehnertz\\formula\\statement\\ReturnStatement::toString<\/a>"],[100,1,"<a href=\"ReturnStatement.php.html#50\">TimoLehnertz\\formula\\statement\\ReturnStatement::getExpression<\/a>"],[100,1,"<a href=\"Statement.php.html#22\">TimoLehnertz\\formula\\statement\\Statement::__construct<\/a>"],[100,1,"<a href=\"Statement.php.html#24\">TimoLehnertz\\formula\\statement\\Statement::validate<\/a>"],[100,0,"<a href=\"Statement.php.html#36\">TimoLehnertz\\formula\\statement\\Statement::validateStatement<\/a>"],[100,1,"<a href=\"Statement.php.html#38\">TimoLehnertz\\formula\\statement\\Statement::run<\/a>"],[100,0,"<a href=\"Statement.php.html#43\">TimoLehnertz\\formula\\statement\\Statement::runStatement<\/a>"],[100,1,"<a href=\"Statement.php.html#45\">TimoLehnertz\\formula\\statement\\Statement::setFirstToken<\/a>"],[100,1,"<a href=\"StatementReturn.php.html#20\">TimoLehnertz\\formula\\statement\\StatementReturn::__construct<\/a>"],[100,3,"<a href=\"StatementReturn.php.html#26\">TimoLehnertz\\formula\\statement\\StatementReturn::isTerminating<\/a>"],[100,2,"<a href=\"StatementReturnType.php.html#32\">TimoLehnertz\\formula\\statement\\StatementReturnType::__construct<\/a>"],[88.88888888888889,4,"<a href=\"StatementReturnType.php.html#43\">TimoLehnertz\\formula\\statement\\StatementReturnType::concatOr<\/a>"],[100,5,"<a href=\"StatementReturnType.php.html#62\">TimoLehnertz\\formula\\statement\\StatementReturnType::concatSequential<\/a>"],[100,1,"<a href=\"VariableDeclarationStatement.php.html#24\">TimoLehnertz\\formula\\statement\\VariableDeclarationStatement::__construct<\/a>"],[100,2,"<a href=\"VariableDeclarationStatement.php.html#32\">TimoLehnertz\\formula\\statement\\VariableDeclarationStatement::validateStatement<\/a>"],[100,1,"<a href=\"VariableDeclarationStatement.php.html#44\">TimoLehnertz\\formula\\statement\\VariableDeclarationStatement::runStatement<\/a>"],[100,1,"<a href=\"VariableDeclarationStatement.php.html#50\">TimoLehnertz\\formula\\statement\\VariableDeclarationStatement::toString<\/a>"],[100,1,"<a href=\"WhileStatement.php.html#19\">TimoLehnertz\\formula\\statement\\WhileStatement::__construct<\/a>"],[100,1,"<a href=\"WhileStatement.php.html#25\">TimoLehnertz\\formula\\statement\\WhileStatement::validateStatement<\/a>"],[85.71428571428571,4,"<a href=\"WhileStatement.php.html#31\">TimoLehnertz\\formula\\statement\\WhileStatement::runStatement<\/a>"],[100,1,"<a href=\"WhileStatement.php.html#44\">TimoLehnertz\\formula\\statement\\WhileStatement::toString<\/a>"],[100,2,"<a href=\"Frequency.php.html#16\">TimoLehnertz\\formula\\statement\\Frequency::getHigher<\/a>"],[100,2,"<a href=\"Frequency.php.html#20\">TimoLehnertz\\formula\\statement\\Frequency::or<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

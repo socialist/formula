@@ -1,0 +1,152 @@
+var res = 0;
+/**
+ * ArrayOperatorParser, ArrayParser
+ */
+int[] a = {1,2,3};
+
+
+res += a[2]; // 3
+
+/**
+ * BreakStatementParser, DoWhileStatementParser, CodeBlockParser
+ */
+do {
+  res++; // 4
+  break;
+} while(true);
+
+
+/**
+ * IfStatementParser
+ */
+
+if(true)
+  res++; // 5
+
+if(false)
+  res++;
+else
+  res--; // 4
+
+if(false)
+  res++;
+else if(true)
+  res--; // 3
+
+if(false)
+  res++;
+else if(false)
+  res--;
+else
+  res++; // 4
+
+if(true) {
+  res--; // 3
+} else if(false) {
+  // nothing
+} else {
+  // nothing
+}
+
+/**
+ * CallOperatorParser
+ */
+res += sum(1,2); // 6
+
+/**
+ * ContinueStatementParser, ForStatementParser
+ */
+for(int i=0;i<10;i++) {
+  if(i % 2 == 0) {
+    continue;
+  }
+  res++; // 11
+}
+
+int i = 0;
+
+for(;true;) {
+  if(i >= 2) {
+    break;
+  }
+  res++; // 13
+  i++;
+}
+
+/**
+ * Ternary
+ */
+true ? i++ : i--; // 14
+false ? i++ : i--; // 13
+
+/**
+ * ForEachStatementParser
+ */
+var arr = {1,2,4};
+for(int item : arr)
+  res += item; // 20
+
+for(final var item : arr) {
+  res += item; // 27
+}
+
+/**
+ * Vargs
+ */
+void addRes(int... num) {
+  for(final var item : num) {
+    res += item; 
+  }
+  return; // test empty return
+}
+
+addRes(1,2);// 30
+
+/**
+ * default expression
+ */
+void addRes2(int num = 2) {
+  res += num;
+}
+
+addRes2(); // 32
+addRes2(1); // 33
+
+// codeblockStatement
+
+{
+  res++; // 34
+}
+
+{
+  int res = 0; // check that parent scope remains untouched
+}
+
+res += arr.length; // 37
+
+String string = "abc";
+
+res += string.length; // 40
+
+function(int) -> int intFunc = (int a) -> a*2;
+
+
+res += intFunc(1); // 42
+
+intFunc = (int a) -> a;
+
+res += intFunc(2); // 44
+
+res -= 4; // 40
+
+
+function(int... args) -> float vargFunc = (int... args) -> sum(args);
+
+res += vargFunc(1,2,3); // 46
+
+res -= 6; // 40
+
+// WhileStatementParser
+while(true) {
+  return res; // 40
+}

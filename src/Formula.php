@@ -1,175 +1,90 @@
 <?php
-namespace socialist\formula;
+namespace TimoLehnertz\formula;
 
+use function PHPUnit\Framework\assertEquals;
+use function PHPUnit\Framework\assertFalse;
+use function PHPUnit\Framework\assertTrue;
+use TimoLehnertz\formula\nodes\NodeTree;
+use TimoLehnertz\formula\parsing\CodeBlockOrExpressionParser;
+use TimoLehnertz\formula\procedure\Scope;
+use TimoLehnertz\formula\statement\CodeBlockOrExpression;
+use TimoLehnertz\formula\tokens\TokenisationException;
+use TimoLehnertz\formula\tokens\Tokenizer;
+use TimoLehnertz\formula\type\Type;
+use TimoLehnertz\formula\type\Value;
+use TimoLehnertz\formula\type\VoidType;
+use TimoLehnertz\formula\type\VoidValue;
+use TimoLehnertz\formula\procedure\DefaultScope;
 
-use socialist\formula\expression\Division;
-use socialist\formula\expression\Increment;
-use socialist\formula\expression\Multiplication;
-use socialist\formula\expression\Operator;
-use socialist\formula\expression\Subtraction;
-use socialist\formula\operator\Expression;
-use socialist\formula\operator\Variable;
+/**
+ * This class represents a formula session that can interpret/run code
+ *
+ * @author Timo Lehnertz
+ */
+class Formula {
 
-class Formula
-{
-    /**
-     * @var Operator[]
-     */
-    public $expressions  = [];
+  private readonly CodeBlockOrExpression $content;
 
-    /**
-     * @var Variable[]
-     */
-    protected $variables = [];
+  private DefaultScope $defaultScope;
 
-    /**
-     * @var string
-     */
-    protected $source = '';
+  private readonly Scope $parentScope;
 
-    /**
-     * @var Operator
-     */
-    protected $result;
+  private readonly FormulaSettings $formulaSettings;
 
-    /**
-     * Formula constructor.
-     * @param string $value
-     */
-    public function __construct(string $value)
-    {
-        $this->source = $this->clear($value);
+  private readonly string $source;
+
+  private readonly Type $returnType;
+
+  public function __construct(string $source, ?Scope $parentScope = null, ?FormulaSettings $formulaSettings = null) {
+    $this->source = $source;
+    $this->defaultScope = new DefaultScope();
+    if($formulaSettings === null) {
+      $formulaSettings = FormulaSettings::buildDefaultSettings();
     }
-
-    /**
-     * @param $key
-     * @param $value
-     */
-    public function setVariable(string $key, string $value): void
-    {
-        $this->variables[$key] = $value;
+    $this->formulaSettings = $formulaSettings;
+    $this->parentScope = $parentScope ?? new Scope();
+    $firstToken = Tokenizer::tokenize($source);
+    if($firstToken !== null) {
+      $firstToken = $firstToken->skipComment();
     }
-
-    /**
-     * @return string
-     */
-    public function getSource(): string
-    {
-        return $this->source;
+    if($firstToken === null) {
+      throw new TokenisationException('Invalid formula', 0, 0);
     }
+    $parsedContent = (new CodeBlockOrExpressionParser(true))->parse($firstToken, true, true);
+    $this->content = $parsedContent->parsed;
+    $this->returnType = $this->content->validate($this->buildScope())->returnType ?? new VoidType();
+  }
 
-    /**
-     * @return null|Operator
-     * @throws ExpressionNotFoundException
-     */
-    public function getExpression(): ?Operator
-    {
-        $key = substr($this->source, 1, -1);
+  /**
+   * @throws NodesNotSupportedException
+   */
+  public function getNodeTree(): NodeTree {
+    $node = $this->content->buildNode($this->buildScope());
+    return new NodeTree($node, $this->buildScope()->toNodeTreeScope());
+  }
 
-        if (array_key_exists($key, $this->expressions)) {
-            return $this->expressions[$key];
-        }
+  public function getReturnType(): Type {
+    return $this->returnType;
+  }
 
-        throw new ExpressionNotFoundException('Expression not found: key - ' . $key);
+  /**
+   * Calculates and returnes the result of this formula
+   */
+  public function calculate(): Value {
+    return $this->content->run($this->buildScope())->returnValue ?? new VoidValue();
+  }
+
+  private function buildScope(): Scope {
+    $scope = new Scope();
+    $this->parentScope->setParent($this->defaultScope);
+    $scope->setParent($this->parentScope);
+    return $scope;
+  }
+
+  public function prettyprintFormula(?PrettyPrintOptions $prettyprintOptions = null): string {
+    if($prettyprintOptions === null) {
+      $prettyprintOptions = PrettyPrintOptions::buildDefault();
     }
-
-    /**
-     * @return float
-     */
-    public function calculate(): float
-    {
-        $this->parse();
-        $expression = $this->getExpression();
-        return $expression->calculate($expression);
-    }
-
-    /**
-     * Clear all comments in source
-     *
-     * @param $source
-     * @return string
-     */
-    private function clear(string $source): string
-    {
-        $patterns = [
-            '/\/\*(.*)\*\//i',
-            '/\{(.*)\}/i',
-            '/\[(.*)\]/i',
-            '/[\s]+/i',
-        ];
-        return preg_replace($patterns, '', $source);
-    }
-
-    /**
-     * Generate random key
-     *
-     * @return string
-     */
-    private function generateKey(): string
-    {
-        return $uid = md5(uniqid(rand(), true));
-    }
-
-    /**
-     * @param string $expression
-     * @return Expression
-     */
-    private function getExpressionObject(string $expression): Expression
-    {
-        if (preg_match('/\{([\w\d]+)\}/', $expression, $result)) {
-            return $this->expressions[$result[1]];
-        } else {
-            return ExpressionFactory::factory($expression, $this->variables);
-        }
-    }
-
-    /**
-     * Formula parse
-     */
-    public function parse()
-    {
-        $patterns = [
-            '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)(\*)([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i',
-            '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)(\/)([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i',
-            '/(([\d\.,%]+|[^\{\}]|[\{\w\d\}]+)([\+|-])([\d\.,%]+|[^\{\}]|[\{\w\d\}]+))/i',
-        ];
-
-        $operators = [
-            '*' => Multiplication::class,
-            '/' => Division::class,
-            '-' => Subtraction::class,
-            '+' => Increment::class,
-        ];
-
-        // Выражение в скобках
-        while (preg_match('/\(((?:(?>[^()]+)|(?R))*)\)/i', $this->source, $results)) {
-            $key = $this->generateKey();
-            $formula = new static($results[1]);
-            foreach ($this->variables as $key => $var) {
-                $formula->setVariable($key, $var);
-            }
-            $formula->parse();
-
-            $this->expressions[$key] = $formula->getExpression();
-            $this->source = str_replace($results[0], '{' . $key . '}', $this->source);
-        }
-
-        foreach ($patterns as $pattern) {
-            while (preg_match($pattern, $this->source, $results)) {
-                try {
-                    $left = $this->getExpressionObject( $results[2] );
-                    $right = $this->getExpressionObject( $results[4] );
-                    $key = $this->generateKey();
-
-                    $this->expressions[ $key ] = new $operators[$results[3]]( $left, $right );
-
-                    $this->source = str_replace( $results[1], '{' . $key . '}', $this->source );
-                } catch(\Exception $e) {
-                    echo $e->getMessage();
-                }
-            }
-        }
-
-        $this->result = $this->getExpressionObject( $this->source );
-    }
+    return $this->content->toString($prettyprintOptions);
+  }
 }
