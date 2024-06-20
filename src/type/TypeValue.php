@@ -24,8 +24,8 @@ class TypeValue extends Value {
     return true;
   }
 
-  public function copy(): ArrayValue {
-    return new ArrayValue($this->value);
+  public function copy(): Value {
+    return new TypeValue($this->value);
   }
 
   public function valueEquals(Value $other): bool {
@@ -45,6 +45,6 @@ class TypeValue extends Value {
   }
 
   public function toString(): string {
-    return new StringValue($this->value->getIdentifier());
+    return 'TypeValue('.$this->value->getIdentifier().')';
   }
 }

@@ -47,10 +47,7 @@ class TypeParser extends Parser {
     $inBrackets = false;
     if($token->id === Token::BRACKETS_OPEN) {
       $inBrackets = true;
-      $token = $token->next();
-      if($token === null) {
-        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
-      }
+      $token = $token->requireNext();
     }
     $types = [];
     while($token !== null) {
@@ -102,10 +99,7 @@ class TypeParser extends Parser {
     $token = $firstToken;
     while($token !== null) {
       if($token->id === Token::SQUARE_BRACKETS_OPEN) {
-        if(!$token->hasNext()) {
-          throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
-        }
-        $token = $token->next();
+        $token = $token->requireNext();
         if($token->id !== Token::SQUARE_BRACKETS_CLOSED) {
           throw new ParsingSkippedException();
         }
@@ -125,25 +119,36 @@ class TypeParser extends Parser {
   private function parseSingleType(Token $firstToken): ParserReturn {
     if($firstToken->id === Token::KEYWORD_BOOL) {
       $type = new BooleanType($this->final);
+      $token = $firstToken->next();
     } else if($firstToken->id === Token::KEYWORD_INT) {
       $type = new IntegerType($this->final);
+      $token = $firstToken->next();
     } else if($firstToken->id === Token::KEYWORD_FLOAT) {
       $type = new FloatType($this->final);
+      $token = $firstToken->next();
     } else if($firstToken->id === Token::KEYWORD_STRING) {
       $type = new StringType($this->final);
+      $token = $firstToken->next();
     } else if($firstToken->id === Token::KEYWORD_VOID) {
       $type = new VoidType();
+      $token = $firstToken->next();
     } else if($firstToken->id === Token::KEYWORD_DATE_INTERVAL) {
       $type = new DateIntervalType();
+      $token = $firstToken->next();
     } else if($firstToken->id === Token::KEYWORD_DATE_TIME_IMMUTABLE) {
       $type = new DateTimeImmutableType();
+      $token = $firstToken->next();
+    } else if($firstToken->id === Token::KEYWORD_FUNCTION) {
+      $parsedType = (new FunctionTypeParser())->parse($firstToken);
+      $token = $parsedType->nextToken;
+      $type = $parsedType->parsed;
     } else {
       throw new ParsingSkippedException($firstToken->value.$firstToken->id);
     }
-    if(!$firstToken->hasNext()) {
-      return new ParserReturn($type, $firstToken->next());
+    if($token === null) {
+      return new ParserReturn($type, $token);
+    } else {
+      return static::parseArrayDimension($token, $type);
     }
-    $type = static::parseArrayDimension($firstToken->next(), $type);
-    return $type;
   }
 }

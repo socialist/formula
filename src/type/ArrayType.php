@@ -74,7 +74,7 @@ class ArrayType extends ClassType implements IteratableType {
   protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_ARRAY_ACCESS:
-        if($this->keyType->assignableBy($otherType)) {
+        if($otherType !== null && $this->keyType->assignableBy($otherType)) {
           return $this->elementsType;
         }
         break;
@@ -90,9 +90,6 @@ class ArrayType extends ClassType implements IteratableType {
         if($otherType instanceof ArrayType) {
           $otherType = $otherType->elementsType;
         }
-        //         if($operator->getID() === ImplementableOperator::TYPE_MODULO) {
-        //           var_dump($otherType);
-        //         }
         $result = $this->elementsType->getOperatorResultType($operator, $otherType);
         if($result !== null) {
           return new ArrayType($this->keyType, $result);

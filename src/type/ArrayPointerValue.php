@@ -28,7 +28,7 @@ class ArrayPointerValue extends Value implements ValueContainer {
     return false;
   }
 
-  public function copy(): ArrayPointerValue {
+  public function copy(): Value {
     throw new FormulaRuntimeException(null, 'Array key '.$this->index.' does not exist');
   }
 

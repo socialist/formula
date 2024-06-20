@@ -170,5 +170,6 @@ class Token {
   public const KEYWORD_DATE_TIME_IMMUTABLE = 71;
   public const KEYWORD_DATE_INTERVAL = 72;
   public const FUNCTION_ARROW = 73; // ->
+  public const KEYWORD_FUNCTION = 74;
   // @formatter:on
 }

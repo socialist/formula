@@ -123,7 +123,7 @@ class ScopeTest extends TestCase {
         [
           'publicReadonlyInt' => new FieldType(true, new IntegerType()),
           'publicArray' => new FieldType(false, new ArrayType(new MixedType(),new MixedType())),
-          'add' => new FieldType(true, new FunctionType(new OuterFunctionArgumentListType([new OuterFunctionArgument(new IntegerType(), false), new OuterFunctionArgument(new IntegerType(), false)], false), new IntegerType()))
+          'add' => new FieldType(true, new FunctionType(new OuterFunctionArgumentListType([new OuterFunctionArgument(new IntegerType(), false, false), new OuterFunctionArgument(new IntegerType(), false, false)], false), new IntegerType()))
         ]
       );
     // @formatter:on

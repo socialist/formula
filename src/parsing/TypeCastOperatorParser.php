@@ -18,10 +18,7 @@ class TypeCastOperatorParser extends Parser {
     if($firstToken->id != Token::BRACKETS_OPEN) {
       throw new ParsingSkippedException();
     }
-    if(!$firstToken->hasNext()) {
-      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
-    }
-    $token = $firstToken->next();
+    $token = $firstToken->requireNext();
     $parsedType = (new TypeParser(false))->parse($token);
     $token = $parsedType->nextToken;
     if($token === null) {

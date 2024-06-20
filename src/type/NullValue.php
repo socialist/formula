@@ -12,7 +12,7 @@ use const false;
 class NullValue extends Value {
 
   public function copy(): NullValue {
-    return new NullValue(); // immutable anyway
+    return new NullValue();
   }
 
   public function isTruthy(): bool {

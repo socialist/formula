@@ -26,7 +26,7 @@ class ArgumentListExpressionTest extends TestCase {
     $expression->expects($this->atLeastOnce())->method('validate')->willReturn(new FloatType());
     $expressions = [$expression];
     $expression = new ArgumentListExpression($expressions);
-    $argType = new OuterFunctionArgument(new IntegerType(), false);
+    $argType = new OuterFunctionArgument(new IntegerType(), false, false);
     $type = new OuterFunctionArgumentListType([$argType], false);
     $casted = $expression->getCastedExpression($type, new Scope());
     $this->assertCount(1, $casted->getExpressions());

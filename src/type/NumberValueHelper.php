@@ -37,7 +37,6 @@ abstract class NumberValueHelper {
       case ImplementableOperator::TYPE_DIVISION:
       case ImplementableOperator::TYPE_LESS:
       case ImplementableOperator::TYPE_GREATER:
-      case ImplementableOperator::TYPE_EQUALS:
         return [new IntegerType(),new FloatType()];
       case ImplementableOperator::TYPE_MODULO:
         return [new IntegerType()];
@@ -84,13 +83,12 @@ abstract class NumberValueHelper {
       case ImplementableOperator::TYPE_MULTIPLICATION:
         return self::getMostPreciseNumberType($typeA, $typeB);
       case ImplementableOperator::TYPE_DIVISION:
-        return new FloatType(false);
+        return new FloatType();
       case ImplementableOperator::TYPE_MODULO:
-        return new IntegerType(false);
+        return new IntegerType();
       case ImplementableOperator::TYPE_GREATER:
       case ImplementableOperator::TYPE_LESS:
-      case ImplementableOperator::TYPE_EQUALS:
-        return new BooleanType(false);
+        return new BooleanType();
       default:
         return null;
     }
@@ -142,8 +140,6 @@ abstract class NumberValueHelper {
         return new BooleanValue($self->toPHPValue() > $other->toPHPValue());
       case ImplementableOperator::TYPE_LESS:
         return new BooleanValue($self->toPHPValue() < $other->toPHPValue());
-      case ImplementableOperator::TYPE_EQUALS:
-        return new BooleanValue($self->toPHPValue() == $other->toPHPValue());
       default:
         throw new FormulaBugException('Invalid operation '.$self->getType()->getIdentifier().' '.$operator->toString(PrettyPrintOptions::buildDefault()).' '.($other !== null ? $other->getType()->getIdentifier() : ''));
     }

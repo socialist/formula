@@ -20,7 +20,7 @@ class IntegerValue extends Value {
     return ''.$this->value;
   }
 
-  public function copy(): IntegerValue {
+  public function copy(): Value {
     return new IntegerValue($this->value);
   }
 

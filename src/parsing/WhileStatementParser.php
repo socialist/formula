@@ -17,10 +17,7 @@ class WhileStatementParser extends Parser {
     if($firstToken->id !== Token::KEYWORD_WHILE) {
       throw new ParsingSkippedException();
     }
-    $token = $firstToken->next();
-    if($token === null) {
-      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
-    }
+    $token = $firstToken->requireNext();
     if($token->id !== Token::BRACKETS_OPEN) {
       throw new ParsingException(ParsingException::ERROR_UNEXPECTED_TOKEN, $firstToken, 'Expected (');
     }
@@ -33,10 +30,7 @@ class WhileStatementParser extends Parser {
     if($token->id !== Token::BRACKETS_CLOSED) {
       throw new ParsingException(ParsingException::ERROR_UNEXPECTED_TOKEN, $firstToken, 'Expected )');
     }
-    $token = $token->next();
-    if($token === null) {
-      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
-    }
+    $token = $token->requireNext();
     $parsedBody = (new CodeBlockParser(true, false))->parse($token, true);
     $whileStatement = new WhileStatement($parsedCondition->parsed, $parsedBody->parsed);
 

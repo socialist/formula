@@ -35,10 +35,7 @@ class VariableDeclarationStatementParser extends Parser {
       throw new ParsingSkippedException();
     }
     $identifier = $token->value;
-    if(!$token->hasNext()) {
-      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
-    }
-    $token = $token->next();
+    $token = $token->requireNext();
     if($token->id !== Token::ASSIGNMENT) {
       throw new ParsingSkippedException();
     }

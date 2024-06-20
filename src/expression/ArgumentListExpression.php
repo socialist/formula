@@ -45,7 +45,7 @@ class ArgumentListExpression implements Expression, CastableExpression {
   public function validate(Scope $scope): Type {
     $arguments = [];
     foreach($this->expressions as $expression) {
-      $arguments[] = new OuterFunctionArgument($expression->validate($scope), false);
+      $arguments[] = new OuterFunctionArgument($expression->validate($scope), false, false);
     }
     return new OuterFunctionArgumentListType($arguments, false);
   }

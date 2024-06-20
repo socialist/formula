@@ -8,7 +8,8 @@ use TimoLehnertz\formula\tokens\Token;
 use TimoLehnertz\formula\type\functions\InnerFunctionArgument;
 use TimoLehnertz\formula\type\functions\InnerFunctionArgumentList;
 use TimoLehnertz\formula\type\functions\InnerVargFunctionArgument;
-use Couchbase\Exception\ParsingFailureException;
+use const false;
+use const true;
 
 /**
  * @author Timo Lehnertz
@@ -52,7 +53,7 @@ class FunctionParser extends Parser {
         throw new ParsingSkippedException();
       }
     }
-    $functionArgumentParser = new EnumeratedParser('Function arguments', new FunctionArgumentParser(), Token::BRACKETS_OPEN, Token::COMMA, Token::BRACKETS_CLOSED, false, true);
+    $functionArgumentParser = new EnumeratedParser('Function arguments', new InnerFunctionArgumentParser(false), Token::BRACKETS_OPEN, Token::COMMA, Token::BRACKETS_CLOSED, false, true);
     $parsedArguments = $functionArgumentParser->parse($token);
     $token = $parsedArguments->nextToken;
     $normalArgs = [];

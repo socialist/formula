@@ -4,9 +4,9 @@ namespace TimoLehnertz\formula\type\functions;
 
 use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\type\ArrayValue;
-use TimoLehnertz\formula\type\StringValue;
 use TimoLehnertz\formula\type\Value;
+use const false;
+use const true;
 
 /**
  * @author Timo Lehnertz
@@ -29,7 +29,7 @@ class OuterFunctionArgumentListValue extends Value {
     return true;
   }
 
-  public function copy(): ArrayValue {
+  public function copy(): Value {
     return new OuterFunctionArgumentListValue($this->values);
   }
 
@@ -50,6 +50,6 @@ class OuterFunctionArgumentListValue extends Value {
   }
 
   public function toString(): string {
-    return new StringValue('OuterFunctionArgumentListValue');
+    return 'OuterFunctionArgumentListValue';
   }
 }

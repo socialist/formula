@@ -49,7 +49,7 @@ class DateIntervalValue extends Value {
     return $this->value;
   }
 
-  public function copy(): DateIntervalValue {
+  public function copy(): Value {
     return new DateIntervalValue($this->value);
   }
 
@@ -61,9 +61,9 @@ class DateIntervalValue extends Value {
     return true;
   }
 
-  protected function valueEquals(Value $other): bool {
+  public function valueEquals(Value $other): bool {
     if($other instanceof DateIntervalValue) {
-      return $other->value == $this->value;
+      return $other->toString() === $this->toString();
     }
     return false;
   }

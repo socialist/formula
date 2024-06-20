@@ -28,14 +28,14 @@ class StringValue extends ClassInstanceValue {
   }
 
   public function valueEquals(Value $other): bool {
-    return $other->value === $this->getValue();
+    return $other instanceof StringValue && $other->value === $this->value;
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_ADDITION:
         if($other !== null && $other instanceof StringValue) {
-          return new StringValue($this->value.$other->toString());
+          return new StringValue($this->value.$other->value);
         }
     }
     return parent::valueOperate($operator, $other);

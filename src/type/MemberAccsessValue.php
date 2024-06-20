@@ -27,7 +27,7 @@ class MemberAccsessValue extends Value {
     return true;
   }
 
-  public function copy(): ArrayValue {
+  public function copy(): Value {
     return new MemberAccsessValue($this->memberIdentifier);
   }
 

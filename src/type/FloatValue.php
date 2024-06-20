@@ -19,15 +19,15 @@ class FloatValue extends Value {
     return true;
   }
 
-  public function copy(): FloatValue {
+  public function copy(): Value {
     return new FloatValue($this->value);
   }
 
   public function valueEquals(Value $other): bool {
     if($other instanceof IntegerValue) {
-      return $other->getValue() == $this->getValue();
+      return $other->toPHPValue() == $this->toPHPValue();
     } else if($other instanceof FloatValue) {
-      return $other->getValue() === $this->getValue();
+      return $other->toPHPValue() === $this->toPHPValue();
     } else {
       return false;
     }

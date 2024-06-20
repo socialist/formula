@@ -96,7 +96,7 @@ class Scope {
           case 'object':
             return new MixedType();
           case 'callable':
-            return new FunctionType(new OuterFunctionArgumentListType([new OuterFunctionArgument(new MixedType(), true)], true), new MixedType());
+            return new FunctionType(new OuterFunctionArgumentListType([new OuterFunctionArgument(new MixedType(), true, false)], true), new MixedType());
         }
       } else {
         return Scope::reflectionClassToType(new \ReflectionClass($reflectionType->getName()));
@@ -166,7 +166,7 @@ class Scope {
       if($reflectionArgument->isVariadic()) {
         $vargs = true;
       }
-      $arguments[] = new OuterFunctionArgument(Scope::reflectionTypeToFormulaType($reflectionArgument->getType()), $reflectionArgument->isOptional());
+      $arguments[] = new OuterFunctionArgument(Scope::reflectionTypeToFormulaType($reflectionArgument->getType()), $reflectionArgument->isOptional(), false);
     }
     return new FunctionType($argumentType ?? new OuterFunctionArgumentListType($arguments, $vargs), $returnType, $specificFunctionReturnType);
   }

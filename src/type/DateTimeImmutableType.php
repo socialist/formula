@@ -4,8 +4,7 @@ namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\nodes\NodeInterfaceType;
 use TimoLehnertz\formula\operator\ImplementableOperator;
-use TimoLehnertz\formula\procedure\Scope;
-use TimoLehnertz\formula\type\classes\ClassType;
+use const false;
 
 /**
  * @author Timo Lehnertz
@@ -26,7 +25,7 @@ class DateTimeImmutableType extends Type {
       case ImplementableOperator::TYPE_SUBTRACTION:
         return [new DateIntervalType()];
       default:
-        return parent::getTypeCompatibleOperands($operator);
+        return [];
     }
   }
 
@@ -34,10 +33,12 @@ class DateTimeImmutableType extends Type {
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_ADDITION:
       case ImplementableOperator::TYPE_SUBTRACTION:
-        return new DateTimeImmutableType();
-      default:
-        return parent::getTypeOperatorResultType($operator, $otherType);
+        if($otherType instanceof DateIntervalType) {
+          return new DateTimeImmutableType();
+        }
+        break;
     }
+    return null;
   }
 
   public function buildNodeInterfaceType(): NodeInterfaceType {

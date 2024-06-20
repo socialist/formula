@@ -5,6 +5,7 @@ namespace TimoLehnertz\formula\type;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 use const false;
 use const true;
+use TimoLehnertz\formula\FormulaBugException;
 
 /**
  * @author Timo Lehnertz
@@ -28,18 +29,18 @@ class DateTimeImmutableValue extends Value {
           return new DateTimeImmutableValue($this->value->sub($other->toPHPValue()));
         }
     }
-    return parent::valueOperate($operator, $other);
+    throw new FormulaBugException('Invalid Operator');
   }
 
   public function toString(): string {
-    return '"'.$this->value->format('Y-m-d\TH:i:s').'"';
+    return $this->value->format('Y-m-d\TH:i:s');
   }
 
   public function toPHPValue(): \DateTimeImmutable {
     return $this->value;
   }
 
-  public function copy(): DateTimeImmutableValue {
+  public function copy(): Value {
     return new DateTimeImmutableValue($this->value);
   }
 
@@ -47,7 +48,7 @@ class DateTimeImmutableValue extends Value {
     return true;
   }
 
-  protected function valueEquals(Value $other): bool {
+  public function valueEquals(Value $other): bool {
     if($other instanceof DateTimeImmutableValue) {
       return $this->value == $other->value;
     }

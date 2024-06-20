@@ -23,10 +23,10 @@ class FunctionValue extends Value {
   }
 
   public function valueEquals(Value $other): bool {
-    return $other === $this;
+    return $other instanceof FunctionValue && $other->body === $this->body;
   }
 
-  public function copy(): FunctionValue {
+  public function copy(): Value {
     return new FunctionValue($this->body);
   }
 

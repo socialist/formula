@@ -9,7 +9,7 @@ use TimoLehnertz\formula\type\functions\InnerVargFunctionArgument;
 /**
  * @author Timo Lehnertz
  */
-class FunctionArgumentParser extends Parser {
+class InnerFunctionArgumentParser extends Parser {
 
   public function __construct() {
     parent::__construct('function argument');
@@ -46,9 +46,10 @@ class FunctionArgumentParser extends Parser {
       $token = $token->next();
     }
     if($isVarg) {
-      return new ParserReturn(new InnerVargFunctionArgument($final, $parsedType->parsed, $identifier), $token);
+      $parsed = new InnerVargFunctionArgument($final, $parsedType->parsed, $identifier);
     } else {
-      return new ParserReturn(new InnerFunctionArgument($final, $parsedType->parsed, $identifier, $parsedExpression?->parsed ?? null), $token);
+      $parsed = new InnerFunctionArgument($final, $parsedType->parsed, $identifier, $parsedExpression?->parsed ?? null);
     }
+    return new ParserReturn($parsed, $token);
   }
 }

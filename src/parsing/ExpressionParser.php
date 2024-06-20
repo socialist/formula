@@ -65,19 +65,13 @@ class ExpressionParser extends Parser {
       if($ternaryCondition === null && $token->id === Token::QUESTIONMARK) {
         $ternaryCondition = $this->transform($expressionsAndOperators, $token);
         $expressionsAndOperators = [];
-        if(!$token->hasNext()) {
-          throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
-        }
-        $token = $token->next();
+        $token = $token->requireNext();
       }
       // Still ternary
       if($ternaryCondition !== null && $ternaryLeftExpression === null && $token->id === Token::COlON) {
         $ternaryLeftExpression = $this->transform($expressionsAndOperators, $token);
         $expressionsAndOperators = [];
-        if(!$token->hasNext()) {
-          throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
-        }
-        $token = $token->next();
+        $token = $token->requireNext();
       }
       if(isset(ExpressionParser::$expressionEndingTokens[$token->id])) {
         break;
@@ -166,7 +160,6 @@ class ExpressionParser extends Parser {
       array_splice($expressionsAndOperators, $startingIndex, $size, [$expression]);
     }
     if(count($expressionsAndOperators) !== 1) {
-      var_dump($expressionsAndOperators);
       throw new ParsingException(ParsingException::ERROR_INVALID_OPERATOR_USE, $nextToken);
     }
     return $expressionsAndOperators[0];

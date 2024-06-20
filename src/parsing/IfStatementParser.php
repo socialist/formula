@@ -21,10 +21,7 @@ class IfStatementParser extends Parser {
       if($firstToken->id !== Token::KEYWORD_IF) {
         throw new ParsingSkippedException();
       }
-      $token = $firstToken->next();
-      if($token === null) {
-        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
-      }
+      $token = $firstToken->requireNext();
       if($token->id !== Token::BRACKETS_OPEN) {
         throw new ParsingException(ParsingException::ERROR_UNEXPECTED_TOKEN, $firstToken, 'Expected (');
       }
@@ -37,10 +34,7 @@ class IfStatementParser extends Parser {
       if($token->id !== Token::BRACKETS_CLOSED) {
         throw new ParsingException(ParsingException::ERROR_UNEXPECTED_TOKEN, $firstToken, 'Expected )');
       }
-      $token = $token->next();
-      if($token === null) {
-        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
-      }
+      $token = $token->requireNext();
     } catch(ParsingException | ParsingSkippedException $e) {
       if($this->isFirst) {
         throw $e;

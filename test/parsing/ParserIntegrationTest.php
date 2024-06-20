@@ -12,6 +12,7 @@ class ParserIntegrationTest extends TestCase {
     $result = $formula->calculate();
     $this->assertEquals(40, $result->toPHPValue());
     $parsedSource = $formula->prettyprintFormula();
+    //     echo $parsedSource;
     $formula = new Formula($parsedSource);
     $this->assertEquals(40, $result->toPHPValue()); // assert that stringify works as expected
   }

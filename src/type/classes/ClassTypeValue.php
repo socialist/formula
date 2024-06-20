@@ -25,7 +25,7 @@ class ClassTypeValue extends Value {
     return $other === $this;
   }
 
-  public function copy(): ClassTypeValue {
+  public function copy(): Value {
     return new ClassTypeValue($this->constructor);
   }
 

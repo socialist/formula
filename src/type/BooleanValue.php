@@ -20,12 +20,12 @@ class BooleanValue extends Value {
     return $this->value;
   }
 
-  public function copy(): BooleanValue {
+  public function copy(): Value {
     return new BooleanValue($this->value);
   }
 
   public function valueEquals(Value $other): bool {
-    return $other->value === $this->value;
+    return $other instanceof BooleanValue && $other->value === $this->value;
   }
 
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {

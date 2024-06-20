@@ -128,6 +128,24 @@ String string = "abc";
 
 res += string.length; // 40
 
+function(int) -> int intFunc = (int a) -> a*2;
+
+
+res += intFunc(1); // 42
+
+intFunc = (int a) -> a;
+
+res += intFunc(2); // 44
+
+res -= 4; // 40
+
+
+function(int... args) -> float vargFunc = (int... args) -> sum(args);
+
+res += vargFunc(1,2,3); // 46
+
+res -= 6; // 40
+
 // WhileStatementParser
 while(true) {
   return res; // 40

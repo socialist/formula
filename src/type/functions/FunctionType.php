@@ -46,7 +46,7 @@ class FunctionType extends Type {
   }
 
   public function getIdentifier(bool $nested = false): string {
-    return $this->arguments->getIdentifier().': '.$this->generalReturnType->getIdentifier();
+    return 'function'.$this->arguments->getIdentifier().' -> '.$this->generalReturnType->getIdentifier();
   }
 
   protected function getTypeCompatibleOperands(ImplementableOperator $operator): array {
@@ -59,10 +59,12 @@ class FunctionType extends Type {
 
   protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {
     if($operator->getID() === ImplementableOperator::TYPE_CALL) {
-      if($this->specificReturnType === null) {
-        return $this->generalReturnType;
-      } else if($otherType instanceof OuterFunctionArgumentListType) {
-        return call_user_func($this->specificReturnType, $otherType);
+      if($otherType instanceof OuterFunctionArgumentListType && $this->arguments->assignableBy($otherType)) {
+        if($this->specificReturnType === null) {
+          return $this->generalReturnType;
+        } else {
+          return call_user_func($this->specificReturnType, $otherType);
+        }
       }
     }
     return null;

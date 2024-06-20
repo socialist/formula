@@ -15,38 +15,40 @@ abstract class Value implements OperatorHandler {
 
   public function operate(ImplementableOperator $operator, ?Value $other): Value {
     // default operators
-    switch($operator->getID()) {
-      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT:
-        if($this->container === null) {
-          throw new FormulaBugException('Missing value container');
-        }
-        $this->container->assign($other);
-        return $other;
-      case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL:
-        if($this->container === null) {
-          throw new FormulaBugException('Missing value container');
-        }
-        $this->container->assign($other);
-        $this->setContainer(null);
-        return $this;
-      case ImplementableOperator::TYPE_EQUALS:
-        return new BooleanValue($this->valueEquals($other));
-      case ImplementableOperator::TYPE_TYPE_CAST:
-        if($other instanceof TypeValue) {
-          if($other->getValue() instanceof BooleanType) {
-            return new BooleanValue($this->isTruthy());
+    if($other !== null) {
+      switch($operator->getID()) {
+        case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT:
+          if($this->container === null) {
+            throw new FormulaBugException('Missing value container');
           }
-          if($other->getValue()->equals(new StringType(false))) {
-            return new StringValue($this->toString());
+          $this->container->assign($other);
+          return $other;
+        case ImplementableOperator::TYPE_DIRECT_ASSIGNMENT_OLD_VAL:
+          if($this->container === null) {
+            throw new FormulaBugException('Missing value container');
           }
-        }
-        break;
-      case ImplementableOperator::TYPE_LOGICAL_AND:
-        return new BooleanValue($this->isTruthy() && $other->isTruthy());
-      case ImplementableOperator::TYPE_LOGICAL_OR:
-        return new BooleanValue($this->isTruthy() || $other->isTruthy());
-      case ImplementableOperator::TYPE_LOGICAL_XOR:
-        return new BooleanValue($this->isTruthy() xor $other->isTruthy());
+          $this->container->assign($other);
+          $this->setContainer(null);
+          return $this;
+        case ImplementableOperator::TYPE_EQUALS:
+          return new BooleanValue($this->valueEquals($other));
+        case ImplementableOperator::TYPE_TYPE_CAST:
+          if($other instanceof TypeValue) {
+            if($other->getValue() instanceof BooleanType) {
+              return new BooleanValue($this->isTruthy());
+            }
+            if($other->getValue()->equals(new StringType(false))) {
+              return new StringValue($this->toString());
+            }
+          }
+          break;
+        case ImplementableOperator::TYPE_LOGICAL_AND:
+          return new BooleanValue($this->isTruthy() && $other->isTruthy());
+        case ImplementableOperator::TYPE_LOGICAL_OR:
+          return new BooleanValue($this->isTruthy() || $other->isTruthy());
+        case ImplementableOperator::TYPE_LOGICAL_XOR:
+          return new BooleanValue($this->isTruthy() xor $other->isTruthy());
+      }
     }
     return $this->valueOperate($operator, $other);
   }
@@ -67,7 +69,7 @@ abstract class Value implements OperatorHandler {
   /**
    * @param Value $other guaranteed to be assignable
    */
-  protected abstract function valueEquals(Value $other): bool;
+  public abstract function valueEquals(Value $other): bool;
 
   /**
    * @return mixed the php representation of this Value

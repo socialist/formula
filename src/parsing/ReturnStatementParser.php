@@ -18,10 +18,7 @@ class ReturnStatementParser extends Parser {
     if($firstToken->id !== Token::KEYWORD_RETURN) {
       throw new ParsingSkippedException();
     }
-    $token = $firstToken->next();
-    if($token === null) {
-      throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
-    }
+    $token = $firstToken->requireNext();
     if($token->id === Token::SEMICOLON) {
       return new ParserReturn(new ReturnStatement(null), $token->next());
     } else {

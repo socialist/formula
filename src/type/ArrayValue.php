@@ -9,6 +9,7 @@ use TimoLehnertz\formula\type\classes\FieldValue;
 use const false;
 use const true;
 use TimoLehnertz\formula\FormulaRuntimeException;
+use TimoLehnertz\formula\operator\OperatorType;
 
 /**
  * @author Timo Lehnertz
@@ -43,7 +44,14 @@ class ArrayValue extends ClassInstanceValue implements IteratableValue {
     return $other === $this;
   }
 
+  public function copy(): Value {
+    return new ArrayValue($this->value);
+  }
+
   protected function valueOperate(ImplementableOperator $operator, ?Value $other): Value {
+    if($operator->getOperatorType() === OperatorType::InfixOperator && $other === null) {
+      throw new FormulaBugException('Expected operator');
+    }
     switch($operator->getID()) {
       case ImplementableOperator::TYPE_ARRAY_ACCESS:
         $key = $other->toPHPValue();

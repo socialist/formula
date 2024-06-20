@@ -307,6 +307,7 @@ class Tokenizer {
     "var" => Token::KEYWORD_VAR,
     "DateTimeImmutable" => Token::KEYWORD_DATE_TIME_IMMUTABLE,
     "DateInterval" => Token::KEYWORD_DATE_INTERVAL,
+    "function" => Token::KEYWORD_FUNCTION,
   ];
 
   private

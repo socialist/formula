@@ -81,6 +81,7 @@ class TokenizerTest extends TestCase {
       [Token::KEYWORD_DATE_INTERVAL, 'DateInterval', 'DateInterval'],
       [Token::KEYWORD_DATE_TIME_IMMUTABLE, 'DateTimeImmutable ', 'DateTimeImmutable'],
       [Token::FUNCTION_ARROW, '-> ', '->'],
+      [Token::KEYWORD_FUNCTION, 'function', 'function'],
     ];
   }
   // @formatter:on

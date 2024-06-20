@@ -26,7 +26,7 @@ class TypeType extends Type {
   }
 
   public function equals(Type $type): bool {
-    return ($type instanceof TypeType) && $type->getType()->equals($this->type);
+    return ($type instanceof TypeType) && $type->type->equals($this->type);
   }
 
   public function getIdentifier(bool $nested = false): string {

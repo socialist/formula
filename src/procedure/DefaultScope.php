@@ -59,8 +59,8 @@ class DefaultScope extends Scope {
     $this->definePHP(true, "assertEquals", [DefaultScope::class,"assertEqualsFunc"]);
     $this->definePHP(true, "sum", [DefaultScope::class,"sumFunc"]);
     $this->definePHP(true, "avg", [DefaultScope::class,"avgFunc"]);
-    $arrayArg = new OuterFunctionArgument(new ArrayType(new MixedType(), new MixedType()), false);
-    $callbackArg = new OuterFunctionArgument(new FunctionType(new OuterFunctionArgumentListType([new OuterFunctionArgument(new MixedType(), false)], false), new BooleanType()), false);
+    $arrayArg = new OuterFunctionArgument(new ArrayType(new MixedType(), new MixedType()), false, false);
+    $callbackArg = new OuterFunctionArgument(new FunctionType(new OuterFunctionArgumentListType([new OuterFunctionArgument(new MixedType(), false, false)], false), new BooleanType()), false, false);
     $this->definePHP(true, "array_filter", [DefaultScope::class,"array_filterFunc"], new OuterFunctionArgumentListType([$arrayArg,$callbackArg], false), function (OuterFunctionArgumentListType $args): ?Type {
       return $args->getArgumentType(0);
     });
@@ -75,7 +75,6 @@ class DefaultScope extends Scope {
         return $type;
       }
     });
-
     // constants
     $this->definePHP(true, "PI", M_PI);
   }

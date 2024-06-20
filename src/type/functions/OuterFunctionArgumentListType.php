@@ -6,6 +6,7 @@ use TimoLehnertz\formula\FormulaValidationException;
 use TimoLehnertz\formula\nodes\NodeInterfaceType;
 use TimoLehnertz\formula\operator\ImplementableOperator;
 use TimoLehnertz\formula\type\Type;
+use TimoLehnertz\formula\PrettyPrintOptions;
 
 /**
  * @author Timo Lehnertz
@@ -101,13 +102,7 @@ class OuterFunctionArgumentListType extends Type {
     if(!($type instanceof OuterFunctionArgumentListType)) {
       return false;
     }
-    if($this->isVArgs !== $type->isVArgs) {
-      return false;
-    }
-    if($this->arguments === null || $type->arguments === null) {
-      return true;
-    }
-    if(count($this->arguments) !== count($type->arguments)) {
+    if($this->isVArgs !== $type->isVArgs || count($this->arguments) !== count($type->arguments)) {
       return false;
     }
     for($i = 0;$i < count($type->arguments);$i++) {
@@ -122,14 +117,7 @@ class OuterFunctionArgumentListType extends Type {
     $identifier = '';
     $delimiter = '';
     for($i = 0;$i < count($this->arguments);$i++) {
-      $argument = $this->arguments[$i];
-      $identifier .= $delimiter;
-      if($i === count($this->arguments) - 1 && $this->isVArgs) {
-        $identifier .= '...';
-      } else if($argument->optional) {
-        $identifier .= '?';
-      }
-      $identifier .= $argument->type->getIdentifier();
+      $identifier .= $delimiter.$this->arguments[$i]->toString(PrettyPrintOptions::buildDefault());
       $delimiter = ',';
     }
     return '('.$identifier.')';

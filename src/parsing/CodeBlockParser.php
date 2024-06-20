@@ -30,10 +30,7 @@ class CodeBlockParser extends Parser {
       if($token->id !== Token::CURLY_BRACKETS_OPEN) {
         throw new ParsingSkippedException();
       }
-      if(!$token->hasNext()) {
-        throw new ParsingException(ParsingException::ERROR_UNEXPECTED_END_OF_INPUT);
-      }
-      $token = $token->next();
+      $token = $token->requireNext();
     }
     $statements = [];
     while($token !== null && $token->id !== Token::CURLY_BRACKETS_CLOSED) {

@@ -28,7 +28,7 @@ class PHPClassInstanceValue extends Value {
     return true;
   }
 
-  public function copy(): PHPClassInstanceValue {
+  public function copy(): Value {
     return new PHPClassInstanceValue($this->instance);
   }
 

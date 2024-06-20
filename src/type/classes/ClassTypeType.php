@@ -38,7 +38,7 @@ class ClassTypeType extends Type {
   }
 
   protected function typeAssignableBy(Type $type): bool {
-    return false;
+    return $this->equals($type);
   }
 
   protected function getTypeOperatorResultType(ImplementableOperator $operator, ?Type $otherType): ?Type {

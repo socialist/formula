@@ -83,6 +83,7 @@ abstract class Type implements OperatorMeta, FormulaPart {
         if($otherType !== null) {
           return new BooleanType();
         }
+        break;
     }
     return $this->getTypeOperatorResultType($operator, $otherType);
   }

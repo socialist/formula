@@ -86,10 +86,10 @@ class InnerFunctionArgumentList {
     $args = [];
     /** @var InnerFunctionArgument $argument */
     foreach($this->arguments as $argument) {
-      $args[] = new OuterFunctionArgument($argument->type, $argument->isOptional());
+      $args[] = new OuterFunctionArgument($argument->type, $argument->isOptional(), false);
     }
     if($this->varg !== null) {
-      $args[] = new OuterFunctionArgument($this->varg->type, true);
+      $args[] = new OuterFunctionArgument($this->varg->type, true, true);
     }
     return new OuterFunctionArgumentListType($args, $this->varg !== null);
   }
