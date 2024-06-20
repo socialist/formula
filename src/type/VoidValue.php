@@ -4,6 +4,7 @@ namespace TimoLehnertz\formula\type;
 
 use TimoLehnertz\formula\FormulaBugException;
 use TimoLehnertz\formula\operator\ImplementableOperator;
+use http\Exception\BadMessageException;
 
 /**
  * @author Timo Lehnertz
@@ -27,7 +28,7 @@ class VoidValue extends Value {
   }
 
   public function toPHPValue(): mixed {
-    throw new FormulaBugException('VoidValue does not have a php representation');
+    throw new \BadMethodCallException('VoidValue does not have a php representation');
   }
 
   public function toString(): string {

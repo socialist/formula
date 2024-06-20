@@ -46,7 +46,7 @@ class OuterFunctionArgumentListValue extends Value {
   }
 
   public function toPHPValue(): mixed {
-    throw new FormulaBugException('OuterFunctionArgumentListValue does not have a php representation');
+    throw new \BadMethodCallException('OuterFunctionArgumentListValue does not have a php representation');
   }
 
   public function toString(): string {
